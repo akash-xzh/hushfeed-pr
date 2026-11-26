@@ -1,5 +1,5 @@
 {
-  "version": "v0.85.7",
+  "version": "v0.85.8",
   "appNames": {
     "com.zhiliaoapp.musically": "TikTok",
     "com.zhiliaoapp.musically.go": "TikTok Lite"
@@ -7,7 +7,7 @@
   "patches": [
     {
       "name": "Follow bridge (localhost)",
-      "description": "Starts a local HTTP bridge (48912 TikTok / 48914 TikTok Lite) for Termux automation.",
+      "description": "Starts a local HTTP bridge (48912 TikTok / 48914 TikTok Lite) and allows background API requests.",
       "category": null,
       "use": true,
       "dependencies": [
