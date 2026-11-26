@@ -15,13 +15,10 @@
 package app.morphe.patches.tiktok.misc.extension
 
 import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
-import app.morphe.patches.tiktok.misc.settings.configurableBytecodePatch as bytecodePatch
 import app.morphe.patches.shared.misc.extension.ExtensionHook
 import app.morphe.patches.shared.misc.extension.sharedExtensionPatch as extendShared
-import app.morphe.patches.tiktok.misc.diagnostics.buildDetailsPatch
-import app.morphe.patches.tiktok.misc.diagnostics.ownClassesPatch
-import app.morphe.patches.tiktok.misc.diagnostics.targetBuildPatch
 import app.morphe.patches.shared.compat.AppCompatibilities
 import app.morphe.util.getReference
 import app.morphe.util.indexOfFirstInstructionOrThrow
@@ -179,5 +176,5 @@ private val tiktokExtensionPatch = extendShared(
 )
 
 val sharedExtensionPatch = bytecodePatch {
-    dependsOn(targetBuildPatch, buildDetailsPatch, ownClassesPatch, tiktokExtensionPatch)
+    dependsOn(tiktokExtensionPatch)
 }
