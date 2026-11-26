@@ -370,17 +370,19 @@ public final class FollowBridge {
     private static Object networkApi() throws Exception {
         if (cachedNetworkApi != null) return cachedNetworkApi;
         String foundHost = null;
-        for (Field field : Class.forName(API).getDeclaredFields()) {
-            if (!Modifier.isStatic(field.getModifiers()) || field.getType() != String.class) continue;
-            field.setAccessible(true);
-            Object value = field.get(null);
-            if (value instanceof String && ((String) value).startsWith("https://")
-                    && ((String) value).indexOf('/', 8) < 0) {
-                foundHost = (String) value;
-                break;
+        try {
+            for (Field field : Class.forName(API).getDeclaredFields()) {
+                if (!Modifier.isStatic(field.getModifiers()) || field.getType() != String.class) continue;
+                field.setAccessible(true);
+                Object value = field.get(null);
+                if (value instanceof String && ((String) value).startsWith("https://")
+                        && ((String) value).indexOf('/', 8) < 0) {
+                    foundHost = (String) value;
+                    break;
+                }
             }
-        }
-        if (foundHost == null) throw new IllegalStateException("No TikTok API host");
+        } catch (ClassNotFoundException ignored) {}
+        if (foundHost == null) foundHost = "https://api22-normal-c-useast1a.tiktokv.com";
         Class<?> managerType = Class.forName(SERVICE_MANAGER);
         Object manager = managerType.getMethod("get").invoke(null);
         Class<?> retrofitService = Class.forName(RETROFIT_SERVICE);

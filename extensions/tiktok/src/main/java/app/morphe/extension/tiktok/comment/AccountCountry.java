@@ -345,15 +345,20 @@ public final class AccountCountry {
      */
     private static String host() throws Exception {
         String found = null;
-        for (Field field : Class.forName(API).getDeclaredFields()) {
-            if (!Modifier.isStatic(field.getModifiers()) || field.getType() != String.class) continue;
-            field.setAccessible(true);
-            Object value = field.get(null);
-            if (!(value instanceof String) || !isHost((String) value)) continue;
-            if (found != null && !found.equals(value)) throw new UnsupportedOperationException("two API hosts");
-            found = (String) value;
+        try {
+            for (Field field : Class.forName(API).getDeclaredFields()) {
+                if (!Modifier.isStatic(field.getModifiers()) || field.getType() != String.class) continue;
+                field.setAccessible(true);
+                Object value = field.get(null);
+                if (!(value instanceof String) || !isHost((String) value)) continue;
+                if (found != null && !found.equals(value)) throw new UnsupportedOperationException("two API hosts");
+                found = (String) value;
+            }
+        } catch (ClassNotFoundException ignored) {
+            // TikTok Lite omits com.ss.android.ugc.aweme.app.api.Api; TTNet routes from default host.
+            return "https://api22-normal-c-useast1a.tiktokv.com";
         }
-        if (found == null) throw new UnsupportedOperationException("no API host");
+        if (found == null) return "https://api22-normal-c-useast1a.tiktokv.com";
         return found;
     }
 }

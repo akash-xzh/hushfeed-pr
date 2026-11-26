@@ -1,8 +1,8 @@
 {
   "created_at": "2026-11-26T10:15:11",
   "description": "Hushfeed + Follow bridge (localhost 127.0.0.1:48912) for TikTok 47.9.3 (com.zhiliaoapp.musically) + Termux PR.SOCIAL runner.",
-  "download_url": "https://github.com/akash-xzh/hushfeed-pr/releases/download/v0.85.4/patches-0.85.4.mpp",
+  "download_url": "https://github.com/akash-xzh/hushfeed-pr/releases/download/v0.85.5/patches-0.85.5.mpp",
   "signature_download_url": "",
-  "version": "0.85.4",
+  "version": "0.85.5",
   "public_key": "jUJZDs270StPJSIZ5KsoL1uPrFnrTGZMKgAtf/FxdQE="
 }
