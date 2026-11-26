@@ -324,19 +324,90 @@ public final class AccountCountry {
         Object cached = cachedApi;
         if (cached != null) return cached;
         String host = host();
-        Class<?> managerType = Class.forName(SERVICE_MANAGER);
-        Object manager = managerType.getMethod("get").invoke(null);
-        Class<?> retrofitService = Class.forName(RETROFIT_SERVICE);
-        Object factory = managerType.getMethod("getService", Class.class).invoke(manager, retrofitService);
-        if (factory == null) throw new UnsupportedOperationException("no IRetrofitService");
-        Object retrofit = retrofitService.getMethod("createNewRetrofit", String.class).invoke(factory, host);
-        if (retrofit == null) throw new UnsupportedOperationException("no client for " + host);
-        Object api = Class.forName(RETROFIT).getMethod("create", Class.class)
-                .invoke(retrofit, Class.forName(NETWORK_API));
+        Object api = null;
+        try {
+            Class<?> managerType = Class.forName(SERVICE_MANAGER);
+            Object manager = managerType.getMethod("get").invoke(null);
+            Class<?> retrofitService = Class.forName(RETROFIT_SERVICE);
+            Object factory = managerType.getMethod("getService", Class.class).invoke(manager, retrofitService);
+            if (factory != null) {
+                Object retrofit = retrofitService.getMethod("createNewRetrofit", String.class).invoke(factory, host);
+                if (retrofit != null) {
+                    api = Class.forName(RETROFIT).getMethod("create", Class.class)
+                            .invoke(retrofit, Class.forName(NETWORK_API));
+                }
+            }
+        } catch (ClassNotFoundException ignored) {
+            api = createLiteNetworkApi(host);
+        }
+        if (api == null) api = createLiteNetworkApi(host);
         if (api == null) throw new UnsupportedOperationException("no INetworkApi");
         cachedHost = host;
         cachedApi = api;
         return api;
+    }
+
+    public static Object createLiteNetworkApi(String host) throws Exception {
+        Class<?> factoryCls = Class.forName("com.bytedance.ies.ugc.aweme.network.RetrofitFactory");
+        Class<?> iFactoryCls = Class.forName("com.bytedance.ies.ugc.aweme.network.IRetrofitFactory");
+        Class<?> netApiCls = Class.forName(NETWORK_API);
+        Object factory = null;
+        for (Method m : factoryCls.getDeclaredMethods()) {
+            if (Modifier.isStatic(m.getModifiers()) && m.getParameterTypes().length == 0
+                    && iFactoryCls.isAssignableFrom(m.getReturnType())) {
+                m.setAccessible(true);
+                factory = m.invoke(null);
+                if (factory != null) break;
+            }
+        }
+        if (factory == null) throw new UnsupportedOperationException("no RetrofitFactory");
+        Object holder = null;
+        for (Method m : iFactoryCls.getMethods()) {
+            if (m.getParameterTypes().length == 1 && m.getParameterTypes()[0] == String.class) {
+                m.setAccessible(true);
+                Object res = m.invoke(factory, host);
+                if (res != null) {
+                    holder = res;
+                    Object created = tryCreateApi(holder, netApiCls);
+                    if (created != null) return created;
+                }
+            }
+        }
+        if (holder != null) {
+            Object created = tryCreateApi(holder, netApiCls);
+            if (created != null) return created;
+        }
+        throw new UnsupportedOperationException("no Lite INetworkApi");
+    }
+
+    private static Object tryCreateApi(Object target, Class<?> netApiCls) {
+        Object direct = invokeCreateClass(target, netApiCls);
+        if (direct != null) return direct;
+        for (Field f : target.getClass().getDeclaredFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            try {
+                f.setAccessible(true);
+                Object sub = f.get(target);
+                if (sub == null) continue;
+                Object r = invokeCreateClass(sub, netApiCls);
+                if (r != null) return r;
+            } catch (Throwable ignored) {}
+        }
+        return null;
+    }
+
+    private static Object invokeCreateClass(Object obj, Class<?> netApiCls) {
+        for (Method m : obj.getClass().getMethods()) {
+            if (m.getParameterTypes().length == 1 && m.getParameterTypes()[0] == Class.class
+                    && m.getReturnType() == Object.class) {
+                try {
+                    m.setAccessible(true);
+                    Object r = m.invoke(obj, netApiCls);
+                    if (netApiCls.isInstance(r)) return r;
+                } catch (Throwable ignored) {}
+            }
+        }
+        return null;
     }
 
     /**

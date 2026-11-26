@@ -383,13 +383,18 @@ public final class FollowBridge {
             }
         } catch (ClassNotFoundException ignored) {}
         if (foundHost == null) foundHost = "https://api22-normal-c-useast1a.tiktokv.com";
-        Class<?> managerType = Class.forName(SERVICE_MANAGER);
-        Object manager = managerType.getMethod("get").invoke(null);
-        Class<?> retrofitService = Class.forName(RETROFIT_SERVICE);
-        Object factory = managerType.getMethod("getService", Class.class).invoke(manager, retrofitService);
-        Object retrofit = retrofitService.getMethod("createNewRetrofit", String.class).invoke(factory, foundHost);
-        Object api = Class.forName(RETROFIT).getMethod("create", Class.class)
-                .invoke(retrofit, Class.forName(NETWORK_API));
+        Object api = null;
+        try {
+            Class<?> managerType = Class.forName(SERVICE_MANAGER);
+            Object manager = managerType.getMethod("get").invoke(null);
+            Class<?> retrofitService = Class.forName(RETROFIT_SERVICE);
+            Object factory = managerType.getMethod("getService", Class.class).invoke(manager, retrofitService);
+            Object retrofit = retrofitService.getMethod("createNewRetrofit", String.class).invoke(factory, foundHost);
+            api = Class.forName(RETROFIT).getMethod("create", Class.class)
+                    .invoke(retrofit, Class.forName(NETWORK_API));
+        } catch (ClassNotFoundException ignored) {
+            api = AccountCountry.createLiteNetworkApi(foundHost);
+        }
         cachedHost = foundHost;
         cachedNetworkApi = api;
         return api;
