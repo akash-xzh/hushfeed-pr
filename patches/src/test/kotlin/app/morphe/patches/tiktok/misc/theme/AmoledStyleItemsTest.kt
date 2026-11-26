@@ -1,0 +1,176 @@
+package app.morphe.patches.tiktok.misc.theme
+
+import java.io.ByteArrayInputStream
+import javax.xml.parsers.DocumentBuilderFactory
+import app.morphe.patcher.patch.PatchException
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Test
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+
+/** The sheet fills live in style literals, not in colors.xml, and only the dark ones move. */
+class AmoledStyleItemsTest {
+    @Test
+    fun `dark sheet literals take the colour and the light and translucent ones stay`() {
+        val styles = parse(
+            """
+            <resources>
+              <style name="a9z"><item name="agp">#ff282828</item><item name="c3">#FF252525</item></style>
+              <style name="zb"><item name="agp">#ff1e1e1e</item><item name="c3">#ffffffff</item></style>
+              <style name="z6"><item name="dy">#1effffff</item><item name="agp">?attr/aut</item></style>
+              <style name="a_0"><item name="agp">#1d2026</item></style>
+              <style name="zf"><item name="aif">#ff1e1e1e</item><item name="axl">#ffffffff</item></style>
+              <style name="zl"><item name="ail">#ff1e1e1e</item><item name="ain">#ff2c2c2c</item><item name="ags">#ff1e1e1e</item></style>
+              <style name="zd"><item name="bx">#ff121212</item></style>
+              <style name="zo"><item name="bx">#ffffffff</item><item name="axq">#fff5f5f5</item><item name="avy">#ffffffff</item></style>
+              <style name="a_d"><item name="ags">#1a1e24</item></style>
+            </resources>
+            """.trimIndent(),
+        )
+
+        val changed = rewriteDarkStyleItems(styles, surfaceStyleItems("47.9.3"), "#000000")
+
+        assertEquals(setOf("agp", "c3", "aif", "ail", "ain", "bx", "ags"), changed)
+        assertEquals(
+            listOf(
+                "#000000", "#000000", "#000000", "#ffffffff", "#1effffff", "?attr/aut", "#000000", "#000000", "#ffffffff",
+                // The long-press panel's fill and its cards (ain) go black. The settings pages'
+                // cards (ags) go black in every dark theme, and light stays white.
+                "#000000", "#000000", "#000000", "#000000", "#ffffffff", "#fff5f5f5", "#ffffffff", "#000000",
+            ),
+            values(styles),
+        )
+    }
+
+    /**
+     * A picked color reached the sheets and cards but left Inbox and profiles black, since the
+     * pages' own tokens are #000000 in the dark themes and weren't rewritten (#348).
+     */
+    @Test
+    fun `a picked color reaches the pages, black ones included, and light pages stay`() {
+        val styles = parse(
+            """
+            <resources>
+              <style name="zo"><item name="agk">#ff000000</item><item name="agq">#ff000000</item><item name="agm">#ff1e1e1e</item></style>
+              <style name="a_k"><item name="agk">#ff0c0e12</item><item name="agq">#ff0c0e12</item><item name="agm">#ff16191d</item></style>
+              <style name="a_j"><item name="agl">#ff1e1e1e</item><item name="agr">#ff1e1e1e</item></style>
+              <style name="z6"><item name="avv">#ffffffff</item><item name="aw1">#fff3f5f6</item><item name="avx">#fff7f8f9</item></style>
+            </resources>
+            """.trimIndent(),
+        )
+
+        val changed = rewriteDarkStyleItems(styles, surfaceStyleItems("47.9.3"), "#181825")
+
+        assertEquals(setOf("agk", "agl", "agm", "agq", "agr"), changed)
+        assertEquals(
+            listOf(
+                "#181825", "#181825", "#181825",
+                "#181825", "#181825", "#181825",
+                "#181825", "#181825",
+                "#ffffffff", "#fff3f5f6", "#fff7f8f9",
+            ),
+            values(styles),
+        )
+    }
+
+    /**
+     * Toasts and popover menus fill with aij, which the default palette sets to #3A3A3A but
+     * another to #484848 and the tinted ones to #323C43 (#368). A raised item goes black in all
+     * of them; the same gray on a plain item stays, and so does a gray past the raised ceiling.
+     */
+    @Test
+    fun `a raised surface item goes black in every dark palette and nothing lighter moves`() {
+        val styles = parse(
+            """
+            <resources>
+              <style name="zo"><item name="aij">#ff3a3a3a</item></style>
+              <style name="a_j"><item name="aij">#ff484848</item><item name="ain">#ff484848</item></style>
+              <style name="a_k"><item name="aij">#ff323c43</item></style>
+              <style name="x"><item name="aij">#ff505050</item><item name="aij">#80202020</item></style>
+            </resources>
+            """.trimIndent(),
+        )
+
+        val changed = rewriteDarkStyleItems(styles, surfaceStyleItems("47.9.3"), "#000000", RAISED_STYLE_ITEMS.getValue("47.9.3"))
+
+        assertEquals(setOf("aij"), changed)
+        assertEquals(
+            listOf("#000000", "#000000", "#ff484848", "#000000", "#ff505050", "#80202020"),
+            values(styles),
+        )
+        assertFalse(isOpaqueLiteralUnder("#ff484848", 0x40))
+        assertTrue(isOpaqueLiteralUnder("#ff484848", RAISED_SURFACE_CEILING))
+    }
+
+    @Test
+    fun `nothing dark to rewrite is reported as nothing changed`() {
+        val styles = parse("""<resources><style name="zb"><item name="c3">#ffffffff</item></style></resources>""")
+        assertTrue(rewriteDarkStyleItems(styles, surfaceStyleItems("47.9.3"), "#000000").isEmpty())
+    }
+
+    /**
+     * The patch rewrites every sheet item and refuses a build whose palette it hasn't read, so the
+     * palette has to be read for exactly the declared builds: a declared build without one would
+     * be refused, and an undeclared one with one would get sheet names nobody checked. On 46.7.3
+     * to 46.9.3 aia was UISheetGrouped3's dark value, another tier (the review of a02d0d67).
+     */
+    @Test
+    fun `the palette is read for exactly the declared builds`() {
+        assertEquals(setOf("47.9.3"), declaredVersions())
+        assertEquals(declaredVersions(), DARK_BACKGROUND_COLORS.keys)
+        assertEquals(declaredVersions(), SURFACE_STYLE_ITEMS.keys)
+        assertEquals(declaredVersions(), RAISED_STYLE_ITEMS.keys)
+        RAISED_STYLE_ITEMS.forEach { (version, raised) ->
+            assertTrue("$version's raised items are surface items", SURFACE_STYLE_ITEMS.getValue(version).containsAll(raised))
+        }
+    }
+
+    /** Each build moves the grays to new names, and an older build's names are an accent and overlays. */
+    @Test
+    fun `the palette is each build's own and a build never read is refused`() {
+        assertEquals(setOf("a2c", "a2e", "a2f", "a2h", "a2p"), darkBackgroundColors("47.9.3"))
+        declaredVersions().forEach { assertTrue("no palette for declared $it", darkBackgroundColors(it).size == 5) }
+        listOf("46.9.3", "47.0.3", "47.1.3", "47.1.4", "47.4.3", "47.6.3").forEach { version ->
+            assertRefused { darkBackgroundColors(version) }
+            assertRefused { surfaceStyleItems(version) }
+        }
+        assertRefused { darkBackgroundColors(null) }
+        assertRefused { surfaceStyleItems(null) }
+        val refusal = unreadPaletteRefusal("47.1.4")
+        assertTrue(refusal, refusal.contains("TikTok 47.1.4") && refusal.contains("nothing was changed"))
+        assertTrue(refusal, refusal.endsWith("The palette is known for TikTok 47.9.3."))
+        assertTrue(unreadPaletteRefusal(null).contains("this TikTok build"))
+    }
+
+    private fun assertRefused(check: () -> Unit) {
+        try {
+            check()
+        } catch (refusal: PatchException) {
+            return
+        }
+        fail("the check accepted what it should have refused")
+    }
+
+    @Test
+    fun `a dark opaque literal is six or eight hex digits with every channel under 40`() {
+        assertTrue(isDarkOpaqueLiteral("#282828"))
+        assertTrue(isDarkOpaqueLiteral("#FF161823"))
+        assertTrue(isDarkOpaqueLiteral(" #ff3f3f3f "))
+        assertFalse(isDarkOpaqueLiteral("#404040"))
+        assertFalse(isDarkOpaqueLiteral("#80000000"))
+        assertFalse(isDarkOpaqueLiteral("#fff"))
+        assertFalse(isDarkOpaqueLiteral("@color/a40"))
+        assertFalse(isDarkOpaqueLiteral("?attr/agk"))
+    }
+
+    private fun parse(xml: String): Document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(ByteArrayInputStream(xml.toByteArray()))
+
+    private fun values(styles: Document): List<String> {
+        val items = styles.getElementsByTagName("item")
+        return (0 until items.length).map { (items.item(it) as Element).textContent }
+    }
+}

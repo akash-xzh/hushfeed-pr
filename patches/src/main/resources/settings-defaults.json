@@ -1,0 +1,5129 @@
+{
+  "patches": {
+    "AMOLED dark theme": [
+      "amoled_dark_mode"
+    ],
+    "Account cleanup": [
+      "tap_to_remove"
+    ],
+    "Advanced downloads": [
+      "download_button",
+      "hold_save_to_download",
+      "download_button_position",
+      "download_video_quality",
+      "download_video_codec",
+      "download_ask_quality",
+      "download_original_photos",
+      "keep_photos_as_sent",
+      "download_photos_as_video",
+      "photo_video_seconds",
+      "download_audio_track",
+      "download_sound_format",
+      "download_watermark_fallback",
+      "download_cover",
+      "save_cover_button",
+      "save_episodes_button",
+      "download_without_sound",
+      "download_progress",
+      "download_saves_at_once",
+      "download_unmetered_only",
+      "download_details",
+      "download_details_json",
+      "download_tags",
+      "download_burn_caption",
+      "check_saved_videos",
+      "mark_saved_videos",
+      "external_downloader_package",
+      "ytdlnis_download_type",
+      "ytdlnis_background",
+      "save_profile_picture",
+      "profile_picture_viewer",
+      "save_story",
+      "save_story_from_share",
+      "save_story_pick",
+      "pick_grid_videos",
+      "delete_picked_posts",
+      "download_video_path",
+      "download_photo_path",
+      "download_video_filename_template",
+      "download_photo_filename_template",
+      "share_after_save",
+      "video_button_size",
+      "video_buttons_over_rail"
+    ],
+    "Allow Duet and Stitch": [
+      "allow_duet_and_stitch",
+      "allow_add_to_story"
+    ],
+    "Allow screenshots and Circle to Search": [
+      "allow_screen_capture"
+    ],
+    "Always show publish date": [
+      "always_show_publish_date",
+      "publish_date_exact_time",
+      "publish_date_time_zone",
+      "publish_date_short_date",
+      "publish_date_day_first",
+      "publish_date_month_name",
+      "publish_date_instead_of_age",
+      "publish_date_on_grid",
+      "video_length_on_grid",
+      "hide_grid_view_count",
+      "rounded_grid_corners",
+      "profile_grid_sort",
+      "sort_pinned_with_rest",
+      "liked_grid_sort",
+      "favorites_grid_sort",
+      "collection_grid_sort",
+      "sound_grid_sort",
+      "liked_jump_to_date",
+      "favorites_jump_to_date",
+      "remember_saved_videos",
+      "grid_search",
+      "grid_position_controls"
+    ],
+    "Always upload in HD": [
+      "always_upload_hd"
+    ],
+    "App lock": [
+      "app_lock",
+      "app_lock_timeout"
+    ],
+    "Automatic video advance": [
+      "auto_advance",
+      "auto_advance_limit",
+      "auto_advance_hide_panel_action",
+      "auto_advance_search"
+    ],
+    "Block author button": [
+      "no_resume_on_foreground",
+      "pause_first_video",
+      "pause_before_feed_seconds",
+      "keep_paused_on_return",
+      "leave_on_rest_reminder",
+      "idle_leave_minutes",
+      "session_budget_videos",
+      "session_budget_minutes",
+      "session_budget_lock_minutes",
+      "session_budget_reset_hour",
+      "session_budget_lock",
+      "session_budget_passes_per_day",
+      "session_budget_wait_to_loosen",
+      "session_budget_ramp",
+      "session_budget_finish_video",
+      "feed_lock",
+      "feed_lock_hours",
+      "shared_video_alone",
+      "session_budget_cue",
+      "session_budget_notice_minutes",
+      "block_author_button",
+      "local_hide_button",
+      "block_sound_button",
+      "block_author_button_position",
+      "local_hide_button_position",
+      "block_sound_button_position",
+      "video_button_size",
+      "video_buttons_over_rail"
+    ],
+    "Block contact list access": [
+      "block_contact_list"
+    ],
+    "Block installed app scanning": [
+      "block_installed_apps"
+    ],
+    "Block popups": [
+      "popup_label_picks",
+      "hide_live_bubble",
+      "hide_wind_down_screens"
+    ],
+    "Block sound on sound pages": [
+      "sound_page_block_button"
+    ],
+    "Block suggested video notifications": [
+      "block_suggested_video_notifications"
+    ],
+    "Camera and microphone indicator": [
+      "camera_mic_indicator"
+    ],
+    "Comment sort controls": [
+      "comment_sort_controls"
+    ],
+    "Comment tools": [
+      "pause_on_comments",
+      "comment_keyword_filter",
+      "comment_blocked_keywords",
+      "comment_blocked_users",
+      "block_from_comment",
+      "block_from_comment_menu",
+      "country_from_comment_menu",
+      "hide_comment_like_count",
+      "hide_comment_dislike",
+      "hide_comment_avatars",
+      "comment_search",
+      "comment_export",
+      "comment_search_folded",
+      "comment_links",
+      "fold_long_comments",
+      "fold_long_comments_lines",
+      "hide_comment_media",
+      "hide_voice_comments",
+      "hide_spam_comments",
+      "hide_comment_polls",
+      "hide_comment_reply_previews",
+      "hide_comment_surveys",
+      "hide_comment_box_buttons",
+      "show_poll_results",
+      "caption_opens_comments",
+      "caption_above_comments",
+      "hide_comment_search_suggestions",
+      "compact_comment_header",
+      "hide_comment_close_button",
+      "hide_comment_expand_button",
+      "show_comment_expand_button",
+      "keep_video_size_under_comments",
+      "share_any_comment",
+      "larger_comment_like_target"
+    ],
+    "Confirm feed interactions": [
+      "confirm_follow",
+      "confirm_like",
+      "confirm_comment_like",
+      "confirm_story_like",
+      "confirm_quick_repost"
+    ],
+    "Copy bio and IDs": [
+      "copy_ids",
+      "account_facts",
+      "country_on_profiles",
+      "bio_mention_links"
+    ],
+    "Copy comments without username": [
+      "copy_comments_without_username"
+    ],
+    "Custom offline videos limit": [
+      "custom_offline_videos",
+      "custom_offline_video_limit",
+      "delete_watched_offline_videos",
+      "keep_offline_videos"
+    ],
+    "Device privacy guard": [
+      "block_clipboard_reads",
+      "hide_vpn",
+      "block_advertising_id",
+      "hide_root"
+    ],
+    "Diagnostic tools": [
+      "morphe_debug",
+      "morphe_debug_log_filters",
+      "morphe_capture_java_crashes",
+      "morphe_debug_stacktrace",
+      "morphe_debug_toast_on_error"
+    ],
+    "Disable telemetry": [
+      "disable_analytics"
+    ],
+    "Disable the long press quick share": [
+      "disable_long_press_quick_share"
+    ],
+    "Disable the long press repost": [
+      "disable_long_press_repost"
+    ],
+    "Double-tap controls": [
+      "double_tap_split_zones",
+      "double_tap_action",
+      "double_tap_top_left_action",
+      "double_tap_top_right_action",
+      "double_tap_bottom_left_action",
+      "double_tap_bottom_right_action"
+    ],
+    "Downloads": [
+      "keep_photos_as_sent",
+      "download_saves_at_once",
+      "download_unmetered_only",
+      "download_sticker_format",
+      "dm_sticker_save_box",
+      "download_video_path",
+      "download_photo_path",
+      "download_sticker_path",
+      "download_video_filename_template",
+      "download_photo_filename_template",
+      "download_comment_media_filename_template",
+      "down_watermark",
+      "skip_post_download_share_sheet"
+    ],
+    "Drop the animated image cache": [
+      "drop_animated_image_cache"
+    ],
+    "Enable voice comments": [
+      "enable_voice_comments"
+    ],
+    "Expand activity list": [
+      "expand_activity_list"
+    ],
+    "Feed filter": [
+      "blocked_caption_words",
+      "blocked_words_in_stickers",
+      "blocked_creators",
+      "local_hidden_creators",
+      "creator_filter_exceptions",
+      "live_kept_creators",
+      "region_only_from",
+      "caption_languages",
+      "region_never_from",
+      "min_video_seconds",
+      "max_video_seconds",
+      "max_publication_age_days",
+      "max_views_per_like",
+      "max_views_per_comment",
+      "hide_promotional_music",
+      "hide_live_replays",
+      "hide_unpersonalized_for_you",
+      "friends_mutuals_only",
+      "following_latest_first",
+      "remove_ads",
+      "hide_live",
+      "hide_shop",
+      "hide_search_shop",
+      "search_tab_picks",
+      "hide_story",
+      "hide_image",
+      "min_max_views",
+      "min_max_likes",
+      "min_max_comments",
+      "min_max_favourites",
+      "min_max_shares",
+      "hide_offline_videos",
+      "filter_cached_offline_videos",
+      "feed_filter_count_pill",
+      "hide_bottom_search_bar",
+      "local_hide_button",
+      "block_sound_button",
+      "hide_blocked_sounds",
+      "blocked_sound_ids",
+      "blocked_sound_names",
+      "hide_paid_partnership",
+      "filter_location_videos",
+      "hide_ai_generated",
+      "hide_verified",
+      "hide_series",
+      "hide_mini_dramas",
+      "hide_playlist_bar",
+      "hide_event_badge",
+      "hide_inserted_cards",
+      "hide_playlist_videos",
+      "hide_subscriber_only",
+      "hide_playable_games",
+      "live_feed_filter",
+      "live_hide_gaming",
+      "live_hide_shopping",
+      "live_hide_sponsored",
+      "live_hide_verified",
+      "live_hidden_categories",
+      "live_min_max_viewers",
+      "live_min_max_followers",
+      "hide_ai_cast"
+    ],
+    "Feed tab navigation": [
+      "feed_navigation",
+      "feed_navigation_tabs",
+      "feed_navigation_block_new_tabs",
+      "bottom_navigation",
+      "bottom_navigation_tabs",
+      "bottom_navigation_block_new_tabs",
+      "discover_bottom_tab",
+      "friends_top_tab",
+      "bottom_tab_icon_style",
+      "bottom_bar_height",
+      "hide_tab_badges",
+      "hide_bottom_tab_labels",
+      "bottom_tab_name_home",
+      "bottom_tab_name_friends",
+      "bottom_tab_name_inbox",
+      "bottom_tab_name_profile",
+      "bottom_tab_name_shop",
+      "keep_for_you_on_tab_tap",
+      "keep_for_you_on_pull_down",
+      "home_tab_opens_settings",
+      "profile_tab_opens_watch_history",
+      "profile_tab_opens_activity_center",
+      "profile_tab_switches_accounts",
+      "inbox_tab_flips_read_receipts",
+      "search_instead_of_home",
+      "start_page",
+      "exit_with_one_back",
+      "show_feed_buttons",
+      "hide_tako_ai",
+      "shared_video_alone",
+      "hide_feed_tab_strip"
+    ],
+    "Feed text sizes": [
+      "feed_description_text_size",
+      "feed_author_text_size",
+      "feed_text_color",
+      "feed_text_backdrop"
+    ],
+    "Fit the video to the screen": [
+      "fit_video_to_screen",
+      "fit_fills_tall_screen",
+      "fill_video_to_screen",
+      "fill_wide_videos",
+      "stretch_video_to_screen",
+      "blend_video_to_screen",
+      "keep_middle_video_to_screen"
+    ],
+    "Foldable split comment view": [
+      "foldable_split_view",
+      "foldable_split_view_min_width_dp"
+    ],
+    "Freeze TikTok's experiments": [
+      "freeze_remote_config"
+    ],
+    "Ghost mode": [
+      "ghost_mode",
+      "ghost_hide_online_status",
+      "ghost_hide_story_views",
+      "ghost_hide_profile_visits",
+      "ghost_hide_typing",
+      "ghost_hide_live_views",
+      "ghost_local_likes"
+    ],
+    "Group likes per comment": [
+      "bundle_activity_likes"
+    ],
+    "Hide CAPTCHA popups": [
+      "hide_browsing_captcha_popups"
+    ],
+    "Hide already seen videos": [
+      "hide_seen_videos",
+      "seen_video_retention_days",
+      "seen_video_mark_percent",
+      "local_watch_history",
+      "for_you_hold_opens_watch_history",
+      "profile_hold_opens_local_watch_history"
+    ],
+    "Hide comment popup ads": [
+      "hide_comment_eggs"
+    ],
+    "Hide comment typing suggestions": [
+      "hide_comment_quick_reactions"
+    ],
+    "Hide feed LIVE button": [
+      "hide_live_entrance",
+      "hide_feed_sidebar_button",
+      "disable_feed_sidebar_swipe"
+    ],
+    "Hide feed follow button": [
+      "hide_feed_follow_button"
+    ],
+    "Hide feed save button": [
+      "hide_feed_save_button"
+    ],
+    "Hide feed search button": [
+      "hide_feed_search_button"
+    ],
+    "Hide floating promotions": [
+      "hide_homepage_coin",
+      "hide_profile_rewards_shortcut"
+    ],
+    "Hide inbox items": [
+      "hide_inbox_stories",
+      "hide_inbox_on_this_day",
+      "hide_inbox_suggested_lives",
+      "hide_inbox_suggested_stories",
+      "hide_inbox_widget_guide",
+      "hide_inbox_new_followers",
+      "hide_inbox_activity",
+      "hide_inbox_archive",
+      "hide_inbox_tako",
+      "hide_inbox_shop",
+      "hide_inbox_bulletin_boards",
+      "hide_inbox_suggested_accounts",
+      "hide_inbox_message_requests",
+      "hide_inbox_conversations",
+      "hide_inbox_add_people",
+      "hide_inbox_search",
+      "inbox_loaded_search",
+      "hide_inbox_activity_status",
+      "hide_inbox_group_chat_banner",
+      "hide_chat_call_buttons",
+      "hide_chat_sticker_banner",
+      "hide_chat_ai_replies",
+      "turn_off_chat_double_tap",
+      "turn_off_chat_swipe_reply",
+      "hide_inbox_custom_titles",
+      "show_inbox_filters",
+      "pin_more_chats",
+      "show_message_times",
+      "keep_chat_place"
+    ],
+    "Hide inbox stories": [
+      "hide_inbox_stories"
+    ],
+    "Hide profile shortcuts": [
+      "hide_profile_menu_balance",
+      "hide_profile_menu_minis_icons",
+      "hidden_profile_shortcuts",
+      "profile_shortcut_picks",
+      "profile_tab_picks",
+      "profile_tab_order",
+      "hide_profile_thoughts",
+      "hide_add_bio",
+      "enable_thoughts"
+    ],
+    "Hide read receipts": [
+      "hide_read_receipts"
+    ],
+    "Hide search suggestions": [
+      "hide_search_rewards",
+      "hide_search_suggestions",
+      "discover_search_bar_only"
+    ],
+    "Hide sound page buttons": [
+      "hide_sound_page_buttons"
+    ],
+    "Hide suggested accounts": [
+      "hide_inbox_suggested_accounts",
+      "keep_profile_suggested_accounts"
+    ],
+    "Hide the launcher shortcuts": [
+      "hide_launcher_shortcuts"
+    ],
+    "Hide video overlays": [
+      "swipe_levels",
+      "swipe_levels_strip_percent",
+      "swipe_levels_left",
+      "swipe_levels_right",
+      "hide_feed_caption",
+      "hide_feed_music",
+      "hide_feed_action_bar",
+      "hide_feed_surveys",
+      "hide_footnotes",
+      "hide_may_know_tag",
+      "hide_pause_icon",
+      "hide_following_live_row",
+      "glass_stories_pill",
+      "hide_following_all_button",
+      "hide_story_create",
+      "hide_repost_chip",
+      "hide_detail_comment_bar",
+      "hide_clear_display_controls",
+      "keep_clear_display_seek_bar",
+      "fade_caption_opacity",
+      "fade_controls_opacity",
+      "fade_in_clear_display",
+      "invisible_controls_button",
+      "invisible_controls_on",
+      "invisible_controls_keep_caption",
+      "see_through_bottom_bar",
+      "see_through_video_in_window",
+      "floating_bottom_bar",
+      "liquid_glass_bottom_bar",
+      "glass_tab_lens",
+      "glass_video_blur",
+      "glass_refraction",
+      "glass_blur_strength",
+      "glass_opacity",
+      "glass_bar_height",
+      "glass_corners",
+      "glass_tab_slide",
+      "glass_liquid_hold",
+      "glass_haptics",
+      "glass_haptic_style",
+      "see_through_status_bar",
+      "status_bar_shade",
+      "burn_in_guard",
+      "burn_in_guard_level",
+      "hide_share_guide",
+      "hide_rail_follow",
+      "hide_rail_like",
+      "hide_rail_comments",
+      "hide_rail_favourite",
+      "hide_rail_music",
+      "hide_rail_share",
+      "hide_rail_counts",
+      "stop_music_disc_spin",
+      "spin_music_disc",
+      "hide_status_bar",
+      "hide_status_bar_in_live",
+      "live_under_status_bar",
+      "touch_target_scale",
+      "hide_opened_video_search",
+      "hide_opened_video_back",
+      "hide_profile_views_button",
+      "hide_profile_add_friends",
+      "hide_visual_search",
+      "hide_fullscreen_button",
+      "hide_feed_report_button",
+      "hide_location_labels",
+      "hide_creation_tags",
+      "hide_live_entrance"
+    ],
+    "Hold-and-slide 2x lock": [
+      "enable_long_press_speed_lock"
+    ],
+    "In-app browser privacy guard": [
+      "block_webview_js_interfaces"
+    ],
+    "Keep a streak going": [
+      "auto_streak",
+      "auto_streak_recipient",
+      "auto_streak_minute",
+      "auto_streak_random",
+      "auto_streak_latest_minute",
+      "auto_streak_message"
+    ],
+    "Keep playing in the background": [
+      "background_play",
+      "background_play_menu",
+      "background_replay"
+    ],
+    "Keep pulled sounds": [
+      "keep_pulled_sounds"
+    ],
+    "Keep the Favorites tab": [
+      "keep_favorites_tab",
+      "dark_quick_favorites"
+    ],
+    "Keep the app language": [
+      "keep_app_language"
+    ],
+    "Keep the next videos in full screen": [
+      "full_screen_next_videos"
+    ],
+    "Keep the screen's brightness in the camera": [
+      "keep_camera_brightness"
+    ],
+    "Keep the screen's refresh rate": [
+      "uncap_refresh_rate"
+    ],
+    "Keep unsent messages": [
+      "keep_unsent_messages",
+      "mark_kept_unsent_messages"
+    ],
+    "LIVE controls": [
+      "stop_live_auto_enter",
+      "hide_live_service_plus",
+      "hide_live_ai_summary",
+      "show_exact_live_viewers",
+      "show_exact_battle_scores",
+      "live_room_info",
+      "live_running_time",
+      "live_following_row_order",
+      "offer_live_quality",
+      "remember_live_quality",
+      "live_start_quality",
+      "offer_live_clear_screen",
+      "keep_live_clear_screen",
+      "hide_live_chat",
+      "offer_live_full_screen",
+      "dark_live_panels",
+      "live_card_background",
+      "live_card_text",
+      "hide_live_card_events",
+      "hide_live_card_products",
+      "hide_live_card_shop",
+      "hide_live_card_shop_rating",
+      "hide_live_card_group_chat",
+      "hide_live_card_bulletin_board",
+      "hide_live_card_gift_gallery",
+      "hide_live_card_fest_honors",
+      "record_live",
+      "auto_record_live",
+      "live_record_quality",
+      "live_record_source",
+      "live_auto_tap",
+      "live_auto_tap_rate",
+      "live_buttons_in_menu",
+      "live_button_size",
+      "live_audio_only",
+      "live_name_alerts",
+      "live_name_alert_names",
+      "live_name_alerts_listen",
+      "remembered_live_quality"
+    ],
+    "Lift text length limits": [
+      "lift_length_limits"
+    ],
+    "Limit background traffic": [
+      "limit_background_traffic"
+    ],
+    "Location access governor": [
+      "block_location"
+    ],
+    "Long-press controls": [
+      "long_press_action",
+      "long_press_sides_only",
+      "rail_hold_comment",
+      "rail_hold_share",
+      "rail_hold_favorites",
+      "hold_save_to_download",
+      "long_press_full_menu_on_profiles",
+      "long_press_full_menu_in_search",
+      "long_press_compact_menu",
+      "edge_seek",
+      "edge_seek_seconds"
+    ],
+    "Look like the store app": [
+      "store_identity",
+      "store_identity_installer"
+    ],
+    "Mute feed videos": [
+      "feed_muted",
+      "feed_mute_button",
+      "feed_mute_button_position",
+      "focus_waits_for_video",
+      "video_button_size",
+      "video_buttons_over_rail"
+    ],
+    "Network proxy": [
+      "network_proxy",
+      "network_proxy_type",
+      "network_proxy_host",
+      "network_proxy_port",
+      "network_proxy_user",
+      "network_proxy_password"
+    ],
+    "Not interested button": [
+      "not_interested_button",
+      "not_interested_also_filter",
+      "not_interested_button_position",
+      "video_button_size",
+      "video_buttons_over_rail"
+    ],
+    "Notification controls": [
+      "hide_follower_notifications",
+      "turn_off_push_notifications",
+      "hide_message_streaks",
+      "hide_streak_popups"
+    ],
+    "Open external links directly": [
+      "open_external_links"
+    ],
+    "Open the comments at full height": [
+      "comments_full_height"
+    ],
+    "Picture-in-picture": [
+      "picture_in_picture"
+    ],
+    "Play SDR instead of HDR": [
+      "play_sdr"
+    ],
+    "Play original audio": [
+      "original_audio"
+    ],
+    "Playback quality": [
+      "playback_quality",
+      "playback_quality_metered",
+      "playback_bitrate_limit"
+    ],
+    "Playback speed": [
+      "remember_playback_speed",
+      "default_speed_enabled",
+      "default_speed",
+      "custom_speeds",
+      "hold_speed",
+      "hold_speed_custom",
+      "hold_speed_slide",
+      "hold_speed_hud_style",
+      "hold_speed_slide_axis",
+      "hold_speed_hud_size",
+      "hide_speed_toasts",
+      "remembered_speed_v2"
+    ],
+    "Prefer H.264 playback": [
+      "prefer_h264"
+    ],
+    "Profile background": [
+      "profile_background"
+    ],
+    "Region spoof": [
+      "region_spoof",
+      "region_store_spoof",
+      "region_request_spoof",
+      "simspoof",
+      "simspoof_iso",
+      "simspoof_time_zone",
+      "simspoof_mccmnc",
+      "simspoof_op_name",
+      "simspoof_feed_real",
+      "live_feed_countries"
+    ],
+    "Remember clear display": [
+      "automatic_clear_display",
+      "automatic_clear_display_delay",
+      "tap_shows_cleared_controls",
+      "clear_display_fade_out",
+      "remember_clear_display_on_scroll",
+      "clear_display"
+    ],
+    "Remove avatar rings": [
+      "hide_story_rings",
+      "hide_live_ring",
+      "hide_rings_feed",
+      "hide_rings_comments",
+      "hide_rings_profiles",
+      "open_story_over_live"
+    ],
+    "Report a newer phone to effects": [
+      "report_newer_phone_to_effects",
+      "effect_phone_model"
+    ],
+    "Report a newer phone to game LIVE": [
+      "report_newer_phone_to_game_live"
+    ],
+    "Resource and battery governor": [
+      "block_motion_sensors",
+      "stop_benchmark_runs"
+    ],
+    "Resume videos after scrolling": [
+      "resume_video_after_scroll"
+    ],
+    "SIM spoof": [
+      "simspoof",
+      "simspoof_iso",
+      "simspoof_mccmnc",
+      "simspoof_op_name",
+      "simspoof_feed_real"
+    ],
+    "Sanitize sharing links": [
+      "custom_share_domain",
+      "expand_short_share_links",
+      "morphe_sanitize_sharing_links"
+    ],
+    "Settings": [
+      "morphe_language",
+      "hushfeed_language",
+      "settings_theme",
+      "morphe_show_menu_icons",
+      "hide_settings_row",
+      "settings_row_picks",
+      "settings_as_list",
+      "startup_message",
+      "startup_message_title",
+      "startup_message_text",
+      "startup_message_dismissible",
+      "check_for_updates"
+    ],
+    "Share sheet tools": [
+      "hide_share_channels",
+      "hide_share_actions",
+      "share_block_author",
+      "hide_share_contacts",
+      "share_tap_copies_link",
+      "hide_share_new_group",
+      "share_hidden_items",
+      "share_hidden_items_profile",
+      "share_hidden_items_live",
+      "share_added_apps"
+    ],
+    "Show LIVE search": [
+      "enable_live_search"
+    ],
+    "Show author region": [
+      "show_author_region",
+      "region_as_flag",
+      "country_date_under_caption",
+      "country_date_text_size",
+      "country_date_opacity",
+      "country_date_shadow",
+      "show_author_handle"
+    ],
+    "Show commenter handle and region": [
+      "region_as_flag",
+      "show_commenter_handle",
+      "show_commenter_region",
+      "color_commenter_names"
+    ],
+    "Show engagement rate": [
+      "show_engagement_rate"
+    ],
+    "Show exact counts": [
+      "show_exact_counts"
+    ],
+    "Show follow status": [
+      "show_follow_status",
+      "show_join_date",
+      "show_profile_changes",
+      "local_profile_counts",
+      "local_profile_verified_badge",
+      "hide_own_profile_restriction_notice",
+      "local_profile_count_values"
+    ],
+    "Show the progress bar": [
+      "show_seekbar",
+      "seekbar_time",
+      "seekbar_time_placement",
+      "seekbar_full_width",
+      "seekbar_big_handle",
+      "story_seekbar",
+      "sound_seekbar"
+    ],
+    "Show the progress bar thumbnail": [
+      "show_seekbar_thumbnail"
+    ],
+    "Skip content warnings": [
+      "hide_sensitive_warnings",
+      "hide_unverified_notices",
+      "hide_check_your_sources"
+    ],
+    "Skip first-launch setup": [
+      "skip_first_launch_setup"
+    ],
+    "Skip passkey sign-in": [
+      "skip_passkey_sign_in"
+    ],
+    "Skip the splash ad": [
+      "skip_splash_ad"
+    ],
+    "Skip update checks": [
+      "skip_update_checks"
+    ],
+    "Smaller text sizes": [
+      "smaller_text_sizes",
+      "smaller_text_size_level"
+    ],
+    "Split activity list": [
+      "split_activity_list"
+    ],
+    "Stay on the video in full screen": [
+      "full_screen_hold"
+    ],
+    "Stop on-device AI profiling": [
+      "stop_ai_profiling"
+    ],
+    "Stop recording watch history": [
+      "stop_watch_history"
+    ],
+    "Stop saving search history": [
+      "stop_search_history"
+    ],
+    "Stop search autoplay": [
+      "stop_search_autoplay"
+    ],
+    "Stop video looping": [
+      "stop_video_looping"
+    ],
+    "Story controls": [
+      "story_loop",
+      "story_photo_hold"
+    ],
+    "Subtitle tools": [
+      "download_subtitles",
+      "subtitle_language",
+      "caption_text_size",
+      "caption_bottom_offset",
+      "caption_landscape_offset",
+      "caption_font_weight",
+      "caption_background",
+      "keep_captions_clear_display",
+      "caption_clear_display_offset",
+      "caption_clear_display_spot",
+      "keep_captions_available",
+      "skip_promo_lines",
+      "skip_promo_words"
+    ],
+    "Swipe-left controls": [
+      "swipe_left_action"
+    ],
+    "Translate comments": [
+      "comment_batch_translation",
+      "dm_translation_preview",
+      "received_dm_translation_preview",
+      "dont_auto_translate_languages",
+      "no_video_auto_translate",
+      "translate_into",
+      "comment_translate_button",
+      "show_translation_settings"
+    ],
+    "Turn off haptics": [
+      "turn_off_haptics"
+    ],
+    "Turn off screen transitions": [
+      "turn_off_screen_transitions"
+    ],
+    "UI scale": [
+      "ui_scale_percent"
+    ],
+    "Use non-personalized search": [
+      "enable_non_personalized_search"
+    ],
+    "Use system font": [
+      "system_font",
+      "system_emoji",
+      "imported_font",
+      "imported_emoji_font"
+    ]
+  },
+  "settings": {
+    "account_facts": {
+      "field": "ACCOUNT_FACTS",
+      "key": "account_facts",
+      "type": "boolean",
+      "default": false
+    },
+    "allow_add_to_story": {
+      "field": "ALLOW_ADD_TO_STORY",
+      "key": "allow_add_to_story",
+      "type": "boolean",
+      "default": false
+    },
+    "allow_duet_and_stitch": {
+      "field": "ALLOW_DUET_AND_STITCH",
+      "key": "allow_duet_and_stitch",
+      "type": "boolean",
+      "default": false
+    },
+    "allow_screen_capture": {
+      "field": "ALLOW_SCREEN_CAPTURE",
+      "key": "allow_screen_capture",
+      "type": "boolean",
+      "default": false
+    },
+    "always_show_publish_date": {
+      "field": "ALWAYS_SHOW_PUBLISH_DATE",
+      "key": "always_show_publish_date",
+      "type": "boolean",
+      "default": true
+    },
+    "always_upload_hd": {
+      "field": "ALWAYS_UPLOAD_HD",
+      "key": "always_upload_hd",
+      "type": "boolean",
+      "default": false
+    },
+    "amoled_dark_mode": {
+      "field": "AMOLED_DARK_MODE",
+      "key": "amoled_dark_mode",
+      "type": "boolean",
+      "default": true
+    },
+    "app_lock": {
+      "field": "APP_LOCK",
+      "key": "app_lock",
+      "type": "boolean",
+      "default": false
+    },
+    "app_lock_timeout": {
+      "field": "APP_LOCK_TIMEOUT",
+      "key": "app_lock_timeout",
+      "type": "string",
+      "default": "0"
+    },
+    "auto_advance": {
+      "field": "AUTO_ADVANCE",
+      "key": "auto_advance",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_advance_hide_panel_action": {
+      "field": "AUTO_ADVANCE_HIDE_PANEL_ACTION",
+      "key": "auto_advance_hide_panel_action",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_advance_limit": {
+      "field": "AUTO_ADVANCE_LIMIT",
+      "key": "auto_advance_limit",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "auto_advance_search": {
+      "field": "AUTO_ADVANCE_SEARCH",
+      "key": "auto_advance_search",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_record_live": {
+      "field": "AUTO_RECORD_LIVE",
+      "key": "auto_record_live",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_streak": {
+      "field": "AUTO_STREAK",
+      "key": "auto_streak",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_streak_latest_minute": {
+      "field": "AUTO_STREAK_LATEST_MINUTE",
+      "key": "auto_streak_latest_minute",
+      "type": "integer",
+      "default": 1200,
+      "minimum": 0,
+      "maximum": 1439
+    },
+    "auto_streak_message": {
+      "field": "AUTO_STREAK_MESSAGE",
+      "key": "auto_streak_message",
+      "type": "string",
+      "default": "🔥"
+    },
+    "auto_streak_minute": {
+      "field": "AUTO_STREAK_MINUTE",
+      "key": "auto_streak_minute",
+      "type": "integer",
+      "default": 720,
+      "minimum": 0,
+      "maximum": 1439
+    },
+    "auto_streak_random": {
+      "field": "AUTO_STREAK_RANDOM",
+      "key": "auto_streak_random",
+      "type": "boolean",
+      "default": false
+    },
+    "auto_streak_recipient": {
+      "field": "AUTO_STREAK_RECIPIENT",
+      "key": "auto_streak_recipient",
+      "type": "string",
+      "default": ""
+    },
+    "automatic_clear_display": {
+      "field": "AUTOMATIC_CLEAR_DISPLAY",
+      "key": "automatic_clear_display",
+      "type": "boolean",
+      "default": false
+    },
+    "automatic_clear_display_delay": {
+      "field": "AUTOMATIC_CLEAR_DISPLAY_DELAY",
+      "key": "automatic_clear_display_delay",
+      "type": "integer",
+      "default": 1000,
+      "minimum": 0,
+      "maximum": 30000
+    },
+    "background_play": {
+      "field": "BACKGROUND_PLAY",
+      "key": "background_play",
+      "type": "boolean",
+      "default": false
+    },
+    "background_play_menu": {
+      "field": "BACKGROUND_PLAY_MENU",
+      "key": "background_play_menu",
+      "type": "boolean",
+      "default": false
+    },
+    "background_replay": {
+      "field": "BACKGROUND_REPLAY",
+      "key": "background_replay",
+      "type": "boolean",
+      "default": false
+    },
+    "bio_mention_links": {
+      "field": "BIO_MENTION_LINKS",
+      "key": "bio_mention_links",
+      "type": "boolean",
+      "default": true
+    },
+    "blend_video_to_screen": {
+      "field": "BLEND_VIDEO_TO_SCREEN",
+      "key": "blend_video_to_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "block_advertising_id": {
+      "field": "BLOCK_ADVERTISING_ID",
+      "key": "block_advertising_id",
+      "type": "boolean",
+      "default": false
+    },
+    "block_author_button": {
+      "field": "BLOCK_AUTHOR_BUTTON",
+      "key": "block_author_button",
+      "type": "boolean",
+      "default": false
+    },
+    "block_author_button_position": {
+      "field": "BLOCK_AUTHOR_BUTTON_POSITION",
+      "key": "block_author_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "block_clipboard_reads": {
+      "field": "BLOCK_CLIPBOARD_READS",
+      "key": "block_clipboard_reads",
+      "type": "boolean",
+      "default": false
+    },
+    "block_contact_list": {
+      "field": "BLOCK_CONTACT_LIST",
+      "key": "block_contact_list",
+      "type": "boolean",
+      "default": false
+    },
+    "block_from_comment": {
+      "field": "BLOCK_FROM_COMMENT",
+      "key": "block_from_comment",
+      "type": "boolean",
+      "default": false
+    },
+    "block_from_comment_menu": {
+      "field": "BLOCK_FROM_COMMENT_MENU",
+      "key": "block_from_comment_menu",
+      "type": "boolean",
+      "default": false
+    },
+    "block_installed_apps": {
+      "field": "BLOCK_INSTALLED_APPS",
+      "key": "block_installed_apps",
+      "type": "boolean",
+      "default": false
+    },
+    "block_location": {
+      "field": "BLOCK_LOCATION",
+      "key": "block_location",
+      "type": "boolean",
+      "default": false
+    },
+    "block_motion_sensors": {
+      "field": "BLOCK_MOTION_SENSORS",
+      "key": "block_motion_sensors",
+      "type": "boolean",
+      "default": false
+    },
+    "block_sound_button": {
+      "field": "BLOCK_SOUND_BUTTON",
+      "key": "block_sound_button",
+      "type": "boolean",
+      "default": false
+    },
+    "block_sound_button_position": {
+      "field": "BLOCK_SOUND_BUTTON_POSITION",
+      "key": "block_sound_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "block_suggested_video_notifications": {
+      "field": "BLOCK_SUGGESTED_VIDEO_NOTIFICATIONS",
+      "key": "block_suggested_video_notifications",
+      "type": "boolean",
+      "default": true
+    },
+    "block_webview_js_interfaces": {
+      "field": "BLOCK_WEBVIEW_JS_INTERFACES",
+      "key": "block_webview_js_interfaces",
+      "type": "boolean",
+      "default": false
+    },
+    "blocked_caption_words": {
+      "field": "BLOCKED_CAPTION_WORDS",
+      "key": "blocked_caption_words",
+      "type": "string",
+      "default": ""
+    },
+    "blocked_creators": {
+      "field": "BLOCKED_CREATORS",
+      "key": "blocked_creators",
+      "type": "string",
+      "default": ""
+    },
+    "blocked_sound_ids": {
+      "field": "BLOCKED_SOUND_IDS",
+      "key": "blocked_sound_ids",
+      "type": "string",
+      "default": ""
+    },
+    "blocked_sound_names": {
+      "field": "BLOCKED_SOUND_NAMES",
+      "key": "blocked_sound_names",
+      "type": "string",
+      "default": ""
+    },
+    "blocked_words_in_stickers": {
+      "field": "BLOCKED_WORDS_IN_STICKERS",
+      "key": "blocked_words_in_stickers",
+      "type": "boolean",
+      "default": false
+    },
+    "bottom_bar_height": {
+      "field": "BOTTOM_BAR_HEIGHT",
+      "key": "bottom_bar_height",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "bottom_navigation": {
+      "field": "BOTTOM_NAVIGATION",
+      "key": "bottom_navigation",
+      "type": "boolean",
+      "default": false
+    },
+    "bottom_navigation_block_new_tabs": {
+      "field": "BOTTOM_NAVIGATION_BLOCK_NEW_TABS",
+      "key": "bottom_navigation_block_new_tabs",
+      "type": "boolean",
+      "default": false
+    },
+    "bottom_navigation_tabs": {
+      "field": "BOTTOM_NAVIGATION_TABS",
+      "key": "bottom_navigation_tabs",
+      "type": "string",
+      "default": "HOME,FRIENDS,PUBLISH,INBOX,PROFILE,MALL"
+    },
+    "bottom_tab_icon_style": {
+      "field": "BOTTOM_TAB_ICON_STYLE",
+      "key": "bottom_tab_icon_style",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "bottom_tab_name_friends": {
+      "field": "BOTTOM_TAB_NAME_FRIENDS",
+      "key": "bottom_tab_name_friends",
+      "type": "string",
+      "default": ""
+    },
+    "bottom_tab_name_home": {
+      "field": "BOTTOM_TAB_NAME_HOME",
+      "key": "bottom_tab_name_home",
+      "type": "string",
+      "default": ""
+    },
+    "bottom_tab_name_inbox": {
+      "field": "BOTTOM_TAB_NAME_INBOX",
+      "key": "bottom_tab_name_inbox",
+      "type": "string",
+      "default": ""
+    },
+    "bottom_tab_name_profile": {
+      "field": "BOTTOM_TAB_NAME_PROFILE",
+      "key": "bottom_tab_name_profile",
+      "type": "string",
+      "default": ""
+    },
+    "bottom_tab_name_shop": {
+      "field": "BOTTOM_TAB_NAME_SHOP",
+      "key": "bottom_tab_name_shop",
+      "type": "string",
+      "default": ""
+    },
+    "bundle_activity_likes": {
+      "field": "BUNDLE_ACTIVITY_LIKES",
+      "key": "bundle_activity_likes",
+      "type": "boolean",
+      "default": false
+    },
+    "burn_in_guard": {
+      "field": "BURN_IN_GUARD",
+      "key": "burn_in_guard",
+      "type": "string",
+      "default": "off"
+    },
+    "burn_in_guard_level": {
+      "field": "BURN_IN_GUARD_LEVEL",
+      "key": "burn_in_guard_level",
+      "type": "integer",
+      "default": 25,
+      "minimum": 0,
+      "maximum": 90
+    },
+    "camera_mic_indicator": {
+      "field": "CAMERA_MIC_INDICATOR",
+      "key": "camera_mic_indicator",
+      "type": "boolean",
+      "default": false
+    },
+    "caption_above_comments": {
+      "field": "CAPTION_ABOVE_COMMENTS",
+      "key": "caption_above_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "caption_background": {
+      "field": "CAPTION_BACKGROUND",
+      "key": "caption_background",
+      "type": "string",
+      "default": "default"
+    },
+    "caption_bottom_offset": {
+      "field": "CAPTION_BOTTOM_OFFSET",
+      "key": "caption_bottom_offset",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 300
+    },
+    "caption_clear_display_offset": {
+      "field": "CAPTION_CLEAR_DISPLAY_OFFSET",
+      "key": "caption_clear_display_offset",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 300
+    },
+    "caption_clear_display_spot": {
+      "field": "CAPTION_CLEAR_DISPLAY_SPOT",
+      "key": "caption_clear_display_spot",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "caption_font_weight": {
+      "field": "CAPTION_FONT_WEIGHT",
+      "key": "caption_font_weight",
+      "type": "string",
+      "default": "default"
+    },
+    "caption_landscape_offset": {
+      "field": "CAPTION_LANDSCAPE_OFFSET",
+      "key": "caption_landscape_offset",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 300
+    },
+    "caption_languages": {
+      "field": "CAPTION_LANGUAGES",
+      "key": "caption_languages",
+      "type": "string",
+      "default": ""
+    },
+    "caption_opens_comments": {
+      "field": "CAPTION_OPENS_COMMENTS",
+      "key": "caption_opens_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "caption_text_size": {
+      "field": "CAPTION_TEXT_SIZE",
+      "key": "caption_text_size",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 48
+    },
+    "check_for_updates": {
+      "field": "CHECK_FOR_UPDATES",
+      "key": "check_for_updates",
+      "type": "boolean",
+      "default": false
+    },
+    "check_saved_videos": {
+      "field": "CHECK_SAVED_VIDEOS",
+      "key": "check_saved_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "clear_display": {
+      "field": "CLEAR_DISPLAY",
+      "key": "clear_display",
+      "type": "boolean",
+      "default": false
+    },
+    "clear_display_fade_out": {
+      "field": "CLEAR_DISPLAY_FADE_OUT",
+      "key": "clear_display_fade_out",
+      "type": "boolean",
+      "default": false
+    },
+    "collection_grid_sort": {
+      "field": "COLLECTION_GRID_SORT",
+      "key": "collection_grid_sort",
+      "type": "string",
+      "default": "favorites"
+    },
+    "color_commenter_names": {
+      "field": "COLOR_COMMENTER_NAMES",
+      "key": "color_commenter_names",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_batch_translation": {
+      "field": "COMMENT_BATCH_TRANSLATION",
+      "key": "comment_batch_translation",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_blocked_keywords": {
+      "field": "COMMENT_BLOCKED_KEYWORDS",
+      "key": "comment_blocked_keywords",
+      "type": "string",
+      "default": ""
+    },
+    "comment_blocked_users": {
+      "field": "COMMENT_BLOCKED_USERS",
+      "key": "comment_blocked_users",
+      "type": "string",
+      "default": ""
+    },
+    "comment_export": {
+      "field": "COMMENT_EXPORT",
+      "key": "comment_export",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_keyword_filter": {
+      "field": "COMMENT_KEYWORD_FILTER",
+      "key": "comment_keyword_filter",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_links": {
+      "field": "COMMENT_LINKS",
+      "key": "comment_links",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_search": {
+      "field": "COMMENT_SEARCH",
+      "key": "comment_search",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_search_folded": {
+      "field": "COMMENT_SEARCH_FOLDED",
+      "key": "comment_search_folded",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_sort_controls": {
+      "field": "COMMENT_SORT_CONTROLS",
+      "key": "comment_sort_controls",
+      "type": "boolean",
+      "default": false
+    },
+    "comment_translate_button": {
+      "field": "COMMENT_TRANSLATE_BUTTON",
+      "key": "comment_translate_button",
+      "type": "boolean",
+      "default": false
+    },
+    "comments_full_height": {
+      "field": "COMMENTS_FULL_HEIGHT",
+      "key": "comments_full_height",
+      "type": "boolean",
+      "default": false
+    },
+    "compact_comment_header": {
+      "field": "COMPACT_COMMENT_HEADER",
+      "key": "compact_comment_header",
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_comment_like": {
+      "field": "CONFIRM_COMMENT_LIKE",
+      "key": "confirm_comment_like",
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_follow": {
+      "field": "CONFIRM_FOLLOW",
+      "key": "confirm_follow",
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_like": {
+      "field": "CONFIRM_LIKE",
+      "key": "confirm_like",
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_quick_repost": {
+      "field": "CONFIRM_QUICK_REPOST",
+      "key": "confirm_quick_repost",
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_story_like": {
+      "field": "CONFIRM_STORY_LIKE",
+      "key": "confirm_story_like",
+      "type": "boolean",
+      "default": false
+    },
+    "copy_comments_without_username": {
+      "field": "COPY_COMMENTS_WITHOUT_USERNAME",
+      "key": "copy_comments_without_username",
+      "type": "boolean",
+      "default": true
+    },
+    "copy_ids": {
+      "field": "COPY_IDS",
+      "key": "copy_ids",
+      "type": "boolean",
+      "default": true
+    },
+    "country_date_opacity": {
+      "field": "COUNTRY_DATE_OPACITY",
+      "key": "country_date_opacity",
+      "type": "integer",
+      "default": 100,
+      "minimum": 10,
+      "maximum": 100
+    },
+    "country_date_shadow": {
+      "field": "COUNTRY_DATE_SHADOW",
+      "key": "country_date_shadow",
+      "type": "boolean",
+      "default": false
+    },
+    "country_date_text_size": {
+      "field": "COUNTRY_DATE_TEXT_SIZE",
+      "key": "country_date_text_size",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 48
+    },
+    "country_date_under_caption": {
+      "field": "COUNTRY_DATE_UNDER_CAPTION",
+      "key": "country_date_under_caption",
+      "type": "boolean",
+      "default": false
+    },
+    "country_from_comment_menu": {
+      "field": "COUNTRY_FROM_COMMENT_MENU",
+      "key": "country_from_comment_menu",
+      "type": "boolean",
+      "default": false
+    },
+    "country_on_profiles": {
+      "field": "COUNTRY_ON_PROFILES",
+      "key": "country_on_profiles",
+      "type": "boolean",
+      "default": false
+    },
+    "creator_filter_exceptions": {
+      "field": "CREATOR_FILTER_EXCEPTIONS",
+      "key": "creator_filter_exceptions",
+      "type": "string",
+      "default": ""
+    },
+    "custom_offline_video_limit": {
+      "field": "CUSTOM_OFFLINE_VIDEO_LIMIT",
+      "key": "custom_offline_video_limit",
+      "type": "integer",
+      "default": 500,
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "custom_offline_videos": {
+      "field": "CUSTOM_OFFLINE_VIDEOS",
+      "key": "custom_offline_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "custom_share_domain": {
+      "field": "CUSTOM_SHARE_DOMAIN",
+      "key": "custom_share_domain",
+      "type": "string",
+      "default": ""
+    },
+    "custom_speeds": {
+      "field": "CUSTOM_SPEEDS",
+      "key": "custom_speeds",
+      "type": "string",
+      "default": ""
+    },
+    "dark_live_panels": {
+      "field": "DARK_LIVE_PANELS",
+      "key": "dark_live_panels",
+      "type": "boolean",
+      "default": false
+    },
+    "dark_quick_favorites": {
+      "field": "DARK_QUICK_FAVORITES",
+      "key": "dark_quick_favorites",
+      "type": "boolean",
+      "default": true
+    },
+    "default_speed": {
+      "field": "DEFAULT_SPEED",
+      "key": "default_speed",
+      "type": "string",
+      "default": "1.5"
+    },
+    "default_speed_enabled": {
+      "field": "DEFAULT_SPEED_ENABLED",
+      "key": "default_speed_enabled",
+      "type": "boolean",
+      "default": false
+    },
+    "delete_picked_posts": {
+      "field": "DELETE_PICKED_POSTS",
+      "key": "delete_picked_posts",
+      "type": "boolean",
+      "default": false
+    },
+    "delete_watched_offline_videos": {
+      "field": "DELETE_WATCHED_OFFLINE_VIDEOS",
+      "key": "delete_watched_offline_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "disable_analytics": {
+      "field": "DISABLE_ANALYTICS",
+      "key": "disable_analytics",
+      "type": "boolean",
+      "default": false
+    },
+    "disable_feed_sidebar_swipe": {
+      "field": "DISABLE_FEED_SIDEBAR_SWIPE",
+      "key": "disable_feed_sidebar_swipe",
+      "type": "boolean",
+      "default": false
+    },
+    "disable_long_press_quick_share": {
+      "field": "DISABLE_LONG_PRESS_QUICK_SHARE",
+      "key": "disable_long_press_quick_share",
+      "type": "boolean",
+      "default": false
+    },
+    "disable_long_press_repost": {
+      "field": "DISABLE_LONG_PRESS_REPOST",
+      "key": "disable_long_press_repost",
+      "type": "boolean",
+      "default": false
+    },
+    "discover_bottom_tab": {
+      "field": "DISCOVER_BOTTOM_TAB",
+      "key": "discover_bottom_tab",
+      "type": "boolean",
+      "default": false
+    },
+    "discover_search_bar_only": {
+      "field": "DISCOVER_SEARCH_BAR_ONLY",
+      "key": "discover_search_bar_only",
+      "type": "boolean",
+      "default": false
+    },
+    "dm_sticker_save_box": {
+      "field": "DM_STICKER_SAVE_BOX",
+      "key": "dm_sticker_save_box",
+      "type": "boolean",
+      "default": true
+    },
+    "dm_translation_preview": {
+      "field": "DM_TRANSLATION_PREVIEW",
+      "key": "dm_translation_preview",
+      "type": "boolean",
+      "default": false
+    },
+    "dont_auto_translate_languages": {
+      "field": "DONT_AUTO_TRANSLATE_LANGUAGES",
+      "key": "dont_auto_translate_languages",
+      "type": "string",
+      "default": ""
+    },
+    "double_tap_action": {
+      "field": "DOUBLE_TAP_ACTION",
+      "key": "double_tap_action",
+      "type": "string",
+      "default": "default"
+    },
+    "double_tap_bottom_left_action": {
+      "field": "DOUBLE_TAP_BOTTOM_LEFT_ACTION",
+      "key": "double_tap_bottom_left_action",
+      "type": "string",
+      "default": "default"
+    },
+    "double_tap_bottom_right_action": {
+      "field": "DOUBLE_TAP_BOTTOM_RIGHT_ACTION",
+      "key": "double_tap_bottom_right_action",
+      "type": "string",
+      "default": "default"
+    },
+    "double_tap_split_zones": {
+      "field": "DOUBLE_TAP_SPLIT_ZONES",
+      "key": "double_tap_split_zones",
+      "type": "boolean",
+      "default": false
+    },
+    "double_tap_top_left_action": {
+      "field": "DOUBLE_TAP_TOP_LEFT_ACTION",
+      "key": "double_tap_top_left_action",
+      "type": "string",
+      "default": "default"
+    },
+    "double_tap_top_right_action": {
+      "field": "DOUBLE_TAP_TOP_RIGHT_ACTION",
+      "key": "double_tap_top_right_action",
+      "type": "string",
+      "default": "default"
+    },
+    "down_watermark": {
+      "field": "REMOVE_DOWNLOAD_WATERMARK",
+      "key": "down_watermark",
+      "type": "boolean",
+      "default": true
+    },
+    "download_ask_quality": {
+      "field": "DOWNLOAD_ASK_QUALITY",
+      "key": "download_ask_quality",
+      "type": "boolean",
+      "default": false
+    },
+    "download_audio_track": {
+      "field": "DOWNLOAD_AUDIO_TRACK",
+      "key": "download_audio_track",
+      "type": "boolean",
+      "default": false
+    },
+    "download_burn_caption": {
+      "field": "DOWNLOAD_BURN_CAPTION",
+      "key": "download_burn_caption",
+      "type": "boolean",
+      "default": false
+    },
+    "download_button": {
+      "field": "DOWNLOAD_BUTTON",
+      "key": "download_button",
+      "type": "boolean",
+      "default": false
+    },
+    "download_button_position": {
+      "field": "DOWNLOAD_BUTTON_POSITION",
+      "key": "download_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "download_comment_media_filename_template": {
+      "field": "DOWNLOAD_COMMENT_MEDIA_FILENAME_TEMPLATE",
+      "key": "download_comment_media_filename_template",
+      "type": "string",
+      "default": "comment_{date}_{media_id}"
+    },
+    "download_cover": {
+      "field": "DOWNLOAD_COVER",
+      "key": "download_cover",
+      "type": "boolean",
+      "default": false
+    },
+    "download_details": {
+      "field": "DOWNLOAD_DETAILS",
+      "key": "download_details",
+      "type": "boolean",
+      "default": false
+    },
+    "download_details_json": {
+      "field": "DOWNLOAD_DETAILS_JSON",
+      "key": "download_details_json",
+      "type": "boolean",
+      "default": false
+    },
+    "download_original_photos": {
+      "field": "DOWNLOAD_ORIGINAL_PHOTOS",
+      "key": "download_original_photos",
+      "type": "boolean",
+      "default": false
+    },
+    "download_photo_filename_template": {
+      "field": "DOWNLOAD_PHOTO_FILENAME_TEMPLATE",
+      "key": "download_photo_filename_template",
+      "type": "string",
+      "default": "{creator}_{date}_{video_id}_{index}"
+    },
+    "download_photo_path": {
+      "field": "DOWNLOAD_PHOTO_PATH",
+      "key": "download_photo_path",
+      "type": "string",
+      "default": "DCIM/TikTok"
+    },
+    "download_photos_as_video": {
+      "field": "DOWNLOAD_PHOTOS_AS_VIDEO",
+      "key": "download_photos_as_video",
+      "type": "boolean",
+      "default": false
+    },
+    "download_progress": {
+      "field": "DOWNLOAD_PROGRESS",
+      "key": "download_progress",
+      "type": "boolean",
+      "default": false
+    },
+    "download_saves_at_once": {
+      "field": "DOWNLOAD_SAVES_AT_ONCE",
+      "key": "download_saves_at_once",
+      "type": "string",
+      "default": "3"
+    },
+    "download_sound_format": {
+      "field": "DOWNLOAD_SOUND_FORMAT",
+      "key": "download_sound_format",
+      "type": "string",
+      "default": "original"
+    },
+    "download_sticker_format": {
+      "field": "DOWNLOAD_STICKER_FORMAT",
+      "key": "download_sticker_format",
+      "type": "string",
+      "default": "mp4"
+    },
+    "download_sticker_path": {
+      "field": "DOWNLOAD_STICKER_PATH",
+      "key": "download_sticker_path",
+      "type": "string",
+      "default": "DCIM/TikTok"
+    },
+    "download_subtitles": {
+      "field": "DOWNLOAD_SUBTITLES",
+      "key": "download_subtitles",
+      "type": "boolean",
+      "default": false
+    },
+    "download_tags": {
+      "field": "DOWNLOAD_TAGS",
+      "key": "download_tags",
+      "type": "boolean",
+      "default": false
+    },
+    "download_unmetered_only": {
+      "field": "DOWNLOAD_UNMETERED_ONLY",
+      "key": "download_unmetered_only",
+      "type": "boolean",
+      "default": false
+    },
+    "download_video_codec": {
+      "field": "DOWNLOAD_VIDEO_CODEC",
+      "key": "download_video_codec",
+      "type": "string",
+      "default": "auto"
+    },
+    "download_video_filename_template": {
+      "field": "DOWNLOAD_VIDEO_FILENAME_TEMPLATE",
+      "key": "download_video_filename_template",
+      "type": "string",
+      "default": "{creator}_{date}_{video_id}"
+    },
+    "download_video_path": {
+      "field": "DOWNLOAD_VIDEO_PATH",
+      "key": "download_video_path",
+      "type": "string",
+      "default": "DCIM/TikTok"
+    },
+    "download_video_quality": {
+      "field": "DOWNLOAD_VIDEO_QUALITY",
+      "key": "download_video_quality",
+      "type": "string",
+      "default": "auto"
+    },
+    "download_watermark_fallback": {
+      "field": "DOWNLOAD_WATERMARK_FALLBACK",
+      "key": "download_watermark_fallback",
+      "type": "boolean",
+      "default": false
+    },
+    "download_without_sound": {
+      "field": "DOWNLOAD_WITHOUT_SOUND",
+      "key": "download_without_sound",
+      "type": "boolean",
+      "default": false
+    },
+    "drop_animated_image_cache": {
+      "field": "DROP_ANIMATED_IMAGE_CACHE",
+      "key": "drop_animated_image_cache",
+      "type": "boolean",
+      "default": false
+    },
+    "edge_seek": {
+      "field": "EDGE_SEEK",
+      "key": "edge_seek",
+      "type": "boolean",
+      "default": false
+    },
+    "edge_seek_seconds": {
+      "field": "EDGE_SEEK_SECONDS",
+      "key": "edge_seek_seconds",
+      "type": "integer",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 60
+    },
+    "effect_phone_model": {
+      "field": "EFFECT_PHONE_MODEL",
+      "key": "effect_phone_model",
+      "type": "string",
+      "default": ""
+    },
+    "enable_live_search": {
+      "field": "ENABLE_LIVE_SEARCH",
+      "key": "enable_live_search",
+      "type": "boolean",
+      "default": false
+    },
+    "enable_long_press_speed_lock": {
+      "field": "ENABLE_LONG_PRESS_SPEED_LOCK",
+      "key": "enable_long_press_speed_lock",
+      "type": "boolean",
+      "default": false
+    },
+    "enable_non_personalized_search": {
+      "field": "ENABLE_NON_PERSONALIZED_SEARCH",
+      "key": "enable_non_personalized_search",
+      "type": "boolean",
+      "default": false
+    },
+    "enable_thoughts": {
+      "field": "ENABLE_THOUGHTS",
+      "key": "enable_thoughts",
+      "type": "boolean",
+      "default": false
+    },
+    "enable_voice_comments": {
+      "field": "ENABLE_VOICE_COMMENTS",
+      "key": "enable_voice_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "exit_with_one_back": {
+      "field": "EXIT_WITH_ONE_BACK",
+      "key": "exit_with_one_back",
+      "type": "boolean",
+      "default": false
+    },
+    "expand_activity_list": {
+      "field": "EXPAND_ACTIVITY_LIST",
+      "key": "expand_activity_list",
+      "type": "boolean",
+      "default": false
+    },
+    "expand_short_share_links": {
+      "field": "EXPAND_SHORT_SHARE_LINKS",
+      "key": "expand_short_share_links",
+      "type": "boolean",
+      "default": false
+    },
+    "external_downloader_package": {
+      "field": "EXTERNAL_DOWNLOADER_PACKAGE",
+      "key": "external_downloader_package",
+      "type": "string",
+      "default": ""
+    },
+    "fade_caption_opacity": {
+      "field": "FADE_CAPTION_OPACITY",
+      "key": "fade_caption_opacity",
+      "type": "integer",
+      "default": 100,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "fade_controls_opacity": {
+      "field": "FADE_CONTROLS_OPACITY",
+      "key": "fade_controls_opacity",
+      "type": "integer",
+      "default": 100,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "fade_in_clear_display": {
+      "field": "FADE_IN_CLEAR_DISPLAY",
+      "key": "fade_in_clear_display",
+      "type": "boolean",
+      "default": true
+    },
+    "favorites_grid_sort": {
+      "field": "FAVORITES_GRID_SORT",
+      "key": "favorites_grid_sort",
+      "type": "string",
+      "default": "profile"
+    },
+    "favorites_jump_to_date": {
+      "field": "FAVORITES_JUMP_TO_DATE",
+      "key": "favorites_jump_to_date",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_author_text_size": {
+      "field": "FEED_AUTHOR_TEXT_SIZE",
+      "key": "feed_author_text_size",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 48
+    },
+    "feed_description_text_size": {
+      "field": "FEED_DESCRIPTION_TEXT_SIZE",
+      "key": "feed_description_text_size",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 48
+    },
+    "feed_filter_count_pill": {
+      "field": "FILTERED_COUNT_PILL",
+      "key": "feed_filter_count_pill",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_lock": {
+      "field": "FEED_LOCK",
+      "key": "feed_lock",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_lock_hours": {
+      "field": "FEED_LOCK_HOURS",
+      "key": "feed_lock_hours",
+      "type": "string",
+      "default": ""
+    },
+    "feed_mute_button": {
+      "field": "FEED_MUTE_BUTTON",
+      "key": "feed_mute_button",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_mute_button_position": {
+      "field": "FEED_MUTE_BUTTON_POSITION",
+      "key": "feed_mute_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "feed_muted": {
+      "field": "FEED_MUTED",
+      "key": "feed_muted",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_navigation": {
+      "field": "FEED_NAVIGATION",
+      "key": "feed_navigation",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_navigation_block_new_tabs": {
+      "field": "FEED_NAVIGATION_BLOCK_NEW_TABS",
+      "key": "feed_navigation_block_new_tabs",
+      "type": "boolean",
+      "default": false
+    },
+    "feed_navigation_tabs": {
+      "field": "FEED_NAVIGATION_TABS",
+      "key": "feed_navigation_tabs",
+      "type": "string",
+      "default": "HOT,EXPLORE,FOLLOWING,MALL,NEARBY,FRIENDS,LIVE,POPULAR,STEM,SERIES"
+    },
+    "feed_text_backdrop": {
+      "field": "FEED_TEXT_BACKDROP",
+      "key": "feed_text_backdrop",
+      "type": "string",
+      "default": "off"
+    },
+    "feed_text_color": {
+      "field": "FEED_TEXT_COLOR",
+      "key": "feed_text_color",
+      "type": "string",
+      "default": "off"
+    },
+    "fill_video_to_screen": {
+      "field": "FILL_VIDEO_TO_SCREEN",
+      "key": "fill_video_to_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "fill_wide_videos": {
+      "field": "FILL_WIDE_VIDEOS",
+      "key": "fill_wide_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "filter_cached_offline_videos": {
+      "field": "FILTER_OFFLINE_FALLBACK_VIDEOS",
+      "key": "filter_cached_offline_videos",
+      "type": "boolean",
+      "default": true
+    },
+    "filter_location_videos": {
+      "field": "FILTER_LOCATION_VIDEOS",
+      "key": "filter_location_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "fit_fills_tall_screen": {
+      "field": "FIT_FILLS_TALL_SCREEN",
+      "key": "fit_fills_tall_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "fit_video_to_screen": {
+      "field": "FIT_VIDEO_TO_SCREEN",
+      "key": "fit_video_to_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "floating_bottom_bar": {
+      "field": "FLOATING_BOTTOM_BAR",
+      "key": "floating_bottom_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "focus_waits_for_video": {
+      "field": "FOCUS_WAITS_FOR_VIDEO",
+      "key": "focus_waits_for_video",
+      "type": "boolean",
+      "default": false
+    },
+    "fold_long_comments": {
+      "field": "FOLD_LONG_COMMENTS",
+      "key": "fold_long_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "fold_long_comments_lines": {
+      "field": "FOLD_LONG_COMMENTS_LINES",
+      "key": "fold_long_comments_lines",
+      "type": "integer",
+      "default": 4,
+      "minimum": 1,
+      "maximum": 20
+    },
+    "foldable_split_view": {
+      "field": "FOLDABLE_SPLIT_VIEW",
+      "key": "foldable_split_view",
+      "type": "boolean",
+      "default": false
+    },
+    "foldable_split_view_min_width_dp": {
+      "field": "FOLDABLE_SPLIT_VIEW_MIN_WIDTH_DP",
+      "key": "foldable_split_view_min_width_dp",
+      "type": "integer",
+      "default": 600,
+      "minimum": 320,
+      "maximum": 1600
+    },
+    "following_latest_first": {
+      "field": "FOLLOWING_LATEST_FIRST",
+      "key": "following_latest_first",
+      "type": "boolean",
+      "default": false
+    },
+    "for_you_hold_opens_watch_history": {
+      "field": "FOR_YOU_HOLD_OPENS_WATCH_HISTORY",
+      "key": "for_you_hold_opens_watch_history",
+      "type": "boolean",
+      "default": false
+    },
+    "freeze_remote_config": {
+      "field": "FREEZE_REMOTE_CONFIG",
+      "key": "freeze_remote_config",
+      "type": "boolean",
+      "default": false
+    },
+    "friends_mutuals_only": {
+      "field": "FRIENDS_MUTUALS_ONLY",
+      "key": "friends_mutuals_only",
+      "type": "boolean",
+      "default": false
+    },
+    "friends_top_tab": {
+      "field": "FRIENDS_TOP_TAB",
+      "key": "friends_top_tab",
+      "type": "boolean",
+      "default": false
+    },
+    "full_screen_hold": {
+      "field": "FULL_SCREEN_HOLD",
+      "key": "full_screen_hold",
+      "type": "boolean",
+      "default": false
+    },
+    "full_screen_next_videos": {
+      "field": "FULL_SCREEN_NEXT_VIDEOS",
+      "key": "full_screen_next_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "ghost_hide_live_views": {
+      "field": "GHOST_HIDE_LIVE_VIEWS",
+      "key": "ghost_hide_live_views",
+      "type": "boolean",
+      "default": false
+    },
+    "ghost_hide_online_status": {
+      "field": "GHOST_HIDE_ONLINE_STATUS",
+      "key": "ghost_hide_online_status",
+      "type": "boolean",
+      "default": false
+    },
+    "ghost_hide_profile_visits": {
+      "field": "GHOST_HIDE_PROFILE_VISITS",
+      "key": "ghost_hide_profile_visits",
+      "type": "boolean",
+      "default": true
+    },
+    "ghost_hide_story_views": {
+      "field": "GHOST_HIDE_STORY_VIEWS",
+      "key": "ghost_hide_story_views",
+      "type": "boolean",
+      "default": true
+    },
+    "ghost_hide_typing": {
+      "field": "GHOST_HIDE_TYPING",
+      "key": "ghost_hide_typing",
+      "type": "boolean",
+      "default": true
+    },
+    "ghost_local_likes": {
+      "field": "GHOST_LOCAL_LIKES",
+      "key": "ghost_local_likes",
+      "type": "boolean",
+      "default": false
+    },
+    "ghost_mode": {
+      "field": "GHOST_MODE",
+      "key": "ghost_mode",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_bar_height": {
+      "field": "GLASS_BAR_HEIGHT",
+      "key": "glass_bar_height",
+      "type": "string",
+      "default": "standard"
+    },
+    "glass_blur_strength": {
+      "field": "GLASS_BLUR_STRENGTH",
+      "key": "glass_blur_strength",
+      "type": "string",
+      "default": "standard"
+    },
+    "glass_corners": {
+      "field": "GLASS_CORNERS",
+      "key": "glass_corners",
+      "type": "string",
+      "default": "round"
+    },
+    "glass_haptic_style": {
+      "field": "GLASS_HAPTIC_STYLE",
+      "key": "glass_haptic_style",
+      "type": "string",
+      "default": "system"
+    },
+    "glass_haptics": {
+      "field": "GLASS_HAPTICS",
+      "key": "glass_haptics",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_liquid_hold": {
+      "field": "GLASS_LIQUID_HOLD",
+      "key": "glass_liquid_hold",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_opacity": {
+      "field": "GLASS_OPACITY",
+      "key": "glass_opacity",
+      "type": "string",
+      "default": "standard"
+    },
+    "glass_refraction": {
+      "field": "GLASS_REFRACTION",
+      "key": "glass_refraction",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_stories_pill": {
+      "field": "GLASS_STORIES_PILL",
+      "key": "glass_stories_pill",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_tab_lens": {
+      "field": "GLASS_TAB_LENS",
+      "key": "glass_tab_lens",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_tab_slide": {
+      "field": "GLASS_TAB_SLIDE",
+      "key": "glass_tab_slide",
+      "type": "boolean",
+      "default": false
+    },
+    "glass_video_blur": {
+      "field": "GLASS_VIDEO_BLUR",
+      "key": "glass_video_blur",
+      "type": "boolean",
+      "default": false
+    },
+    "grid_position_controls": {
+      "field": "GRID_POSITION_CONTROLS",
+      "key": "grid_position_controls",
+      "type": "boolean",
+      "default": false
+    },
+    "grid_search": {
+      "field": "GRID_SEARCH",
+      "key": "grid_search",
+      "type": "boolean",
+      "default": false
+    },
+    "hidden_profile_shortcuts": {
+      "field": "HIDDEN_PROFILE_SHORTCUTS",
+      "key": "hidden_profile_shortcuts",
+      "type": "string",
+      "default": ""
+    },
+    "hide_add_bio": {
+      "field": "HIDE_ADD_BIO",
+      "key": "hide_add_bio",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_ai_cast": {
+      "field": "HIDE_AI_CAST",
+      "key": "hide_ai_cast",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_ai_generated": {
+      "field": "HIDE_AI_GENERATED",
+      "key": "hide_ai_generated",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_blocked_sounds": {
+      "field": "HIDE_BLOCKED_SOUNDS",
+      "key": "hide_blocked_sounds",
+      "type": "boolean",
+      "default": true
+    },
+    "hide_bottom_search_bar": {
+      "field": "HIDE_BOTTOM_SEARCH_BAR",
+      "key": "hide_bottom_search_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_bottom_tab_labels": {
+      "field": "HIDE_BOTTOM_TAB_LABELS",
+      "key": "hide_bottom_tab_labels",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_browsing_captcha_popups": {
+      "field": "HIDE_CAPTCHA_POPUPS",
+      "key": "hide_browsing_captcha_popups",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_chat_ai_replies": {
+      "field": "HIDE_CHAT_AI_REPLIES",
+      "key": "hide_chat_ai_replies",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_chat_call_buttons": {
+      "field": "HIDE_CHAT_CALL_BUTTONS",
+      "key": "hide_chat_call_buttons",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_chat_sticker_banner": {
+      "field": "HIDE_CHAT_STICKER_BANNER",
+      "key": "hide_chat_sticker_banner",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_check_your_sources": {
+      "field": "HIDE_CHECK_YOUR_SOURCES",
+      "key": "hide_check_your_sources",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_clear_display_controls": {
+      "field": "HIDE_CLEAR_DISPLAY_CONTROLS",
+      "key": "hide_clear_display_controls",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_avatars": {
+      "field": "HIDE_COMMENT_AVATARS",
+      "key": "hide_comment_avatars",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_box_buttons": {
+      "field": "HIDE_COMMENT_BOX_BUTTONS",
+      "key": "hide_comment_box_buttons",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_close_button": {
+      "field": "HIDE_COMMENT_CLOSE_BUTTON",
+      "key": "hide_comment_close_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_dislike": {
+      "field": "HIDE_COMMENT_DISLIKE",
+      "key": "hide_comment_dislike",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_eggs": {
+      "field": "HIDE_COMMENT_EGGS",
+      "key": "hide_comment_eggs",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_expand_button": {
+      "field": "HIDE_COMMENT_EXPAND_BUTTON",
+      "key": "hide_comment_expand_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_like_count": {
+      "field": "HIDE_COMMENT_LIKE_COUNT",
+      "key": "hide_comment_like_count",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_media": {
+      "field": "HIDE_COMMENT_MEDIA",
+      "key": "hide_comment_media",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_polls": {
+      "field": "HIDE_COMMENT_POLLS",
+      "key": "hide_comment_polls",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_quick_reactions": {
+      "field": "HIDE_COMMENT_QUICK_REACTIONS",
+      "key": "hide_comment_quick_reactions",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_reply_previews": {
+      "field": "HIDE_COMMENT_REPLY_PREVIEWS",
+      "key": "hide_comment_reply_previews",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_search_suggestions": {
+      "field": "HIDE_COMMENT_SEARCH_SUGGESTIONS",
+      "key": "hide_comment_search_suggestions",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_comment_surveys": {
+      "field": "HIDE_COMMENT_SURVEYS",
+      "key": "hide_comment_surveys",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_creation_tags": {
+      "field": "HIDE_CREATION_TAGS",
+      "key": "hide_creation_tags",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_detail_comment_bar": {
+      "field": "HIDE_DETAIL_COMMENT_BAR",
+      "key": "hide_detail_comment_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_event_badge": {
+      "field": "HIDE_EVENT_BADGE",
+      "key": "hide_event_badge",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_action_bar": {
+      "field": "HIDE_FEED_ACTION_BAR",
+      "key": "hide_feed_action_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_caption": {
+      "field": "HIDE_FEED_CAPTION",
+      "key": "hide_feed_caption",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_follow_button": {
+      "field": "HIDE_FEED_FOLLOW_BUTTON",
+      "key": "hide_feed_follow_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_music": {
+      "field": "HIDE_FEED_MUSIC",
+      "key": "hide_feed_music",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_report_button": {
+      "field": "HIDE_FEED_REPORT_BUTTON",
+      "key": "hide_feed_report_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_save_button": {
+      "field": "HIDE_FEED_SAVE_BUTTON",
+      "key": "hide_feed_save_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_search_button": {
+      "field": "HIDE_FEED_SEARCH_BUTTON",
+      "key": "hide_feed_search_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_sidebar_button": {
+      "field": "HIDE_FEED_SIDEBAR_BUTTON",
+      "key": "hide_feed_sidebar_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_surveys": {
+      "field": "HIDE_FEED_SURVEYS",
+      "key": "hide_feed_surveys",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_feed_tab_strip": {
+      "field": "HIDE_FEED_TAB_STRIP",
+      "key": "hide_feed_tab_strip",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_follower_notifications": {
+      "field": "HIDE_FOLLOWER_NOTIFICATIONS",
+      "key": "hide_follower_notifications",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_following_all_button": {
+      "field": "HIDE_FOLLOWING_ALL_BUTTON",
+      "key": "hide_following_all_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_following_live_row": {
+      "field": "HIDE_FOLLOWING_LIVE_ROW",
+      "key": "hide_following_live_row",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_footnotes": {
+      "field": "HIDE_FOOTNOTES",
+      "key": "hide_footnotes",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_fullscreen_button": {
+      "field": "HIDE_FULLSCREEN_BUTTON",
+      "key": "hide_fullscreen_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_grid_view_count": {
+      "field": "HIDE_GRID_VIEW_COUNT",
+      "key": "hide_grid_view_count",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_homepage_coin": {
+      "field": "HIDE_HOMEPAGE_COIN",
+      "key": "hide_homepage_coin",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_image": {
+      "field": "HIDE_IMAGE",
+      "key": "hide_image",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_activity": {
+      "field": "HIDE_INBOX_ACTIVITY",
+      "key": "hide_inbox_activity",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_activity_status": {
+      "field": "HIDE_INBOX_ACTIVITY_STATUS",
+      "key": "hide_inbox_activity_status",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_add_people": {
+      "field": "HIDE_INBOX_ADD_PEOPLE",
+      "key": "hide_inbox_add_people",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_archive": {
+      "field": "HIDE_INBOX_ARCHIVE",
+      "key": "hide_inbox_archive",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_bulletin_boards": {
+      "field": "HIDE_INBOX_BULLETIN_BOARDS",
+      "key": "hide_inbox_bulletin_boards",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_conversations": {
+      "field": "HIDE_INBOX_CONVERSATIONS",
+      "key": "hide_inbox_conversations",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_custom_titles": {
+      "field": "HIDE_INBOX_CUSTOM_TITLES",
+      "key": "hide_inbox_custom_titles",
+      "type": "string",
+      "default": ""
+    },
+    "hide_inbox_group_chat_banner": {
+      "field": "HIDE_INBOX_GROUP_CHAT_BANNER",
+      "key": "hide_inbox_group_chat_banner",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_message_requests": {
+      "field": "HIDE_INBOX_MESSAGE_REQUESTS",
+      "key": "hide_inbox_message_requests",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_new_followers": {
+      "field": "HIDE_INBOX_NEW_FOLLOWERS",
+      "key": "hide_inbox_new_followers",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_on_this_day": {
+      "field": "HIDE_INBOX_ON_THIS_DAY",
+      "key": "hide_inbox_on_this_day",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_search": {
+      "field": "HIDE_INBOX_SEARCH",
+      "key": "hide_inbox_search",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_shop": {
+      "field": "HIDE_INBOX_SHOP",
+      "key": "hide_inbox_shop",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_stories": {
+      "field": "HIDE_INBOX_STORIES",
+      "key": "hide_inbox_stories",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_suggested_accounts": {
+      "field": "HIDE_INBOX_SUGGESTED_ACCOUNTS",
+      "key": "hide_inbox_suggested_accounts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_suggested_lives": {
+      "field": "HIDE_INBOX_SUGGESTED_LIVES",
+      "key": "hide_inbox_suggested_lives",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_suggested_stories": {
+      "field": "HIDE_INBOX_SUGGESTED_STORIES",
+      "key": "hide_inbox_suggested_stories",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_tako": {
+      "field": "HIDE_INBOX_TAKO",
+      "key": "hide_inbox_tako",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inbox_widget_guide": {
+      "field": "HIDE_INBOX_WIDGET_GUIDE",
+      "key": "hide_inbox_widget_guide",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_inserted_cards": {
+      "field": "HIDE_INSERTED_CARDS",
+      "key": "hide_inserted_cards",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_launcher_shortcuts": {
+      "field": "HIDE_LAUNCHER_SHORTCUTS",
+      "key": "hide_launcher_shortcuts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live": {
+      "field": "HIDE_LIVE",
+      "key": "hide_live",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_ai_summary": {
+      "field": "HIDE_LIVE_AI_SUMMARY",
+      "key": "hide_live_ai_summary",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_bubble": {
+      "field": "HIDE_LIVE_BUBBLE",
+      "key": "hide_live_bubble",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_bulletin_board": {
+      "field": "HIDE_LIVE_CARD_BULLETIN_BOARD",
+      "key": "hide_live_card_bulletin_board",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_events": {
+      "field": "HIDE_LIVE_CARD_EVENTS",
+      "key": "hide_live_card_events",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_fest_honors": {
+      "field": "HIDE_LIVE_CARD_FEST_HONORS",
+      "key": "hide_live_card_fest_honors",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_gift_gallery": {
+      "field": "HIDE_LIVE_CARD_GIFT_GALLERY",
+      "key": "hide_live_card_gift_gallery",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_group_chat": {
+      "field": "HIDE_LIVE_CARD_GROUP_CHAT",
+      "key": "hide_live_card_group_chat",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_products": {
+      "field": "HIDE_LIVE_CARD_PRODUCTS",
+      "key": "hide_live_card_products",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_shop": {
+      "field": "HIDE_LIVE_CARD_SHOP",
+      "key": "hide_live_card_shop",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_card_shop_rating": {
+      "field": "HIDE_LIVE_CARD_SHOP_RATING",
+      "key": "hide_live_card_shop_rating",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_chat": {
+      "field": "HIDE_LIVE_CHAT",
+      "key": "hide_live_chat",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_entrance": {
+      "field": "HIDE_LIVE_ENTRANCE",
+      "key": "hide_live_entrance",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_replays": {
+      "field": "HIDE_LIVE_REPLAYS",
+      "key": "hide_live_replays",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_ring": {
+      "field": "HIDE_LIVE_RING",
+      "key": "hide_live_ring",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_live_service_plus": {
+      "field": "HIDE_LIVE_SERVICE_PLUS",
+      "key": "hide_live_service_plus",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_location_labels": {
+      "field": "HIDE_LOCATION_LABELS",
+      "key": "hide_location_labels",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_may_know_tag": {
+      "field": "HIDE_MAY_KNOW_TAG",
+      "key": "hide_may_know_tag",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_message_streaks": {
+      "field": "HIDE_MESSAGE_STREAKS",
+      "key": "hide_message_streaks",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_mini_dramas": {
+      "field": "HIDE_MINI_DRAMAS",
+      "key": "hide_mini_dramas",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_offline_videos": {
+      "field": "HIDE_OFFLINE_VIDEOS",
+      "key": "hide_offline_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_opened_video_back": {
+      "field": "HIDE_OPENED_VIDEO_BACK",
+      "key": "hide_opened_video_back",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_opened_video_search": {
+      "field": "HIDE_OPENED_VIDEO_SEARCH",
+      "key": "hide_opened_video_search",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_own_profile_restriction_notice": {
+      "field": "HIDE_OWN_PROFILE_RESTRICTION_NOTICE",
+      "key": "hide_own_profile_restriction_notice",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_paid_partnership": {
+      "field": "HIDE_PAID_PARTNERSHIP",
+      "key": "hide_paid_partnership",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_pause_icon": {
+      "field": "HIDE_PAUSE_ICON",
+      "key": "hide_pause_icon",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_playable_games": {
+      "field": "HIDE_PLAYABLE_GAMES",
+      "key": "hide_playable_games",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_playlist_bar": {
+      "field": "HIDE_PLAYLIST_BAR",
+      "key": "hide_playlist_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_playlist_videos": {
+      "field": "HIDE_PLAYLIST_VIDEOS",
+      "key": "hide_playlist_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_add_friends": {
+      "field": "HIDE_PROFILE_ADD_FRIENDS",
+      "key": "hide_profile_add_friends",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_menu_balance": {
+      "field": "HIDE_PROFILE_MENU_BALANCE",
+      "key": "hide_profile_menu_balance",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_menu_minis_icons": {
+      "field": "HIDE_PROFILE_MENU_MINIS_ICONS",
+      "key": "hide_profile_menu_minis_icons",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_rewards_shortcut": {
+      "field": "HIDE_PROFILE_REWARDS_SHORTCUT",
+      "key": "hide_profile_rewards_shortcut",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_thoughts": {
+      "field": "HIDE_PROFILE_THOUGHTS",
+      "key": "hide_profile_thoughts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_profile_views_button": {
+      "field": "HIDE_PROFILE_VIEWS_BUTTON",
+      "key": "hide_profile_views_button",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_promotional_music": {
+      "field": "HIDE_PROMOTIONAL_MUSIC",
+      "key": "hide_promotional_music",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_comments": {
+      "field": "HIDE_RAIL_COMMENTS",
+      "key": "hide_rail_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_counts": {
+      "field": "HIDE_RAIL_COUNTS",
+      "key": "hide_rail_counts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_favourite": {
+      "field": "HIDE_RAIL_FAVOURITE",
+      "key": "hide_rail_favourite",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_follow": {
+      "field": "HIDE_RAIL_FOLLOW",
+      "key": "hide_rail_follow",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_like": {
+      "field": "HIDE_RAIL_LIKE",
+      "key": "hide_rail_like",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_music": {
+      "field": "HIDE_RAIL_MUSIC",
+      "key": "hide_rail_music",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rail_share": {
+      "field": "HIDE_RAIL_SHARE",
+      "key": "hide_rail_share",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_read_receipts": {
+      "field": "HIDE_READ_RECEIPTS",
+      "key": "hide_read_receipts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_repost_chip": {
+      "field": "HIDE_REPOST_CHIP",
+      "key": "hide_repost_chip",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_rings_comments": {
+      "field": "HIDE_RINGS_COMMENTS",
+      "key": "hide_rings_comments",
+      "type": "boolean",
+      "default": true
+    },
+    "hide_rings_feed": {
+      "field": "HIDE_RINGS_FEED",
+      "key": "hide_rings_feed",
+      "type": "boolean",
+      "default": true
+    },
+    "hide_rings_profiles": {
+      "field": "HIDE_RINGS_PROFILES",
+      "key": "hide_rings_profiles",
+      "type": "boolean",
+      "default": true
+    },
+    "hide_root": {
+      "field": "HIDE_ROOT",
+      "key": "hide_root",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_search_rewards": {
+      "field": "HIDE_SEARCH_REWARDS",
+      "key": "hide_search_rewards",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_search_shop": {
+      "field": "HIDE_SEARCH_SHOP",
+      "key": "hide_search_shop",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_search_suggestions": {
+      "field": "HIDE_SEARCH_SUGGESTIONS",
+      "key": "hide_search_suggestions",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_seen_videos": {
+      "field": "HIDE_SEEN_VIDEOS",
+      "key": "hide_seen_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_sensitive_warnings": {
+      "field": "HIDE_SENSITIVE_WARNINGS",
+      "key": "hide_sensitive_warnings",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_series": {
+      "field": "HIDE_SERIES",
+      "key": "hide_series",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_settings_row": {
+      "field": "HIDE_SETTINGS_ROW",
+      "key": "hide_settings_row",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_share_actions": {
+      "field": "HIDE_SHARE_ACTIONS",
+      "key": "hide_share_actions",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_share_channels": {
+      "field": "HIDE_SHARE_CHANNELS",
+      "key": "hide_share_channels",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_share_contacts": {
+      "field": "HIDE_SHARE_CONTACTS",
+      "key": "hide_share_contacts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_share_guide": {
+      "field": "HIDE_SHARE_GUIDE",
+      "key": "hide_share_guide",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_share_new_group": {
+      "field": "HIDE_SHARE_NEW_GROUP",
+      "key": "hide_share_new_group",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_shop": {
+      "field": "HIDE_SHOP",
+      "key": "hide_shop",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_sound_page_buttons": {
+      "field": "HIDE_SOUND_PAGE_BUTTONS",
+      "key": "hide_sound_page_buttons",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_spam_comments": {
+      "field": "HIDE_SPAM_COMMENTS",
+      "key": "hide_spam_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_speed_toasts": {
+      "field": "HIDE_SPEED_TOASTS",
+      "key": "hide_speed_toasts",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_status_bar": {
+      "field": "HIDE_STATUS_BAR",
+      "key": "hide_status_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_status_bar_in_live": {
+      "field": "HIDE_STATUS_BAR_IN_LIVE",
+      "key": "hide_status_bar_in_live",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_story": {
+      "field": "HIDE_STORY",
+      "key": "hide_story",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_story_create": {
+      "field": "HIDE_STORY_CREATE",
+      "key": "hide_story_create",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_story_rings": {
+      "field": "HIDE_STORY_RINGS",
+      "key": "hide_story_rings",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_streak_popups": {
+      "field": "HIDE_STREAK_POPUPS",
+      "key": "hide_streak_popups",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_subscriber_only": {
+      "field": "HIDE_SUBSCRIBER_ONLY",
+      "key": "hide_subscriber_only",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_tab_badges": {
+      "field": "HIDE_TAB_BADGES",
+      "key": "hide_tab_badges",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_tako_ai": {
+      "field": "HIDE_TAKO_AI",
+      "key": "hide_tako_ai",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_unpersonalized_for_you": {
+      "field": "HIDE_UNPERSONALIZED_FOR_YOU",
+      "key": "hide_unpersonalized_for_you",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_unverified_notices": {
+      "field": "HIDE_UNVERIFIED_NOTICES",
+      "key": "hide_unverified_notices",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_verified": {
+      "field": "HIDE_VERIFIED",
+      "key": "hide_verified",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_visual_search": {
+      "field": "HIDE_VISUAL_SEARCH",
+      "key": "hide_visual_search",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_voice_comments": {
+      "field": "HIDE_VOICE_COMMENTS",
+      "key": "hide_voice_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_vpn": {
+      "field": "HIDE_VPN",
+      "key": "hide_vpn",
+      "type": "boolean",
+      "default": false
+    },
+    "hide_wind_down_screens": {
+      "field": "HIDE_WIND_DOWN_SCREENS",
+      "key": "hide_wind_down_screens",
+      "type": "boolean",
+      "default": false
+    },
+    "hold_save_to_download": {
+      "field": "HOLD_SAVE_TO_DOWNLOAD",
+      "key": "hold_save_to_download",
+      "type": "boolean",
+      "default": false
+    },
+    "hold_speed": {
+      "field": "HOLD_SPEED",
+      "key": "hold_speed",
+      "type": "string",
+      "default": "2"
+    },
+    "hold_speed_custom": {
+      "field": "HOLD_SPEED_CUSTOM",
+      "key": "hold_speed_custom",
+      "type": "string",
+      "default": ""
+    },
+    "hold_speed_hud_size": {
+      "field": "HOLD_SPEED_HUD_SIZE",
+      "key": "hold_speed_hud_size",
+      "type": "integer",
+      "default": 100,
+      "minimum": 50,
+      "maximum": 150
+    },
+    "hold_speed_hud_style": {
+      "field": "HOLD_SPEED_HUD_STYLE",
+      "key": "hold_speed_hud_style",
+      "type": "string",
+      "default": "pill"
+    },
+    "hold_speed_slide": {
+      "field": "HOLD_SPEED_SLIDE",
+      "key": "hold_speed_slide",
+      "type": "boolean",
+      "default": false
+    },
+    "hold_speed_slide_axis": {
+      "field": "HOLD_SPEED_SLIDE_AXIS",
+      "key": "hold_speed_slide_axis",
+      "type": "string",
+      "default": "sideways"
+    },
+    "home_tab_opens_settings": {
+      "field": "HOME_TAB_OPENS_SETTINGS",
+      "key": "home_tab_opens_settings",
+      "type": "boolean",
+      "default": true
+    },
+    "hushfeed_language": {
+      "field": "HUSHFEED_LANGUAGE",
+      "key": "hushfeed_language",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "idle_leave_minutes": {
+      "field": "IDLE_LEAVE_MINUTES",
+      "key": "idle_leave_minutes",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 240
+    },
+    "imported_emoji_font": {
+      "field": "IMPORTED_EMOJI_FONT",
+      "key": "imported_emoji_font",
+      "type": "boolean",
+      "default": false
+    },
+    "imported_font": {
+      "field": "IMPORTED_FONT",
+      "key": "imported_font",
+      "type": "boolean",
+      "default": false
+    },
+    "inbox_loaded_search": {
+      "field": "INBOX_LOADED_SEARCH",
+      "key": "inbox_loaded_search",
+      "type": "boolean",
+      "default": false
+    },
+    "inbox_tab_flips_read_receipts": {
+      "field": "INBOX_TAB_FLIPS_READ_RECEIPTS",
+      "key": "inbox_tab_flips_read_receipts",
+      "type": "boolean",
+      "default": false
+    },
+    "invisible_controls_button": {
+      "field": "INVISIBLE_CONTROLS_BUTTON",
+      "key": "invisible_controls_button",
+      "type": "boolean",
+      "default": false
+    },
+    "invisible_controls_keep_caption": {
+      "field": "INVISIBLE_CONTROLS_KEEP_CAPTION",
+      "key": "invisible_controls_keep_caption",
+      "type": "boolean",
+      "default": false
+    },
+    "invisible_controls_on": {
+      "field": "INVISIBLE_CONTROLS_ON",
+      "key": "invisible_controls_on",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_app_language": {
+      "field": "KEEP_APP_LANGUAGE",
+      "key": "keep_app_language",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_camera_brightness": {
+      "field": "KEEP_CAMERA_BRIGHTNESS",
+      "key": "keep_camera_brightness",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_captions_available": {
+      "field": "KEEP_CAPTIONS_AVAILABLE",
+      "key": "keep_captions_available",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_captions_clear_display": {
+      "field": "KEEP_CAPTIONS_CLEAR_DISPLAY",
+      "key": "keep_captions_clear_display",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_chat_place": {
+      "field": "KEEP_CHAT_PLACE",
+      "key": "keep_chat_place",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_clear_display_seek_bar": {
+      "field": "KEEP_CLEAR_DISPLAY_SEEK_BAR",
+      "key": "keep_clear_display_seek_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_favorites_tab": {
+      "field": "KEEP_FAVORITES_TAB",
+      "key": "keep_favorites_tab",
+      "type": "boolean",
+      "default": true
+    },
+    "keep_for_you_on_pull_down": {
+      "field": "KEEP_FOR_YOU_ON_PULL_DOWN",
+      "key": "keep_for_you_on_pull_down",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_for_you_on_tab_tap": {
+      "field": "KEEP_FOR_YOU_ON_TAB_TAP",
+      "key": "keep_for_you_on_tab_tap",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_live_clear_screen": {
+      "field": "KEEP_LIVE_CLEAR_SCREEN",
+      "key": "keep_live_clear_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_middle_video_to_screen": {
+      "field": "KEEP_MIDDLE_VIDEO_TO_SCREEN",
+      "key": "keep_middle_video_to_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_offline_videos": {
+      "field": "KEEP_OFFLINE_VIDEOS",
+      "key": "keep_offline_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_paused_on_return": {
+      "field": "KEEP_PAUSED_ON_RETURN",
+      "key": "keep_paused_on_return",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_photos_as_sent": {
+      "field": "KEEP_PHOTOS_AS_SENT",
+      "key": "keep_photos_as_sent",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_profile_suggested_accounts": {
+      "field": "KEEP_PROFILE_SUGGESTED_ACCOUNTS",
+      "key": "keep_profile_suggested_accounts",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_pulled_sounds": {
+      "field": "KEEP_PULLED_SOUNDS",
+      "key": "keep_pulled_sounds",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_unsent_messages": {
+      "field": "KEEP_UNSENT_MESSAGES",
+      "key": "keep_unsent_messages",
+      "type": "boolean",
+      "default": false
+    },
+    "keep_video_size_under_comments": {
+      "field": "KEEP_VIDEO_SIZE_UNDER_COMMENTS",
+      "key": "keep_video_size_under_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "larger_comment_like_target": {
+      "field": "LARGER_COMMENT_LIKE_TARGET",
+      "key": "larger_comment_like_target",
+      "type": "boolean",
+      "default": false
+    },
+    "leave_on_rest_reminder": {
+      "field": "LEAVE_ON_REST_REMINDER",
+      "key": "leave_on_rest_reminder",
+      "type": "boolean",
+      "default": false
+    },
+    "lift_length_limits": {
+      "field": "LIFT_LENGTH_LIMITS",
+      "key": "lift_length_limits",
+      "type": "boolean",
+      "default": false
+    },
+    "liked_grid_sort": {
+      "field": "LIKED_GRID_SORT",
+      "key": "liked_grid_sort",
+      "type": "string",
+      "default": "profile"
+    },
+    "liked_jump_to_date": {
+      "field": "LIKED_JUMP_TO_DATE",
+      "key": "liked_jump_to_date",
+      "type": "boolean",
+      "default": false
+    },
+    "limit_background_traffic": {
+      "field": "LIMIT_BACKGROUND_TRAFFIC",
+      "key": "limit_background_traffic",
+      "type": "boolean",
+      "default": false
+    },
+    "liquid_glass_bottom_bar": {
+      "field": "LIQUID_GLASS_BOTTOM_BAR",
+      "key": "liquid_glass_bottom_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "live_audio_only": {
+      "field": "LIVE_AUDIO_ONLY",
+      "key": "live_audio_only",
+      "type": "boolean",
+      "default": false
+    },
+    "live_auto_tap": {
+      "field": "LIVE_AUTO_TAP",
+      "key": "live_auto_tap",
+      "type": "boolean",
+      "default": false
+    },
+    "live_auto_tap_rate": {
+      "field": "LIVE_AUTO_TAP_RATE",
+      "key": "live_auto_tap_rate",
+      "type": "string",
+      "default": "4"
+    },
+    "live_button_size": {
+      "field": "LIVE_BUTTON_SIZE",
+      "key": "live_button_size",
+      "type": "string",
+      "default": "48"
+    },
+    "live_buttons_in_menu": {
+      "field": "LIVE_BUTTONS_IN_MENU",
+      "key": "live_buttons_in_menu",
+      "type": "boolean",
+      "default": false
+    },
+    "live_card_background": {
+      "field": "LIVE_CARD_BACKGROUND",
+      "key": "live_card_background",
+      "type": "string",
+      "default": "off"
+    },
+    "live_card_text": {
+      "field": "LIVE_CARD_TEXT",
+      "key": "live_card_text",
+      "type": "string",
+      "default": "off"
+    },
+    "live_feed_countries": {
+      "field": "LIVE_FEED_COUNTRIES",
+      "key": "live_feed_countries",
+      "type": "string",
+      "default": ""
+    },
+    "live_feed_filter": {
+      "field": "LIVE_FEED_FILTER",
+      "key": "live_feed_filter",
+      "type": "boolean",
+      "default": false
+    },
+    "live_following_row_order": {
+      "field": "LIVE_FOLLOWING_ROW_ORDER",
+      "key": "live_following_row_order",
+      "type": "boolean",
+      "default": false
+    },
+    "live_hidden_categories": {
+      "field": "LIVE_HIDDEN_CATEGORIES",
+      "key": "live_hidden_categories",
+      "type": "string",
+      "default": ""
+    },
+    "live_hide_gaming": {
+      "field": "LIVE_HIDE_GAMING",
+      "key": "live_hide_gaming",
+      "type": "boolean",
+      "default": false
+    },
+    "live_hide_shopping": {
+      "field": "LIVE_HIDE_SHOPPING",
+      "key": "live_hide_shopping",
+      "type": "boolean",
+      "default": false
+    },
+    "live_hide_sponsored": {
+      "field": "LIVE_HIDE_SPONSORED",
+      "key": "live_hide_sponsored",
+      "type": "boolean",
+      "default": false
+    },
+    "live_hide_verified": {
+      "field": "LIVE_HIDE_VERIFIED",
+      "key": "live_hide_verified",
+      "type": "boolean",
+      "default": false
+    },
+    "live_kept_creators": {
+      "field": "LIVE_KEPT_CREATORS",
+      "key": "live_kept_creators",
+      "type": "string",
+      "default": ""
+    },
+    "live_min_max_followers": {
+      "field": "LIVE_MIN_MAX_FOLLOWERS",
+      "key": "live_min_max_followers",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "live_min_max_viewers": {
+      "field": "LIVE_MIN_MAX_VIEWERS",
+      "key": "live_min_max_viewers",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "live_name_alert_names": {
+      "field": "LIVE_NAME_ALERT_NAMES",
+      "key": "live_name_alert_names",
+      "type": "string",
+      "default": ""
+    },
+    "live_name_alerts": {
+      "field": "LIVE_NAME_ALERTS",
+      "key": "live_name_alerts",
+      "type": "boolean",
+      "default": false
+    },
+    "live_name_alerts_listen": {
+      "field": "LIVE_NAME_ALERTS_LISTEN",
+      "key": "live_name_alerts_listen",
+      "type": "boolean",
+      "default": false
+    },
+    "live_record_quality": {
+      "field": "LIVE_RECORD_QUALITY",
+      "key": "live_record_quality",
+      "type": "string",
+      "default": "room"
+    },
+    "live_record_source": {
+      "field": "LIVE_RECORD_SOURCE",
+      "key": "live_record_source",
+      "type": "string",
+      "default": "stream"
+    },
+    "live_room_info": {
+      "field": "LIVE_ROOM_INFO",
+      "key": "live_room_info",
+      "type": "boolean",
+      "default": false
+    },
+    "live_running_time": {
+      "field": "LIVE_RUNNING_TIME",
+      "key": "live_running_time",
+      "type": "boolean",
+      "default": false
+    },
+    "live_start_quality": {
+      "field": "LIVE_START_QUALITY",
+      "key": "live_start_quality",
+      "type": "string",
+      "default": "last"
+    },
+    "live_under_status_bar": {
+      "field": "LIVE_UNDER_STATUS_BAR",
+      "key": "live_under_status_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "local_hidden_creators": {
+      "field": "LOCAL_HIDDEN_CREATORS",
+      "key": "local_hidden_creators",
+      "type": "string",
+      "default": ""
+    },
+    "local_hide_button": {
+      "field": "LOCAL_HIDE_BUTTON",
+      "key": "local_hide_button",
+      "type": "boolean",
+      "default": false
+    },
+    "local_hide_button_position": {
+      "field": "LOCAL_HIDE_BUTTON_POSITION",
+      "key": "local_hide_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "local_profile_count_values": {
+      "field": "LOCAL_PROFILE_COUNT_VALUES",
+      "key": "local_profile_count_values",
+      "type": "string",
+      "default": ""
+    },
+    "local_profile_counts": {
+      "field": "LOCAL_PROFILE_COUNTS",
+      "key": "local_profile_counts",
+      "type": "boolean",
+      "default": false
+    },
+    "local_profile_verified_badge": {
+      "field": "LOCAL_PROFILE_VERIFIED_BADGE",
+      "key": "local_profile_verified_badge",
+      "type": "boolean",
+      "default": false
+    },
+    "local_watch_history": {
+      "field": "LOCAL_WATCH_HISTORY",
+      "key": "local_watch_history",
+      "type": "boolean",
+      "default": false
+    },
+    "long_press_action": {
+      "field": "LONG_PRESS_ACTION",
+      "key": "long_press_action",
+      "type": "string",
+      "default": "default"
+    },
+    "long_press_compact_menu": {
+      "field": "LONG_PRESS_COMPACT_MENU",
+      "key": "long_press_compact_menu",
+      "type": "boolean",
+      "default": false
+    },
+    "long_press_full_menu_in_search": {
+      "field": "LONG_PRESS_FULL_MENU_IN_SEARCH",
+      "key": "long_press_full_menu_in_search",
+      "type": "boolean",
+      "default": false
+    },
+    "long_press_full_menu_on_profiles": {
+      "field": "LONG_PRESS_FULL_MENU_ON_PROFILES",
+      "key": "long_press_full_menu_on_profiles",
+      "type": "boolean",
+      "default": false
+    },
+    "long_press_sides_only": {
+      "field": "LONG_PRESS_SIDES_ONLY",
+      "key": "long_press_sides_only",
+      "type": "boolean",
+      "default": false
+    },
+    "mark_kept_unsent_messages": {
+      "field": "MARK_KEPT_UNSENT_MESSAGES",
+      "key": "mark_kept_unsent_messages",
+      "type": "boolean",
+      "default": true
+    },
+    "mark_saved_videos": {
+      "field": "MARK_SAVED_VIDEOS",
+      "key": "mark_saved_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "max_publication_age_days": {
+      "field": "MAX_PUBLICATION_AGE_DAYS",
+      "key": "max_publication_age_days",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 3650
+    },
+    "max_video_seconds": {
+      "field": "MAX_VIDEO_SECONDS",
+      "key": "max_video_seconds",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "max_views_per_comment": {
+      "field": "MAX_VIEWS_PER_COMMENT",
+      "key": "max_views_per_comment",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "max_views_per_like": {
+      "field": "MAX_VIEWS_PER_LIKE",
+      "key": "max_views_per_like",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "min_max_comments": {
+      "field": "MIN_MAX_COMMENTS",
+      "key": "min_max_comments",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "min_max_favourites": {
+      "field": "MIN_MAX_FAVOURITES",
+      "key": "min_max_favourites",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "min_max_likes": {
+      "field": "MIN_MAX_LIKES",
+      "key": "min_max_likes",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "min_max_shares": {
+      "field": "MIN_MAX_SHARES",
+      "key": "min_max_shares",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "min_max_views": {
+      "field": "MIN_MAX_VIEWS",
+      "key": "min_max_views",
+      "type": "string",
+      "default": "0-9223372036854775807"
+    },
+    "min_video_seconds": {
+      "field": "MIN_VIDEO_SECONDS",
+      "key": "min_video_seconds",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "morphe_capture_java_crashes": {
+      "field": "CAPTURE_JAVA_CRASHES",
+      "key": "morphe_capture_java_crashes",
+      "type": "boolean",
+      "default": false
+    },
+    "morphe_debug": {
+      "field": "DEBUG",
+      "key": "morphe_debug",
+      "type": "boolean",
+      "default": false
+    },
+    "morphe_debug_log_filters": {
+      "field": "DEBUG_LOG_FILTERS",
+      "key": "morphe_debug_log_filters",
+      "type": "string",
+      "default": "all"
+    },
+    "morphe_debug_stacktrace": {
+      "field": "DEBUG_STACKTRACE",
+      "key": "morphe_debug_stacktrace",
+      "type": "boolean",
+      "default": false
+    },
+    "morphe_debug_toast_on_error": {
+      "field": "DEBUG_TOAST_ON_ERROR",
+      "key": "morphe_debug_toast_on_error",
+      "type": "boolean",
+      "default": true
+    },
+    "morphe_language": {
+      "field": "MORPHE_LANGUAGE",
+      "key": "morphe_language",
+      "type": "enum",
+      "default": "DEFAULT",
+      "values": [
+        "DEFAULT",
+        "GA",
+        "AF",
+        "AM",
+        "AR",
+        "AS",
+        "AZ",
+        "BE",
+        "BG",
+        "BN",
+        "BS",
+        "CA",
+        "CS",
+        "DA",
+        "DE",
+        "EL",
+        "EN",
+        "ES",
+        "ET",
+        "EU",
+        "FA",
+        "FI",
+        "FR",
+        "GL",
+        "GU",
+        "HE",
+        "HI",
+        "HR",
+        "HU",
+        "HY",
+        "ID",
+        "IS",
+        "IT",
+        "JA",
+        "KA",
+        "KK",
+        "KM",
+        "KN",
+        "KO",
+        "KY",
+        "LO",
+        "LT",
+        "LV",
+        "MK",
+        "ML",
+        "MN",
+        "MR",
+        "MS",
+        "MY",
+        "NB",
+        "NE",
+        "NL",
+        "OR",
+        "PA",
+        "PL",
+        "PT",
+        "RO",
+        "RU",
+        "SI",
+        "SK",
+        "SL",
+        "SQ",
+        "SR",
+        "SV",
+        "SW",
+        "TA",
+        "TE",
+        "TH",
+        "TL",
+        "TR",
+        "UK",
+        "UR",
+        "UZ",
+        "VI",
+        "ZH",
+        "ZU"
+      ]
+    },
+    "morphe_sanitize_sharing_links": {
+      "field": "SANITIZE_SHARING_LINKS",
+      "key": "morphe_sanitize_sharing_links",
+      "type": "boolean",
+      "default": true
+    },
+    "morphe_show_menu_icons": {
+      "field": "SHOW_MENU_ICONS",
+      "key": "morphe_show_menu_icons",
+      "type": "boolean",
+      "default": true
+    },
+    "network_proxy": {
+      "field": "NETWORK_PROXY",
+      "key": "network_proxy",
+      "type": "boolean",
+      "default": false
+    },
+    "network_proxy_host": {
+      "field": "NETWORK_PROXY_HOST",
+      "key": "network_proxy_host",
+      "type": "string",
+      "default": ""
+    },
+    "network_proxy_password": {
+      "field": "NETWORK_PROXY_PASSWORD",
+      "key": "network_proxy_password",
+      "type": "string",
+      "default": ""
+    },
+    "network_proxy_port": {
+      "field": "NETWORK_PROXY_PORT",
+      "key": "network_proxy_port",
+      "type": "string",
+      "default": ""
+    },
+    "network_proxy_type": {
+      "field": "NETWORK_PROXY_TYPE",
+      "key": "network_proxy_type",
+      "type": "string",
+      "default": "http"
+    },
+    "network_proxy_user": {
+      "field": "NETWORK_PROXY_USER",
+      "key": "network_proxy_user",
+      "type": "string",
+      "default": ""
+    },
+    "no_resume_on_foreground": {
+      "field": "NO_RESUME_ON_FOREGROUND",
+      "key": "no_resume_on_foreground",
+      "type": "boolean",
+      "default": false
+    },
+    "no_video_auto_translate": {
+      "field": "NO_VIDEO_AUTO_TRANSLATE",
+      "key": "no_video_auto_translate",
+      "type": "boolean",
+      "default": false
+    },
+    "not_interested_also_filter": {
+      "field": "NOT_INTERESTED_ALSO_FILTER",
+      "key": "not_interested_also_filter",
+      "type": "boolean",
+      "default": false
+    },
+    "not_interested_button": {
+      "field": "NOT_INTERESTED_BUTTON",
+      "key": "not_interested_button",
+      "type": "boolean",
+      "default": false
+    },
+    "not_interested_button_position": {
+      "field": "NOT_INTERESTED_BUTTON_POSITION",
+      "key": "not_interested_button_position",
+      "type": "string",
+      "default": ""
+    },
+    "offer_live_clear_screen": {
+      "field": "OFFER_LIVE_CLEAR_SCREEN",
+      "key": "offer_live_clear_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "offer_live_full_screen": {
+      "field": "OFFER_LIVE_FULL_SCREEN",
+      "key": "offer_live_full_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "offer_live_quality": {
+      "field": "OFFER_LIVE_QUALITY",
+      "key": "offer_live_quality",
+      "type": "boolean",
+      "default": false
+    },
+    "open_external_links": {
+      "field": "OPEN_EXTERNAL_LINKS",
+      "key": "open_external_links",
+      "type": "boolean",
+      "default": true
+    },
+    "open_story_over_live": {
+      "field": "OPEN_STORY_OVER_LIVE",
+      "key": "open_story_over_live",
+      "type": "boolean",
+      "default": false
+    },
+    "original_audio": {
+      "field": "ORIGINAL_AUDIO",
+      "key": "original_audio",
+      "type": "boolean",
+      "default": false
+    },
+    "pause_before_feed_seconds": {
+      "field": "PAUSE_BEFORE_FEED_SECONDS",
+      "key": "pause_before_feed_seconds",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 60
+    },
+    "pause_first_video": {
+      "field": "PAUSE_FIRST_VIDEO",
+      "key": "pause_first_video",
+      "type": "boolean",
+      "default": false
+    },
+    "pause_on_comments": {
+      "field": "PAUSE_ON_COMMENTS",
+      "key": "pause_on_comments",
+      "type": "boolean",
+      "default": false
+    },
+    "photo_video_seconds": {
+      "field": "PHOTO_VIDEO_SECONDS",
+      "key": "photo_video_seconds",
+      "type": "integer",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 300
+    },
+    "pick_grid_videos": {
+      "field": "PICK_GRID_VIDEOS",
+      "key": "pick_grid_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "picture_in_picture": {
+      "field": "PICTURE_IN_PICTURE",
+      "key": "picture_in_picture",
+      "type": "boolean",
+      "default": false
+    },
+    "pin_more_chats": {
+      "field": "PIN_MORE_CHATS",
+      "key": "pin_more_chats",
+      "type": "boolean",
+      "default": false
+    },
+    "play_sdr": {
+      "field": "PLAY_SDR",
+      "key": "play_sdr",
+      "type": "boolean",
+      "default": false
+    },
+    "playback_bitrate_limit": {
+      "field": "PLAYBACK_BITRATE_LIMIT",
+      "key": "playback_bitrate_limit",
+      "type": "string",
+      "default": "off"
+    },
+    "playback_quality": {
+      "field": "PLAYBACK_QUALITY",
+      "key": "playback_quality",
+      "type": "string",
+      "default": "auto"
+    },
+    "playback_quality_metered": {
+      "field": "PLAYBACK_QUALITY_METERED",
+      "key": "playback_quality_metered",
+      "type": "string",
+      "default": "off"
+    },
+    "popup_label_picks": {
+      "field": "POPUP_LABEL_PICKS",
+      "key": "popup_label_picks",
+      "type": "string",
+      "default": ""
+    },
+    "prefer_h264": {
+      "field": "PREFER_H264",
+      "key": "prefer_h264",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_background": {
+      "field": "PROFILE_BACKGROUND",
+      "key": "profile_background",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_grid_sort": {
+      "field": "PROFILE_GRID_SORT",
+      "key": "profile_grid_sort",
+      "type": "string",
+      "default": "off"
+    },
+    "profile_hold_opens_local_watch_history": {
+      "field": "PROFILE_HOLD_OPENS_LOCAL_WATCH_HISTORY",
+      "key": "profile_hold_opens_local_watch_history",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_picture_viewer": {
+      "field": "PROFILE_PICTURE_VIEWER",
+      "key": "profile_picture_viewer",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_shortcut_picks": {
+      "field": "PROFILE_SHORTCUT_PICKS",
+      "key": "profile_shortcut_picks",
+      "type": "string",
+      "default": ""
+    },
+    "profile_tab_opens_activity_center": {
+      "field": "PROFILE_TAB_OPENS_ACTIVITY_CENTER",
+      "key": "profile_tab_opens_activity_center",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_tab_opens_watch_history": {
+      "field": "PROFILE_TAB_OPENS_WATCH_HISTORY",
+      "key": "profile_tab_opens_watch_history",
+      "type": "boolean",
+      "default": false
+    },
+    "profile_tab_order": {
+      "field": "PROFILE_TAB_ORDER",
+      "key": "profile_tab_order",
+      "type": "string",
+      "default": ""
+    },
+    "profile_tab_picks": {
+      "field": "PROFILE_TAB_PICKS",
+      "key": "profile_tab_picks",
+      "type": "string",
+      "default": ""
+    },
+    "profile_tab_switches_accounts": {
+      "field": "PROFILE_TAB_SWITCHES_ACCOUNTS",
+      "key": "profile_tab_switches_accounts",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_day_first": {
+      "field": "PUBLISH_DATE_DAY_FIRST",
+      "key": "publish_date_day_first",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_exact_time": {
+      "field": "PUBLISH_DATE_EXACT_TIME",
+      "key": "publish_date_exact_time",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_instead_of_age": {
+      "field": "PUBLISH_DATE_INSTEAD_OF_AGE",
+      "key": "publish_date_instead_of_age",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_month_name": {
+      "field": "PUBLISH_DATE_MONTH_NAME",
+      "key": "publish_date_month_name",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_on_grid": {
+      "field": "PUBLISH_DATE_ON_GRID",
+      "key": "publish_date_on_grid",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_short_date": {
+      "field": "PUBLISH_DATE_SHORT_DATE",
+      "key": "publish_date_short_date",
+      "type": "boolean",
+      "default": false
+    },
+    "publish_date_time_zone": {
+      "field": "PUBLISH_DATE_TIME_ZONE",
+      "key": "publish_date_time_zone",
+      "type": "boolean",
+      "default": true
+    },
+    "rail_hold_comment": {
+      "field": "RAIL_HOLD_COMMENT",
+      "key": "rail_hold_comment",
+      "type": "boolean",
+      "default": false
+    },
+    "rail_hold_favorites": {
+      "field": "RAIL_HOLD_FAVORITES",
+      "key": "rail_hold_favorites",
+      "type": "boolean",
+      "default": false
+    },
+    "rail_hold_share": {
+      "field": "RAIL_HOLD_SHARE",
+      "key": "rail_hold_share",
+      "type": "boolean",
+      "default": false
+    },
+    "received_dm_translation_preview": {
+      "field": "RECEIVED_DM_TRANSLATION_PREVIEW",
+      "key": "received_dm_translation_preview",
+      "type": "boolean",
+      "default": false
+    },
+    "record_live": {
+      "field": "RECORD_LIVE",
+      "key": "record_live",
+      "type": "boolean",
+      "default": false
+    },
+    "region_as_flag": {
+      "field": "REGION_AS_FLAG",
+      "key": "region_as_flag",
+      "type": "boolean",
+      "default": false
+    },
+    "region_never_from": {
+      "field": "REGION_NEVER_FROM",
+      "key": "region_never_from",
+      "type": "string",
+      "default": ""
+    },
+    "region_only_from": {
+      "field": "REGION_ONLY_FROM",
+      "key": "region_only_from",
+      "type": "string",
+      "default": ""
+    },
+    "region_request_spoof": {
+      "field": "REGION_REQUEST_SPOOF",
+      "key": "region_request_spoof",
+      "type": "boolean",
+      "default": false
+    },
+    "region_spoof": {
+      "field": "REGION_SPOOF",
+      "key": "region_spoof",
+      "type": "boolean",
+      "default": false
+    },
+    "region_store_spoof": {
+      "field": "REGION_STORE_SPOOF",
+      "key": "region_store_spoof",
+      "type": "boolean",
+      "default": false
+    },
+    "remember_clear_display_on_scroll": {
+      "field": "REMEMBER_CLEAR_DISPLAY_ON_SCROLL",
+      "key": "remember_clear_display_on_scroll",
+      "type": "boolean",
+      "default": true
+    },
+    "remember_live_quality": {
+      "field": "REMEMBER_LIVE_QUALITY",
+      "key": "remember_live_quality",
+      "type": "boolean",
+      "default": true
+    },
+    "remember_playback_speed": {
+      "field": "REMEMBER_SPEED",
+      "key": "remember_playback_speed",
+      "type": "boolean",
+      "default": true
+    },
+    "remember_saved_videos": {
+      "field": "REMEMBER_SAVED_VIDEOS",
+      "key": "remember_saved_videos",
+      "type": "boolean",
+      "default": false
+    },
+    "remembered_live_quality": {
+      "field": "REMEMBERED_LIVE_QUALITY",
+      "key": "remembered_live_quality",
+      "type": "string",
+      "default": ""
+    },
+    "remembered_speed_v2": {
+      "field": "REMEMBERED_SPEED",
+      "key": "remembered_speed_v2",
+      "type": "float",
+      "default": 1
+    },
+    "remove_ads": {
+      "field": "REMOVE_ADS",
+      "key": "remove_ads",
+      "type": "boolean",
+      "default": true
+    },
+    "report_newer_phone_to_effects": {
+      "field": "REPORT_NEWER_PHONE_TO_EFFECTS",
+      "key": "report_newer_phone_to_effects",
+      "type": "boolean",
+      "default": false
+    },
+    "report_newer_phone_to_game_live": {
+      "field": "REPORT_NEWER_PHONE_TO_GAME_LIVE",
+      "key": "report_newer_phone_to_game_live",
+      "type": "boolean",
+      "default": false
+    },
+    "resume_video_after_scroll": {
+      "field": "RESUME_VIDEO_AFTER_SCROLL",
+      "key": "resume_video_after_scroll",
+      "type": "boolean",
+      "default": true
+    },
+    "rounded_grid_corners": {
+      "field": "ROUNDED_GRID_CORNERS",
+      "key": "rounded_grid_corners",
+      "type": "boolean",
+      "default": false
+    },
+    "save_cover_button": {
+      "field": "SAVE_COVER_BUTTON",
+      "key": "save_cover_button",
+      "type": "boolean",
+      "default": false
+    },
+    "save_episodes_button": {
+      "field": "SAVE_EPISODES_BUTTON",
+      "key": "save_episodes_button",
+      "type": "boolean",
+      "default": false
+    },
+    "save_profile_picture": {
+      "field": "SAVE_PROFILE_PICTURE",
+      "key": "save_profile_picture",
+      "type": "boolean",
+      "default": false
+    },
+    "save_story": {
+      "field": "SAVE_STORY",
+      "key": "save_story",
+      "type": "boolean",
+      "default": false
+    },
+    "save_story_from_share": {
+      "field": "SAVE_STORY_FROM_SHARE",
+      "key": "save_story_from_share",
+      "type": "boolean",
+      "default": false
+    },
+    "save_story_pick": {
+      "field": "SAVE_STORY_PICK",
+      "key": "save_story_pick",
+      "type": "boolean",
+      "default": false
+    },
+    "search_instead_of_home": {
+      "field": "SEARCH_INSTEAD_OF_HOME",
+      "key": "search_instead_of_home",
+      "type": "boolean",
+      "default": false
+    },
+    "search_tab_picks": {
+      "field": "SEARCH_TAB_PICKS",
+      "key": "search_tab_picks",
+      "type": "string",
+      "default": ""
+    },
+    "see_through_bottom_bar": {
+      "field": "SEE_THROUGH_BOTTOM_BAR",
+      "key": "see_through_bottom_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "see_through_status_bar": {
+      "field": "SEE_THROUGH_STATUS_BAR",
+      "key": "see_through_status_bar",
+      "type": "boolean",
+      "default": false
+    },
+    "see_through_video_in_window": {
+      "field": "SEE_THROUGH_VIDEO_IN_WINDOW",
+      "key": "see_through_video_in_window",
+      "type": "boolean",
+      "default": false
+    },
+    "seekbar_big_handle": {
+      "field": "SEEKBAR_BIG_HANDLE",
+      "key": "seekbar_big_handle",
+      "type": "boolean",
+      "default": false
+    },
+    "seekbar_full_width": {
+      "field": "SEEKBAR_FULL_WIDTH",
+      "key": "seekbar_full_width",
+      "type": "boolean",
+      "default": false
+    },
+    "seekbar_time": {
+      "field": "SEEKBAR_TIME",
+      "key": "seekbar_time",
+      "type": "boolean",
+      "default": false
+    },
+    "seekbar_time_placement": {
+      "field": "SEEKBAR_TIME_PLACEMENT",
+      "key": "seekbar_time_placement",
+      "type": "string",
+      "default": "beside"
+    },
+    "seen_video_mark_percent": {
+      "field": "SEEN_VIDEO_MARK_PERCENT",
+      "key": "seen_video_mark_percent",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 90
+    },
+    "seen_video_retention_days": {
+      "field": "SEEN_VIDEO_RETENTION_DAYS",
+      "key": "seen_video_retention_days",
+      "type": "integer",
+      "default": 30,
+      "minimum": 0,
+      "maximum": 3650
+    },
+    "session_budget_cue": {
+      "field": "SESSION_BUDGET_CUE",
+      "key": "session_budget_cue",
+      "type": "boolean",
+      "default": false
+    },
+    "session_budget_finish_video": {
+      "field": "SESSION_BUDGET_FINISH_VIDEO",
+      "key": "session_budget_finish_video",
+      "type": "boolean",
+      "default": false
+    },
+    "session_budget_lock": {
+      "field": "SESSION_BUDGET_LOCK",
+      "key": "session_budget_lock",
+      "type": "boolean",
+      "default": false
+    },
+    "session_budget_lock_minutes": {
+      "field": "SESSION_BUDGET_LOCK_MINUTES",
+      "key": "session_budget_lock_minutes",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 720
+    },
+    "session_budget_minutes": {
+      "field": "SESSION_BUDGET_MINUTES",
+      "key": "session_budget_minutes",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 600
+    },
+    "session_budget_notice_minutes": {
+      "field": "SESSION_BUDGET_NOTICE_MINUTES",
+      "key": "session_budget_notice_minutes",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 120
+    },
+    "session_budget_passes_per_day": {
+      "field": "SESSION_BUDGET_PASSES_PER_DAY",
+      "key": "session_budget_passes_per_day",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 20
+    },
+    "session_budget_ramp": {
+      "field": "SESSION_BUDGET_RAMP",
+      "key": "session_budget_ramp",
+      "type": "boolean",
+      "default": false
+    },
+    "session_budget_reset_hour": {
+      "field": "SESSION_BUDGET_RESET_HOUR",
+      "key": "session_budget_reset_hour",
+      "type": "integer",
+      "default": 4,
+      "minimum": 0,
+      "maximum": 23
+    },
+    "session_budget_videos": {
+      "field": "SESSION_BUDGET_VIDEOS",
+      "key": "session_budget_videos",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 2000
+    },
+    "session_budget_wait_to_loosen": {
+      "field": "SESSION_BUDGET_WAIT_TO_LOOSEN",
+      "key": "session_budget_wait_to_loosen",
+      "type": "boolean",
+      "default": false
+    },
+    "settings_as_list": {
+      "field": "SETTINGS_AS_LIST",
+      "key": "settings_as_list",
+      "type": "boolean",
+      "default": false
+    },
+    "settings_row_picks": {
+      "field": "SETTINGS_ROW_PICKS",
+      "key": "settings_row_picks",
+      "type": "string",
+      "default": ""
+    },
+    "settings_theme": {
+      "field": "SETTINGS_THEME",
+      "key": "settings_theme",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "share_added_apps": {
+      "field": "SHARE_ADDED_APPS",
+      "key": "share_added_apps",
+      "type": "string",
+      "default": ""
+    },
+    "share_after_save": {
+      "field": "SHARE_AFTER_SAVE",
+      "key": "share_after_save",
+      "type": "boolean",
+      "default": false
+    },
+    "share_any_comment": {
+      "field": "SHARE_ANY_COMMENT",
+      "key": "share_any_comment",
+      "type": "boolean",
+      "default": false
+    },
+    "share_block_author": {
+      "field": "SHARE_BLOCK_AUTHOR",
+      "key": "share_block_author",
+      "type": "boolean",
+      "default": false
+    },
+    "share_hidden_items": {
+      "field": "SHARE_HIDDEN_ITEMS",
+      "key": "share_hidden_items",
+      "type": "string",
+      "default": ""
+    },
+    "share_hidden_items_live": {
+      "field": "SHARE_HIDDEN_ITEMS_LIVE",
+      "key": "share_hidden_items_live",
+      "type": "string",
+      "default": "@video"
+    },
+    "share_hidden_items_profile": {
+      "field": "SHARE_HIDDEN_ITEMS_PROFILE",
+      "key": "share_hidden_items_profile",
+      "type": "string",
+      "default": "@video"
+    },
+    "share_tap_copies_link": {
+      "field": "SHARE_TAP_COPIES_LINK",
+      "key": "share_tap_copies_link",
+      "type": "boolean",
+      "default": false
+    },
+    "shared_video_alone": {
+      "field": "SHARED_VIDEO_ALONE",
+      "key": "shared_video_alone",
+      "type": "boolean",
+      "default": false
+    },
+    "show_author_handle": {
+      "field": "SHOW_AUTHOR_HANDLE",
+      "key": "show_author_handle",
+      "type": "boolean",
+      "default": false
+    },
+    "show_author_region": {
+      "field": "SHOW_AUTHOR_REGION",
+      "key": "show_author_region",
+      "type": "boolean",
+      "default": false
+    },
+    "show_comment_expand_button": {
+      "field": "SHOW_COMMENT_EXPAND_BUTTON",
+      "key": "show_comment_expand_button",
+      "type": "boolean",
+      "default": false
+    },
+    "show_commenter_handle": {
+      "field": "SHOW_COMMENTER_HANDLE",
+      "key": "show_commenter_handle",
+      "type": "boolean",
+      "default": false
+    },
+    "show_commenter_region": {
+      "field": "SHOW_COMMENTER_REGION",
+      "key": "show_commenter_region",
+      "type": "boolean",
+      "default": false
+    },
+    "show_engagement_rate": {
+      "field": "SHOW_ENGAGEMENT_RATE",
+      "key": "show_engagement_rate",
+      "type": "boolean",
+      "default": false
+    },
+    "show_exact_battle_scores": {
+      "field": "SHOW_EXACT_BATTLE_SCORES",
+      "key": "show_exact_battle_scores",
+      "type": "boolean",
+      "default": false
+    },
+    "show_exact_counts": {
+      "field": "SHOW_EXACT_COUNTS",
+      "key": "show_exact_counts",
+      "type": "boolean",
+      "default": false
+    },
+    "show_exact_live_viewers": {
+      "field": "SHOW_EXACT_LIVE_VIEWERS",
+      "key": "show_exact_live_viewers",
+      "type": "boolean",
+      "default": false
+    },
+    "show_feed_buttons": {
+      "field": "SHOW_FEED_BUTTONS",
+      "key": "show_feed_buttons",
+      "type": "boolean",
+      "default": false
+    },
+    "show_follow_status": {
+      "field": "SHOW_FOLLOW_STATUS",
+      "key": "show_follow_status",
+      "type": "boolean",
+      "default": true
+    },
+    "show_inbox_filters": {
+      "field": "SHOW_INBOX_FILTERS",
+      "key": "show_inbox_filters",
+      "type": "boolean",
+      "default": false
+    },
+    "show_join_date": {
+      "field": "SHOW_JOIN_DATE",
+      "key": "show_join_date",
+      "type": "boolean",
+      "default": false
+    },
+    "show_message_times": {
+      "field": "SHOW_MESSAGE_TIMES",
+      "key": "show_message_times",
+      "type": "boolean",
+      "default": false
+    },
+    "show_poll_results": {
+      "field": "SHOW_POLL_RESULTS",
+      "key": "show_poll_results",
+      "type": "boolean",
+      "default": false
+    },
+    "show_profile_changes": {
+      "field": "SHOW_PROFILE_CHANGES",
+      "key": "show_profile_changes",
+      "type": "boolean",
+      "default": false
+    },
+    "show_seekbar": {
+      "field": "SHOW_SEEKBAR",
+      "key": "show_seekbar",
+      "type": "boolean",
+      "default": true
+    },
+    "show_seekbar_thumbnail": {
+      "field": "SHOW_SEEKBAR_THUMBNAIL",
+      "key": "show_seekbar_thumbnail",
+      "type": "boolean",
+      "default": true
+    },
+    "show_translation_settings": {
+      "field": "SHOW_TRANSLATION_SETTINGS",
+      "key": "show_translation_settings",
+      "type": "boolean",
+      "default": false
+    },
+    "simspoof": {
+      "field": "SIM_SPOOF",
+      "key": "simspoof",
+      "type": "boolean",
+      "default": false
+    },
+    "simspoof_feed_real": {
+      "field": "SIM_SPOOF_FEED_REAL",
+      "key": "simspoof_feed_real",
+      "type": "boolean",
+      "default": false
+    },
+    "simspoof_iso": {
+      "field": "SIM_SPOOF_ISO",
+      "key": "simspoof_iso",
+      "type": "string",
+      "default": "us"
+    },
+    "simspoof_mccmnc": {
+      "field": "SIMSPOOF_MCCMNC",
+      "key": "simspoof_mccmnc",
+      "type": "string",
+      "default": "310260"
+    },
+    "simspoof_op_name": {
+      "field": "SIMSPOOF_OP_NAME",
+      "key": "simspoof_op_name",
+      "type": "string",
+      "default": "T-Mobile"
+    },
+    "simspoof_time_zone": {
+      "field": "SIM_SPOOF_TIME_ZONE",
+      "key": "simspoof_time_zone",
+      "type": "string",
+      "default": ""
+    },
+    "skip_first_launch_setup": {
+      "field": "SKIP_FIRST_LAUNCH_SETUP",
+      "key": "skip_first_launch_setup",
+      "type": "boolean",
+      "default": true
+    },
+    "skip_passkey_sign_in": {
+      "field": "SKIP_PASSKEY_SIGN_IN",
+      "key": "skip_passkey_sign_in",
+      "type": "boolean",
+      "default": false
+    },
+    "skip_post_download_share_sheet": {
+      "field": "SKIP_POST_DOWNLOAD_SHARE_SHEET",
+      "key": "skip_post_download_share_sheet",
+      "type": "boolean",
+      "default": false
+    },
+    "skip_promo_lines": {
+      "field": "SKIP_PROMO_LINES",
+      "key": "skip_promo_lines",
+      "type": "boolean",
+      "default": false
+    },
+    "skip_promo_words": {
+      "field": "SKIP_PROMO_WORDS",
+      "key": "skip_promo_words",
+      "type": "string",
+      "default": ""
+    },
+    "skip_splash_ad": {
+      "field": "SKIP_SPLASH_AD",
+      "key": "skip_splash_ad",
+      "type": "boolean",
+      "default": false
+    },
+    "skip_update_checks": {
+      "field": "SKIP_UPDATE_CHECKS",
+      "key": "skip_update_checks",
+      "type": "boolean",
+      "default": false
+    },
+    "smaller_text_size_level": {
+      "field": "SMALLER_TEXT_SIZE_LEVEL",
+      "key": "smaller_text_size_level",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 3
+    },
+    "smaller_text_sizes": {
+      "field": "SMALLER_TEXT_SIZES",
+      "key": "smaller_text_sizes",
+      "type": "boolean",
+      "default": false
+    },
+    "sort_pinned_with_rest": {
+      "field": "SORT_PINNED_WITH_REST",
+      "key": "sort_pinned_with_rest",
+      "type": "boolean",
+      "default": false
+    },
+    "sound_grid_sort": {
+      "field": "SOUND_GRID_SORT",
+      "key": "sound_grid_sort",
+      "type": "string",
+      "default": "off"
+    },
+    "sound_page_block_button": {
+      "field": "SOUND_PAGE_BLOCK_BUTTON",
+      "key": "sound_page_block_button",
+      "type": "boolean",
+      "default": true
+    },
+    "sound_seekbar": {
+      "field": "SOUND_SEEKBAR",
+      "key": "sound_seekbar",
+      "type": "boolean",
+      "default": false
+    },
+    "spin_music_disc": {
+      "field": "SPIN_MUSIC_DISC",
+      "key": "spin_music_disc",
+      "type": "boolean",
+      "default": false
+    },
+    "split_activity_list": {
+      "field": "SPLIT_ACTIVITY_LIST",
+      "key": "split_activity_list",
+      "type": "boolean",
+      "default": false
+    },
+    "start_page": {
+      "field": "START_PAGE",
+      "key": "start_page",
+      "type": "string",
+      "default": "tiktok"
+    },
+    "startup_message": {
+      "field": "STARTUP_MESSAGE",
+      "key": "startup_message",
+      "type": "boolean",
+      "default": false
+    },
+    "startup_message_dismissible": {
+      "field": "STARTUP_MESSAGE_DISMISSIBLE",
+      "key": "startup_message_dismissible",
+      "type": "boolean",
+      "default": true
+    },
+    "startup_message_text": {
+      "field": "STARTUP_MESSAGE_TEXT",
+      "key": "startup_message_text",
+      "type": "string",
+      "default": ""
+    },
+    "startup_message_title": {
+      "field": "STARTUP_MESSAGE_TITLE",
+      "key": "startup_message_title",
+      "type": "string",
+      "default": ""
+    },
+    "status_bar_shade": {
+      "field": "STATUS_BAR_SHADE",
+      "key": "status_bar_shade",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_ai_profiling": {
+      "field": "STOP_AI_PROFILING",
+      "key": "stop_ai_profiling",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_benchmark_runs": {
+      "field": "STOP_BENCHMARK_RUNS",
+      "key": "stop_benchmark_runs",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_live_auto_enter": {
+      "field": "STOP_LIVE_AUTO_ENTER",
+      "key": "stop_live_auto_enter",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_music_disc_spin": {
+      "field": "STOP_MUSIC_DISC_SPIN",
+      "key": "stop_music_disc_spin",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_search_autoplay": {
+      "field": "STOP_SEARCH_AUTOPLAY",
+      "key": "stop_search_autoplay",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_search_history": {
+      "field": "STOP_SEARCH_HISTORY",
+      "key": "stop_search_history",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_video_looping": {
+      "field": "STOP_VIDEO_LOOPING",
+      "key": "stop_video_looping",
+      "type": "boolean",
+      "default": false
+    },
+    "stop_watch_history": {
+      "field": "STOP_WATCH_HISTORY",
+      "key": "stop_watch_history",
+      "type": "boolean",
+      "default": false
+    },
+    "store_identity": {
+      "field": "STORE_IDENTITY",
+      "key": "store_identity",
+      "type": "boolean",
+      "default": true
+    },
+    "store_identity_installer": {
+      "field": "STORE_IDENTITY_INSTALLER",
+      "key": "store_identity_installer",
+      "type": "string",
+      "default": "com.android.vending"
+    },
+    "story_loop": {
+      "field": "STORY_LOOP",
+      "key": "story_loop",
+      "type": "boolean",
+      "default": false
+    },
+    "story_photo_hold": {
+      "field": "STORY_PHOTO_HOLD",
+      "key": "story_photo_hold",
+      "type": "boolean",
+      "default": false
+    },
+    "story_seekbar": {
+      "field": "STORY_SEEKBAR",
+      "key": "story_seekbar",
+      "type": "boolean",
+      "default": false
+    },
+    "stretch_video_to_screen": {
+      "field": "STRETCH_VIDEO_TO_SCREEN",
+      "key": "stretch_video_to_screen",
+      "type": "boolean",
+      "default": false
+    },
+    "subtitle_language": {
+      "field": "SUBTITLE_LANGUAGE",
+      "key": "subtitle_language",
+      "type": "string",
+      "default": "original"
+    },
+    "swipe_left_action": {
+      "field": "SWIPE_LEFT_ACTION",
+      "key": "swipe_left_action",
+      "type": "string",
+      "default": "default"
+    },
+    "swipe_levels": {
+      "field": "SWIPE_LEVELS",
+      "key": "swipe_levels",
+      "type": "boolean",
+      "default": false
+    },
+    "swipe_levels_left": {
+      "field": "SWIPE_LEVELS_LEFT",
+      "key": "swipe_levels_left",
+      "type": "string",
+      "default": "brightness"
+    },
+    "swipe_levels_right": {
+      "field": "SWIPE_LEVELS_RIGHT",
+      "key": "swipe_levels_right",
+      "type": "string",
+      "default": "volume"
+    },
+    "swipe_levels_strip_percent": {
+      "field": "SWIPE_LEVELS_STRIP_PERCENT",
+      "key": "swipe_levels_strip_percent",
+      "type": "integer",
+      "default": 15,
+      "minimum": 5,
+      "maximum": 30
+    },
+    "system_emoji": {
+      "field": "SYSTEM_EMOJI",
+      "key": "system_emoji",
+      "type": "boolean",
+      "default": false
+    },
+    "system_font": {
+      "field": "SYSTEM_FONT",
+      "key": "system_font",
+      "type": "boolean",
+      "default": false
+    },
+    "tap_shows_cleared_controls": {
+      "field": "TAP_SHOWS_CLEARED_CONTROLS",
+      "key": "tap_shows_cleared_controls",
+      "type": "boolean",
+      "default": false
+    },
+    "tap_to_remove": {
+      "field": "TAP_TO_REMOVE",
+      "key": "tap_to_remove",
+      "type": "boolean",
+      "default": false
+    },
+    "touch_target_scale": {
+      "field": "TOUCH_TARGET_SCALE",
+      "key": "touch_target_scale",
+      "type": "string",
+      "default": "1"
+    },
+    "translate_into": {
+      "field": "TRANSLATE_INTO",
+      "key": "translate_into",
+      "type": "string",
+      "default": ""
+    },
+    "turn_off_chat_double_tap": {
+      "field": "TURN_OFF_CHAT_DOUBLE_TAP",
+      "key": "turn_off_chat_double_tap",
+      "type": "boolean",
+      "default": false
+    },
+    "turn_off_chat_swipe_reply": {
+      "field": "TURN_OFF_CHAT_SWIPE_REPLY",
+      "key": "turn_off_chat_swipe_reply",
+      "type": "boolean",
+      "default": false
+    },
+    "turn_off_haptics": {
+      "field": "TURN_OFF_HAPTICS",
+      "key": "turn_off_haptics",
+      "type": "boolean",
+      "default": false
+    },
+    "turn_off_push_notifications": {
+      "field": "TURN_OFF_PUSH_NOTIFICATIONS",
+      "key": "turn_off_push_notifications",
+      "type": "boolean",
+      "default": false
+    },
+    "turn_off_screen_transitions": {
+      "field": "TURN_OFF_SCREEN_TRANSITIONS",
+      "key": "turn_off_screen_transitions",
+      "type": "boolean",
+      "default": false
+    },
+    "ui_scale_percent": {
+      "field": "UI_SCALE_PERCENT",
+      "key": "ui_scale_percent",
+      "type": "integer",
+      "default": 100,
+      "minimum": 50,
+      "maximum": 100
+    },
+    "uncap_refresh_rate": {
+      "field": "UNCAP_REFRESH_RATE",
+      "key": "uncap_refresh_rate",
+      "type": "boolean",
+      "default": false
+    },
+    "video_button_size": {
+      "field": "VIDEO_BUTTON_SIZE",
+      "key": "video_button_size",
+      "type": "string",
+      "default": "48"
+    },
+    "video_buttons_over_rail": {
+      "field": "VIDEO_BUTTONS_OVER_RAIL",
+      "key": "video_buttons_over_rail",
+      "type": "boolean",
+      "default": false
+    },
+    "video_length_on_grid": {
+      "field": "VIDEO_LENGTH_ON_GRID",
+      "key": "video_length_on_grid",
+      "type": "boolean",
+      "default": false
+    },
+    "ytdlnis_background": {
+      "field": "YTDLNIS_BACKGROUND",
+      "key": "ytdlnis_background",
+      "type": "boolean",
+      "default": false
+    },
+    "ytdlnis_download_type": {
+      "field": "YTDLNIS_DOWNLOAD_TYPE",
+      "key": "ytdlnis_download_type",
+      "type": "string",
+      "default": "video"
+    }
+  }
+}

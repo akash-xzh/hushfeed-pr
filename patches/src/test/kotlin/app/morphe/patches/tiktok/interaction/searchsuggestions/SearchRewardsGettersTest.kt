@@ -1,0 +1,216 @@
+package app.morphe.patches.tiktok.interaction.searchsuggestions
+
+import app.morphe.Fixtures
+import app.morphe.util.addInstructionsWithLabels
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import app.morphe.util.getReference
+import app.morphe.util.namedRegisters
+import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.iface.Method
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
+import com.android.tools.smali.dexlib2.iface.reference.StringReference
+import com.android.tools.smali.dexlib2.iface.reference.TypeReference
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+private const val COIN_TASK = "Lcom/ss/android/ugc/aweme/search/df/api/cointask/core/spi/dummyspi/"
+private const val INCENTIVE_TASK = "Lcom/ss/android/ugc/aweme/search/df/api/incentivetask/spi/dummyspi/"
+private const val COIN_CONTROL = "${COIN_TASK}DummySearchCoinTaskControlService;"
+
+/** Issue #21: every search rewards service getter on every declared host, and the hook put in each. */
+class SearchRewardsGettersTest {
+    @Test
+    fun `each declared host has one getter for each of the eight search rewards services`() {
+        val expected = setOf(
+            "${COIN_TASK}DummySearchBlankPageCoinTaskService;",
+            "${COIN_TASK}DummySearchCoinHintService;",
+            "${COIN_TASK}DummySearchCoinTaskBridgeMethodService;",
+            COIN_CONTROL,
+            "${COIN_TASK}DummySearchCoinViewModelBridgeService;",
+            "${COIN_TASK}DummySearchEntranceGuideTaskService;",
+            "${INCENTIVE_TASK}DummySearchIncentiveMultiDayService;",
+            "${INCENTIVE_TASK}DummySearchIncentiveTaskBridgeService;",
+        )
+        assertTrue(expected.containsAll(SEARCH_REWARDS_VIEW_PLACEHOLDERS))
+        Fixtures.forEachDeclared { apk ->
+            val version = Fixtures.versionOf(apk)
+            val container = Fixtures.dexContainer(apk, Opcodes.getDefault())
+            val getters = container.dexEntryNames.asSequence()
+                .flatMap { container.getEntry(it)!!.dexFile.classes.asSequence() }
+                .flatMap { it.methods.asSequence() }
+                .mapNotNull { method -> searchRewardsGetter(method)?.let { method to it } }
+                .toList()
+
+            assertEquals("$version placeholders", expected, getters.map { it.second.placeholder }.toSet())
+            assertEquals("$version: one getter each ${getters.map { it.first.definingClass }}",
+                expected.size, getters.size)
+            for ((method, getter) in getters) {
+                // The patch finds them through the classes that load a feature name.
+                assertTrue("$version ${method.definingClass}: loads no feature name",
+                    method.implementation!!.instructions.any {
+                        it.getReference<StringReference>()?.string in SEARCH_REWARDS_FEATURES
+                    })
+                assertHooked(method, getter)
+            }
+        }
+    }
+
+    @Test
+    fun `a getter shaped like the hosts' is found at its feature check`() {
+        val getter = searchRewardsGetter(getter("coin", COIN_CONTROL))
+        assertEquals(COIN_CONTROL, getter!!.placeholder)
+        assertEquals(5, getter.loadedResultIndex)
+        assertHooked(getter("coin", COIN_CONTROL), getter)
+    }
+
+    @Test
+    fun `other features, other placeholders and getters that never ask for the service are left alone`() {
+        assertNull("another feature's check", searchRewardsGetter(getter("ecommerce", COIN_CONTROL)))
+        assertNull("not a search rewards placeholder",
+            searchRewardsGetter(getter("coin", "Lcom/ss/android/ugc/aweme/dummyspi/DummySearchAdapter;")))
+        assertNull("never asks pluggableSpi", searchRewardsGetter(getter("coin", COIN_CONTROL, asksForService = false)))
+    }
+
+    /** #522: the points bubble by the search icon comes from a service the getters above never reach. */
+    @Test
+    fun `every coin hot word service method answers like TikTok's switched-off copy while rewards are hidden`() {
+        val emptyPopup = "Lcom/ss/android/ugc/aweme/search/service/EmptyCoinIncentivePopupTask;"
+        Fixtures.forEachDeclared { apk ->
+            val version = Fixtures.versionOf(apk)
+            val container = Fixtures.dexContainer(apk, Opcodes.getDefault())
+            val classes = container.dexEntryNames.asSequence()
+                .flatMap { container.getEntry(it)!!.dexFile.classes.asSequence() }
+                .filter { it.type in setOf(COIN_HOT_WORD_SERVICE, COIN_HOT_WORD_IMPL, COIN_HOT_WORD_OFF) }
+                .associateBy { it.type }
+            val declared = classes.getValue(COIN_HOT_WORD_SERVICE).methods.map { it.signature() }.toSet()
+            val real = classes.getValue(COIN_HOT_WORD_IMPL).methods.filter { it.name != "<init>" }
+            val off = classes.getValue(COIN_HOT_WORD_OFF).methods.filter { it.name != "<init>" }
+            assertTrue("$version: the interface declares the service", declared.isNotEmpty())
+            assertEquals("$version: the real service", declared, real.map { it.signature() }.toSet())
+            assertEquals("$version: the switched-off copy", declared, off.map { it.signature() }.toSet())
+            // The copy reads nothing and builds nothing but TikTok's empty popup.
+            for (method in off) {
+                for (instruction in method.implementation!!.instructions) {
+                    assertNull("$version ${method.name} reads a field", instruction.getReference<FieldReference>())
+                    instruction.getReference<TypeReference>()?.let {
+                        assertEquals("$version ${method.name}", emptyPopup, it.type)
+                    }
+                    instruction.getReference<MethodReference>()?.let {
+                        assertEquals("$version ${method.name}", "$emptyPopup-><init>", "${it.definingClass}->${it.name}")
+                    }
+                }
+            }
+            for (native in real) assertAnswersLikeTheCopy(version, native)
+        }
+    }
+
+    private fun assertAnswersLikeTheCopy(version: String, native: Method) {
+        val mutable = MutableMethod(native)
+        val before = mutable.implementation!!.instructions.toList()
+        mutable.answerLikeTheSwitchedOffHotWordService()
+        val after = mutable.implementation!!.instructions.toList()
+        val where = "$version ${native.name}"
+        val ask = after[0].getReference<MethodReference>()!!
+        assertEquals(where, "Lapp/morphe/extension/tiktok/search/SearchSuggestions;->shouldHideRewards",
+            "${ask.definingClass}->${ask.name}")
+        assertEquals(where, listOf(Opcode.MOVE_RESULT, Opcode.IF_EQZ, Opcode.NEW_INSTANCE, Opcode.INVOKE_DIRECT, Opcode.INVOKE_VIRTUAL),
+            after.subList(1, 6).map { it.opcode })
+        assertEquals(where, COIN_HOT_WORD_OFF, after[3].getReference<TypeReference>()!!.type)
+        val call = after[5]
+        val reference = call.getReference<MethodReference>()!!
+        assertEquals(where, COIN_HOT_WORD_OFF, reference.definingClass)
+        assertEquals(where, native.signature(), reference.signature())
+        // The copy is v0, then the method's own arguments in order.
+        val firstParameter = native.implementation!!.registerCount - native.parameterTypes.size
+        assertEquals(where, listOf(0) + native.parameterTypes.indices.map { firstParameter + it }, call.namedRegisters())
+        val returns = after.subList(6, after.size - before.size - 1).map { it.opcode }
+        assertEquals(where, when {
+            native.returnType == "V" -> listOf(Opcode.RETURN_VOID)
+            native.returnType.startsWith("L") -> listOf(Opcode.MOVE_RESULT_OBJECT, Opcode.RETURN_OBJECT)
+            else -> listOf(Opcode.MOVE_RESULT, Opcode.RETURN)
+        }, returns)
+        assertEquals(where, Opcode.NOP, after[after.size - before.size - 1].opcode)
+        before.forEachIndexed { index, instruction -> assertSame(where, instruction, after[after.size - before.size + index]) }
+    }
+
+    private fun Method.signature() = "$name(${parameterTypes.joinToString("")})$returnType"
+    private fun MethodReference.signature() = "$name(${parameterTypes.joinToString("")})$returnType"
+
+    /** The answer goes through the switch, and TikTok's own branch on it follows unchanged. */
+    private fun assertHooked(native: Method, getter: SearchRewardsGetter) {
+        val mutable = MutableMethod(native)
+        val before = mutable.implementation!!.instructions.toList()
+        val loaded = (before[getter.loadedResultIndex] as OneRegisterInstruction).registerA
+        assertEquals("${native.definingClass}: the answer is branched on next",
+            Opcode.IF_NEZ, before[getter.loadedResultIndex + 1].opcode)
+        assertEquals(loaded, (before[getter.loadedResultIndex + 1] as OneRegisterInstruction).registerA)
+        assertEquals("${native.definingClass}: not loaded builds the placeholder",
+            getter.placeholder, before[getter.loadedResultIndex + 2].getReference<TypeReference>()?.type)
+
+        mutable.askBeforeLoadingSearchRewards(getter)
+        val after = mutable.implementation!!.instructions.toList()
+        val ask = after[getter.loadedResultIndex + 1]
+        assertEquals(Opcode.INVOKE_STATIC_RANGE, ask.opcode)
+        assertEquals(loaded, (ask as RegisterRangeInstruction).startRegister)
+        assertEquals(1, ask.registerCount)
+        val reference = ask.getReference<MethodReference>()!!
+        assertEquals("Lapp/morphe/extension/tiktok/search/SearchSuggestions;->filterRewardsLoaded(Z)Z",
+            "${reference.definingClass}->${reference.name}(${reference.parameterTypes.joinToString("")})${reference.returnType}")
+        assertEquals(Opcode.MOVE_RESULT, after[getter.loadedResultIndex + 2].opcode)
+        assertEquals(loaded, (after[getter.loadedResultIndex + 2] as OneRegisterInstruction).registerA)
+        assertEquals(before.size + 2, after.size)
+        before.forEachIndexed { index, instruction ->
+            assertSame(instruction, after[if (index <= getter.loadedResultIndex) index else index + 2])
+        }
+    }
+
+    private fun getter(feature: String, placeholder: String, asksForService: Boolean = true): Method {
+        val mutable = MutableMethod(ImmutableMethod(
+            "LX/0ATg;", "invoke", emptyList(), "Ljava/lang/Object;", AccessFlags.PUBLIC.value or AccessFlags.FINAL.value,
+            null, null, ImmutableMethodImplementation(9, emptyList(), null, null),
+        ))
+        val real = if (asksForService) {
+            """
+                const-class v2, Lcom/ss/android/ugc/aweme/search/df/api/cointask/core/spi/ISearchCoinTaskControlService;
+                const/4 v3, 0x0
+                const/4 v4, 0x0
+                const/4 v5, 0x0
+                const/16 v6, 0xe
+                const/4 v7, 0x0
+                invoke-static/range {v2 .. v7}, Lcom/ss/android/ugc/aweme/framework/services/PluggableExtentionKt;->pluggableSpi${'$'}default(Ljava/lang/Class;ZZZILjava/lang/Object;)Ljava/lang/Object;
+                move-result-object v0
+            """
+        } else {
+            "const/4 v0, 0x0"
+        }
+        mutable.addInstructionsWithLabels(
+            0,
+            """
+                sget-object v2, LX/07yx;->LIZIZ:LX/07yx;
+                const-string v1, "$feature"
+                const/4 v3, 0x0
+                const/4 v0, 0x0
+                invoke-virtual {v2, v0, v1, v3}, LX/07yx;->LJFF(Landroidx/fragment/app/Fragment;Ljava/lang/String;Z)Z
+                move-result v0
+                if-nez v0, :real
+                new-instance v0, $placeholder
+                invoke-direct {v0}, $placeholder-><init>()V
+                return-object v0
+                :real
+                $real
+                return-object v0
+            """,
+        )
+        return mutable
+    }
+}

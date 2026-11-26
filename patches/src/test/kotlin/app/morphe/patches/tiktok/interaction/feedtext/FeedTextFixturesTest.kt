@@ -1,0 +1,150 @@
+package app.morphe.patches.tiktok.interaction.feedtext
+
+import app.morphe.Fixtures
+import app.morphe.ResourceIds
+import app.morphe.patcher.patch.PatchException
+import app.morphe.patcher.util.proxy.mutableTypes.MutableClass
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import app.morphe.util.ControlFlow
+import app.morphe.util.RegisterLiveness
+import app.morphe.util.addInstruction
+import app.morphe.util.cloneMutable
+import app.morphe.util.getReference
+import app.morphe.util.namedRegisters
+import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.iface.ClassDef
+import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+/** Actual vendor binders, fields, cardinality and branch/register safety. Native taps need devices. */
+class FeedTextFixturesTest {
+    @Test
+    fun `all declared hosts resolve native owners and safely size before line breaking`() {
+        val expected = mapOf(
+            "47.9.3" to Triple("LX/08j5;", "LX/07rk;", 0x7f0a20e8 to 0x7f0a8a72),
+        )
+        // The instruction after each of the factory's two calls to the builder's font input. 47.7.3
+        // had them at 86 and 276. 47.9.3's LJZL calls 0A23.LJI at 83 and 273.
+        val sizeInputIndexes = mapOf("47.9.3" to listOf(84, 274))
+        assertEquals(Fixtures.declaredVersions().toSet(), expected.keys)
+        Fixtures.forEachDeclared { apk ->
+            val version = Fixtures.versionOf(apk)
+            val container = Fixtures.dexContainer(apk, Opcodes.getDefault())
+            val classes = container.dexEntryNames.flatMap { container.getEntry(it)!!.dexFile.classes }
+            val byType = classes.associateBy { it.type }
+            val native = resolveFeedText { byType[it] }
+            val (controller, builder, ids) = expected.getValue(version)
+            assertEquals(controller, native.controller.type)
+            assertEquals(builder, native.builder.type)
+            val resources = ResourceIds.read(apk).getValue("com.zhiliaoapp.musically")
+            assertEquals(listOf(ids.first), resources.getValue("desc"))
+            assertEquals(listOf(ids.second), resources.getValue("title"))
+            assertEquals(POST_TIME_IDS.toList(), resources.getValue("tv_post_time"))
+            assertEquals(2, native.sizeInputs.size)
+            assertEquals(listOf(2, 10), native.sizeInputs.map { it.builderRegister })
+            assertEquals(sizeInputIndexes.getValue(version), native.sizeInputs.map { it.index })
+            assertEquals(30, native.layoutFactory.implementation!!.registerCount)
+            assertEquals("LIZJ", native.builderPaint.name)
+            assertEquals("LJIIJ", native.builderSize.name)
+            assertEquals("LJFF", native.builderCache.name)
+            assertEquals(6, native.layoutCaches.size)
+            assertEquals("LJJLIIIJLJLI", native.refreshOriginal.name)
+            assertEquals("LJJLIIJ", native.refreshTranslated.name)
+            // The author binder's name moves between builds (47.7.3: lr, 47.8.3: vr, 47.9.1: Dr, 47.9.2: Jr).
+            assertEquals("Sr", native.authorBind.name)
+            assertEquals("LLLIIIIL", native.authorView.name)
+            assertTrue(native.authorLoader.implementation!!.instructions.any {
+                it is NarrowLiteralInstruction && it.narrowLiteral == ids.second
+            })
+            // The post date beside the name: the same owner loads it, as the same kind of text view.
+            assertEquals("LLLIIIL", native.dateView.name)
+            assertEquals(AUTHOR, native.dateView.definingClass)
+            assertEquals(native.authorView.type, native.dateView.type)
+            val loaderCode = native.authorLoader.implementation!!.instructions.toList()
+            assertTrue("the date is stored before the name, where the view-created hook reads both",
+                loaderCode.indexOfFirst { it.getReference<FieldReference>()?.toString() == native.dateView.toString() } <
+                    native.authorStore)
+            native.sizeInputs.forEach { input ->
+                assertFalse(input.ownerLocal in RegisterLiveness.of(native.layoutFactory).liveInto(input.index))
+                assertTrue(input.ownerLocal < 16)
+            }
+            val mutable = MutableMethod(native.layoutFactory)
+            val before = mutable.implementation!!.instructions.toList()
+            val branches = before.filterIsInstance<OffsetInstruction>().map { branch ->
+                val source = before.single { it === branch }
+                branch to before.single { it.location.codeAddress == source.location.codeAddress + branch.codeOffset }
+            }
+            mutable.markDescriptionBuilders(native.sizeInputs)
+            val after = mutable.implementation!!.instructions.toList()
+            assertEquals(before.size + 4, after.size)
+            assertEquals(30, mutable.implementation!!.registerCount)
+            assertEquals(2, after.count { it.getReference<MethodReference>()?.name == "descriptionBuilder" })
+            branches.forEach { (branch, target) ->
+                val source = after.single { it === branch }
+                assertSame(target, after.single { it.location.codeAddress == source.location.codeAddress + branch.codeOffset })
+            }
+            val dispatch = MutableMethod(native.layoutDispatch)
+            dispatch.bypassDescriptionCache(native.bypass)
+            val flow = ControlFlow.of(dispatch)
+            val fresh = flow.instructions.indexOfFirst { it.getReference<MethodReference>()?.name == "freshDescription" }
+            val branch = fresh + 2
+            assertEquals(Opcode.IF_NEZ, flow.instructions[branch].opcode)
+            // v2 holds the controller at entry (move-object/from16 v2, p0); v0 is still the caption there.
+            assertEquals(2, (flow.instructions[fresh] as RegisterRangeInstruction).startRegister)
+            // 47.9.3 shuffles the fallback's arguments down into v0..v6 with plain moves before the
+            // uncached call. The bypass lands on the first move, where the native empty-caption check lands.
+            val shuffle = flow.normal[branch].single { it != branch + 1 }
+            assertTrue(flow.instructions.indices.any {
+                it != branch && flow.instructions[it].opcode == Opcode.IF_EQZ && shuffle in flow.normal[it]
+            })
+            val moves = setOf(Opcode.MOVE, Opcode.MOVE_OBJECT)
+            val fallback = (shuffle until flow.instructions.size).first { flow.instructions[it].opcode !in moves }
+            assertEquals(7, fallback - shuffle)
+            assertEquals(native.layoutFactory.toString(),
+                flow.instructions[fallback].getReference<MethodReference>()?.toString())
+            assertEquals(listOf(0, 1, 2, 3, 4, 5, 6), flow.instructions[fallback].namedRegisters())
+            val author = MutableMethod(native.authorBind)
+            val returns = author.implementation!!.instructions.count { it.opcode == Opcode.RETURN_VOID }
+            author.bindAuthorSize()
+            val authorCode = author.implementation!!.instructions.toList()
+            assertEquals("authorBinding", authorCode.first().getReference<MethodReference>()?.name)
+            val enter = authorCode.first() as RegisterRangeInstruction
+            assertEquals(2, enter.registerCount)
+            assertTrue(enter.startRegister > 15)
+            assertEquals(returns, authorCode.count { it.getReference<MethodReference>()?.name == "authorOwnerBound" })
+            authorCode.indices.filter { authorCode[it].opcode == Opcode.RETURN_VOID }.forEach {
+                assertEquals("authorOwnerBound", authorCode[it - 1].getReference<MethodReference>()?.name)
+            }
+            // A changed owner or extra font input must fail before any patch mutation.
+            assertThrows(PatchException::class.java) { resolveFeedText { if (it == DESCRIPTION) null else byType[it] } }
+            val duplicate = MutableClass(native.controller)
+            duplicate.methods.add(native.layoutFactory.cloneMutable(name = "anotherDescriptionFactory"))
+            rejects(byType, duplicate)
+            val thirdInput = MutableClass(native.controller)
+            val altered = thirdInput.methods.single { it.name == native.layoutFactory.name }
+            val firstInput = native.sizeInputs.first().index
+            val font = native.layoutFactory.implementation!!.instructions.elementAt(firstInput - 1).getReference<MethodReference>()!!
+            altered.addInstruction(firstInput, "invoke-virtual { v2, v3 }, $font")
+            rejects(byType, thirdInput)
+            val missingFont = MutableClass(native.builder)
+            missingFont.methods.removeAll { it.name == font.name }
+            rejects(byType, missingFont)
+        }
+    }
+
+    private fun rejects(original: Map<String, ClassDef>, changed: ClassDef) {
+        assertThrows(PatchException::class.java) {
+            resolveFeedText { if (it == changed.type) changed else original[it] }
+        }
+    }
+}

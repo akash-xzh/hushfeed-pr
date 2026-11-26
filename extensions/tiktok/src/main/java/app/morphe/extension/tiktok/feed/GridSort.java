@@ -1,0 +1,1674 @@
+/*
+ * Copyright 2026 Hushfeed contributors
+ * https://github.com/SysAdminDoc/hushfeed
+ */
+package app.morphe.extension.tiktok.feed;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.ss.android.ugc.aweme.feed.model.Aweme;
+import com.ss.android.ugc.aweme.feed.model.AwemeStatistics;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import app.morphe.extension.shared.Logger;
+import app.morphe.extension.shared.Utils;
+import app.morphe.extension.shared.diagnostics.HookStatus;
+import app.morphe.extension.shared.settings.Setting;
+import app.morphe.extension.shared.settings.StringSetting;
+import app.morphe.extension.tiktok.blockauthor.Reflect;
+import app.morphe.extension.tiktok.download.GridPicker;
+import app.morphe.extension.tiktok.privacy.QuickRemove;
+import app.morphe.extension.tiktok.settings.L10n;
+import app.morphe.extension.tiktok.settings.Settings;
+import app.morphe.extension.tiktok.settings.preference.SettingsUi;
+import app.morphe.extension.tiktok.wellbeing.SessionLockOverlay;
+
+/**
+ * Sorts the videos a profile or Liked grid has loaded (#180). The patch hands this the list
+ * TikTok is about to give the grid's adapter, and the adapter keeps the list it gets back. TikTok
+ * hands over its whole list again with each page, so a new page is sorted in with the rest and
+ * nothing repeats.
+ *
+ * <p>TikTok's video page plays that same list, so as a cell opens its video the list gets the
+ * order the grid shows, and swiping goes on in the sorted order ({@link #beforeOpen}). From then
+ * on TikTok's own order is rebuilt from the copy kept before that write, with each later video
+ * added where TikTok put it, which is how Original order, switching the setting off and pausing
+ * Hushfeed still bring TikTok's order back.
+ *
+ * <p>Pinned videos keep their place at the front in the order TikTok has them. A video with no
+ * value for the chosen order (no length, no counts, no date) goes after the ones that have one,
+ * in the order TikTok had them, and ties between equal values keep TikTok's order too, so a
+ * sort gives the same grid every time.
+ *
+ * <p>While an order is chosen, a grid on screen asks for its next page as each one comes in,
+ * the way scrolling to its end would, until TikTok has no more, a page adds nothing, the grid
+ * holds {@link #LOAD_CAP} videos, or its hold runs out. That way the order covers the profile rather than the first
+ * screen of it. A chip over the grid's top corner names the order and changes it in place.
+ *
+ * <p>That chain used to play out in front of the reader, a fresh list or a pull to refresh showing
+ * TikTok's first page and then reshuffling page by page, which read as a slow sort and as the order
+ * being lost. A grid now stays out of sight while the chain runs and comes back once, sorted
+ * ({@link Hold}).
+ *
+ * <p>The Liked and Favorites tabs each have their own order, which follows the profile grids until
+ * one is chosen for it there or from its chip ({@link #orderFor}).
+ *
+ * <p>A sound's page draws its videos through TikTok's detail page adapter, which hashtag and
+ * effect pages share. The patch hands over the label each one is built with, and only a sound's
+ * grid is sorted, by its own setting ({@link #soundGrid}). Its video page plays the page model's
+ * list rather than the one the grid got, so that's the list a cell's click puts in order.
+ */
+@SuppressWarnings("unused")
+public final class GridSort {
+    static final String OFF = "off";
+    static final String NEWEST = "newest";
+    static final String OLDEST = "oldest";
+    static final String LONGEST = "longest";
+    static final String SHORTEST = "shortest";
+    static final String MOST_VIEWED = "most_viewed";
+    static final String LEAST_VIEWED = "least_viewed";
+    static final String MOST_LIKED = "most_liked";
+    static final String LEAST_LIKED = "least_liked";
+
+    /** Every choice, as the settings row and the grid's chip list them. */
+    public static final String[] ORDERS = {
+            OFF, NEWEST, OLDEST, LONGEST, SHORTEST, MOST_VIEWED, LEAST_VIEWED, MOST_LIKED, LEAST_LIKED,
+    };
+    /** The label of each of {@link #ORDERS}, in English: the lookup keys of the l10n tables. */
+    public static final String[] LABELS = {
+            "Original order", "Newest first", "Oldest first", "Longest first", "Shortest first",
+            "Most viewed first", "Least viewed first", "Most liked first", "Least liked first",
+    };
+    /**
+     * TikTok's number for a grid's tab, as its adapter is built (#180): 0 posts, 1 Liked, 4 and
+     * 25 Favorites, 14 private. Both of TikTok's profile tab fragments use these numbers.
+     */
+    static final int TAB_POSTS = 0;
+    static final int TAB_LIKED = 1;
+    static final int TAB_FAVORITES = 4;
+    static final int TAB_PRIVATE = 14;
+    static final int TAB_FAVORITE_VIDEOS = 25;
+    /**
+     * The numbers kept for a detail page's grid, which TikTok builds with an event label in place
+     * of a tab number: a sound's page, and any other (hashtags, effects), which keeps TikTok's order.
+     */
+    static final int TAB_SOUND = -100;
+    static final int TAB_DETAIL_OTHER = -101;
+    /**
+     * The number kept for a Favorites collection folder's grid, which has its own adapter. Its list
+     * holds rows that wrap the videos, behind a header row or two that stay in front.
+     */
+    static final int TAB_COLLECTION = -102;
+    /** The event label TikTok builds a sound page's grid with. */
+    static final String SOUND_LABEL = "single_song";
+
+    /**
+     * The most videos a sorted grid loads by itself. Past this the reader's scrolling loads more.
+     * 300 left a long profile's oldest and longest videos out of the order (#180). The settings
+     * note formats this in, so it can't drift from the cap again.
+     */
+    public static final int LOAD_CAP = 1000;
+    /** The pause before asking for the next page, so a long profile isn't fetched in one burst. */
+    static final long NEXT_PAGE_DELAY_MS = 100;
+    /** How many videos a page asks for. The server answers 50 with about 30, up from about 16 for 18. */
+    static final int PAGE_SIZE = 50;
+    /** The source TikTok's footer names when it asks for a page. */
+    static final String PAGE_SOURCE = "load_more_bind_footer";
+    /**
+     * The longest a grid stays out of sight, so a slow or dead request can't leave it hidden. 300
+     * videos took 18 s on Login2. The S22 on Wi-Fi got about 33 a page and a page a second, so 20 s
+     * ran out at 618 and the cap was never reached (#180). A later run averaged 1.14 s a page, so 35 s
+     * ran out at 981, a page short; 45 s leaves room for a slower page. A grid still loading when this
+     * runs out, or whose hold is tapped, stops loading by itself ({@link #TIMED_OUT}), so it shows
+     * its order once instead of reshuffling page by page.
+     */
+    static final long HOLD_LIMIT_MS = 45_000;
+    /**
+     * How long a hold waits on one page. The Liked tab keeps its listener past its last video and
+     * just never answers the ask, so this is what ends that hold. Pages came within 3 s on Login2.
+     */
+    static final long HOLD_QUIET_MS = 5_000;
+    /** A hold shows nothing this early, so a profile with few videos doesn't flash a spinner. */
+    static final long HOLD_SPINNER_DELAY_MS = 250;
+
+    static final String CHIP_TAG = "hushfeed_grid_sort_chip";
+    static final String HOLD_TAG = "hushfeed_grid_sort_hold";
+
+    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+
+    /** Per adapter, TikTok's own list as last handed over, so a new order applies without a reload. */
+    private static final Map<Object, List<?>> ORIGINALS = new WeakHashMap<>();
+    /** Per adapter, how many videos it held after its last list, to spot a page that added nothing. */
+    private static final Map<Object, Integer> LOADED = new WeakHashMap<>();
+    /** Adapters whose next page was asked for and hasn't come in. */
+    private static final Map<Object, Boolean> ASKED = new WeakHashMap<>();
+    /** Per adapter, the list object TikTok last handed over, which its video page plays. */
+    private static final Map<Object, List<?>> HANDED = new WeakHashMap<>();
+    /** Adapters whose handed list was given the grid's order, so it no longer holds TikTok's. */
+    private static final Map<Object, Boolean> REWRITTEN = new WeakHashMap<>();
+    /** Per adapter, TikTok's number for the tab it draws, where the patch passed one on. */
+    private static final Map<Object, Integer> TABS = new WeakHashMap<>();
+    /** Per grid fragment class, the field that holds its adapter. */
+    private static final Map<Class<?>, Field> ADAPTER_FIELDS = new WeakHashMap<>();
+    /** Per grid, its hold while its pages load. Main thread only. */
+    private static final Map<View, Hold> HOLDS = new WeakHashMap<>();
+    /**
+     * Adapters whose hold ran out or was tapped while pages were still coming, which leave the rest
+     * of their pages to the reader's scrolling until a fresh list. Main thread only.
+     */
+    private static final Map<Object, Boolean> TIMED_OUT = new WeakHashMap<>();
+    /** Per frame class, whether it takes any view an overlay adds. Main thread only. */
+    private static final Map<Class<?>, Boolean> TAKES_VIEWS = new WeakHashMap<>();
+
+    private GridSort() {
+    }
+
+    /** Called as TikTok builds a grid adapter, with the number of the tab it's for. */
+    public static void tab(Object adapter, int type) {
+        if (adapter == null) return;
+        synchronized (ORIGINALS) {
+            TABS.put(adapter, type);
+        }
+    }
+
+    /**
+     * Called as TikTok builds a detail page's grid adapter, with the event label the page was
+     * opened with. Only a sound's page is sorted; hashtag and effect pages keep TikTok's order.
+     */
+    public static void soundGrid(Object adapter, String label) {
+        tab(adapter, SOUND_LABEL.equals(label) ? TAB_SOUND : TAB_DETAIL_OTHER);
+    }
+
+    /** A detail page adapter's setData: a sound page's list goes through {@link #data}, any other comes back as it came. */
+    public static List<?> soundData(Object adapter, List<?> list) {
+        return isSound(adapter) ? data(adapter, list) : list;
+    }
+
+    /** A detail page adapter's setDataAfterLoadMore, the same way as {@link #soundData}. */
+    public static List<?> soundPage(Object adapter, List<?> list) {
+        return isSound(adapter) ? page(adapter, list) : list;
+    }
+
+    static boolean isSound(Object adapter) {
+        if (adapter == null) return false;
+        synchronized (ORIGINALS) {
+            Integer type = TABS.get(adapter);
+            return type != null && type == TAB_SOUND;
+        }
+    }
+
+    static boolean isLiked(Object adapter) {
+        if (adapter == null) return false;
+        synchronized (ORIGINALS) {
+            Integer type = TABS.get(adapter);
+            return type != null && type == TAB_LIKED;
+        }
+    }
+
+    /** TikTok's number for the adapter's tab, or {@link Integer#MIN_VALUE} where none came in. */
+    static int tabOf(Object adapter) {
+        if (adapter == null) return Integer.MIN_VALUE;
+        synchronized (ORIGINALS) {
+            Integer type = TABS.get(adapter);
+            return type == null ? Integer.MIN_VALUE : type;
+        }
+    }
+
+    private static String hookName(Object adapter) {
+        int tab = tabOf(adapter);
+        if (tab == TAB_SOUND) return "sound grid sort";
+        return tab == TAB_COLLECTION ? "collection grid sort" : "profile grid sort";
+    }
+
+    /**
+     * The order the grid this adapter draws follows. The Liked and Favorites tabs each have their
+     * own setting, which follows the profile grids ("profile", its default) until an order is
+     * chosen for it. Posts and the private tab follow the profile setting, and a tab TikTok numbers
+     * some other way keeps TikTok's order. A sound's page has its own setting. An adapter whose
+     * tab never came in (a build the patch couldn't hook) follows the profile setting, as every
+     * grid did before Liked got its own.
+     */
+    static String orderFor(Object adapter) {
+        Integer type;
+        synchronized (ORIGINALS) {
+            type = adapter == null ? null : TABS.get(adapter);
+        }
+        if (type == null) return Settings.PROFILE_GRID_SORT.get();
+        switch (type) {
+            case TAB_LIKED:
+                return ownOrProfile(Settings.LIKED_GRID_SORT);
+            case TAB_FAVORITES:
+            case TAB_FAVORITE_VIDEOS:
+                return ownOrProfile(Settings.FAVORITES_GRID_SORT);
+            case TAB_POSTS:
+            case TAB_PRIVATE:
+                return Settings.PROFILE_GRID_SORT.get();
+            case TAB_SOUND:
+                return Settings.SOUND_GRID_SORT.get();
+            case TAB_COLLECTION: {
+                // "favorites", its default, or a value no order has follows the Favorites grids.
+                String own = Settings.COLLECTION_GRID_SORT.get();
+                return indexOf(own) >= 0 ? own : ownOrProfile(Settings.FAVORITES_GRID_SORT);
+            }
+            default:
+                return OFF;
+        }
+    }
+
+    /** A tab's own order, or the profile grids' while it's "profile" or a value no order has. */
+    private static String ownOrProfile(StringSetting own) {
+        String order = own.get();
+        return indexOf(order) >= 0 ? order : Settings.PROFILE_GRID_SORT.get();
+    }
+
+    /** The setting a choice on this adapter's chip saves to. */
+    static StringSetting settingFor(Object adapter) {
+        Integer type;
+        synchronized (ORIGINALS) {
+            type = adapter == null ? null : TABS.get(adapter);
+        }
+        if (type == null) return Settings.PROFILE_GRID_SORT;
+        switch (type) {
+            case TAB_LIKED:
+                return Settings.LIKED_GRID_SORT;
+            case TAB_FAVORITES:
+            case TAB_FAVORITE_VIDEOS:
+                return Settings.FAVORITES_GRID_SORT;
+            case TAB_SOUND:
+                return Settings.SOUND_GRID_SORT;
+            case TAB_COLLECTION:
+                return Settings.COLLECTION_GRID_SORT;
+            default:
+                return Settings.PROFILE_GRID_SORT;
+        }
+    }
+
+    /**
+     * A collection folder adapter's addData (#180), with the folder's whole list: TikTok empties the
+     * adapter and hands every loaded row over again whenever the folder changes, a new page
+     * included. A list that kept every row so far goes on as a page, so loading stops once a page
+     * adds nothing, and a shorter one starts over like a fresh load.
+     */
+    public static List<?> collectionData(Object adapter, List<?> list) {
+        if (adapter == null) return list;
+        int before;
+        synchronized (ORIGINALS) {
+            TABS.put(adapter, TAB_COLLECTION);
+            Integer loaded = LOADED.get(adapter);
+            before = loaded == null ? 0 : loaded;
+        }
+        int size = list == null ? 0 : list.size();
+        return before > 0 && size >= before ? page(adapter, list) : data(adapter, list);
+    }
+
+    /**
+     * Called as a collection folder's cell opens its video (#180), with the list of the folder's
+     * videos TikTok just built for the video page from its own state, in its own order. This puts
+     * them in the order the folder shows. The page opens the tapped video by its id, so only the
+     * swiping after it changes. A list that doesn't hold the folder's videos is left alone.
+     */
+    public static void collectionPlay(List<?> played) {
+        try {
+            if (played == null || played.size() < 2) return;
+            Object adapter = collectionHolding(played);
+            if (adapter == null || comparator(orderFor(adapter)) == null) return;
+            Object shown = Reflect.readField(adapter, "mmItems");
+            if (!(shown instanceof List)) return;
+            List<Object> posts = new ArrayList<>();
+            for (Object row : (List<?>) shown) {
+                Object post = postOf(row);
+                if (post != null) posts.add(post);
+            }
+            if (follow(played, GridSearch.withRest(stillIn(posts, played), played))) {
+                Logger.printDebug(() -> "Grid sort: the collection's video page follows its order, " + played.size() + " videos");
+            }
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not give a collection's video page its order", ex);
+        }
+    }
+
+    /** The collection folder adapter whose last list holds one of {@code played}'s videos, or null. */
+    private static Object collectionHolding(List<?> played) {
+        Map<Object, Boolean> videos = new IdentityHashMap<>();
+        for (Object video : played) {
+            if (video != null) videos.put(video, Boolean.TRUE);
+        }
+        List<Object> folders = new ArrayList<>();
+        List<List<?>> lists = new ArrayList<>();
+        synchronized (ORIGINALS) {
+            for (Map.Entry<Object, Integer> entry : TABS.entrySet()) {
+                List<?> list = entry.getValue() == TAB_COLLECTION ? ORIGINALS.get(entry.getKey()) : null;
+                if (list == null) continue;
+                folders.add(entry.getKey());
+                lists.add(list);
+            }
+        }
+        for (int i = 0; i < folders.size(); i++) {
+            for (Object row : lists.get(i)) {
+                Object post = postOf(row);
+                if (post != null && videos.containsKey(post)) return folders.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The adapter's setData: the list it should keep. Anything this can't sort comes back as it
+     * came. A fresh list starts the loading over.
+     */
+    public static List<?> data(Object adapter, List<?> list) {
+        String chosen = orderFor(adapter);
+        HookStatus.bound(hookName(adapter), OFF.equals(chosen) ? "order left" : "order sorted");
+        List<?> order = adapter == null ? list : tiktokOrder(adapter, list);
+        List<?> out = sorted(order, chosen);
+        if (adapter != null) {
+            int before = remember(adapter, list, order);
+            int size = list == null ? 0 : list.size();
+            // A first list or a shorter one is a fresh load or a pull to refresh. TikTok handing the
+            // same list back stays in sight. This has to happen here: a post runs after the frame.
+            boolean fresh = before == 0 || size < before;
+            if (fresh) startHold(adapter, size);
+            MAIN.post(() -> {
+                if (fresh) TIMED_OUT.remove(adapter);
+                if (GridSearch.searching(adapter)) reshow(adapter);
+                afterTikTok(adapter, 0, size, fresh);
+            });
+            if (isLiked(adapter)) LikedJump.listIn(adapter, true);
+            else if (tabOf(adapter) == TAB_FAVORITES) FavoritesJump.listIn(adapter, true);
+            SavedVideoMemory.listIn(adapter, list, true);
+        }
+        return out;
+    }
+
+    /**
+     * The adapter's setDataAfterLoadMore: the list it should keep. The adapter announces the page
+     * as new cells at the end of the grid, which is wrong for a list that was reordered, so a list
+     * that moved anything also gets a full refresh once TikTok's own call is through. A grid
+     * narrowed to a search gets the whole list here too, since TikTok counts the new cells from it,
+     * and is narrowed again in that same post.
+     */
+    public static List<?> page(Object adapter, List<?> list) {
+        String chosen = orderFor(adapter);
+        HookStatus.bound(hookName(adapter), OFF.equals(chosen) ? "order left" : "order sorted");
+        List<?> order = adapter == null ? list : tiktokOrder(adapter, list);
+        List<?> out = sorted(order, chosen);
+        if (adapter != null) {
+            int before = remember(adapter, list, order);
+            int size = list == null ? 0 : list.size();
+            boolean moved = moved(list, out);
+            MAIN.post(() -> {
+                if (GridSearch.searching(adapter)) reshow(adapter);
+                else if (moved && !holdTakesRefresh(adapter)) refresh(adapter);
+                afterTikTok(adapter, before, size, false);
+            });
+            if (isLiked(adapter)) LikedJump.listIn(adapter, false);
+            else if (tabOf(adapter) == TAB_FAVORITES) FavoritesJump.listIn(adapter, false);
+            SavedVideoMemory.listIn(adapter, list, false);
+        }
+        return out;
+    }
+
+    /**
+     * Whether a grid that now holds {@code size} videos, {@code before} before this list came in,
+     * should ask for its next page. Only for a real order, only on screen, under the cap, and only
+     * while pages still add videos, so a profile with no more ends the chain.
+     */
+    static boolean wantsNextPage(String order, int before, int size, boolean onScreen) {
+        return wantsNextPage(order, false, before, size, onScreen);
+    }
+
+    /** The same, for a grid that may be narrowed to a search, which loads on whatever its order. */
+    static boolean wantsNextPage(String order, boolean searching, int before, int size, boolean onScreen) {
+        if (!searching && (order == null || OFF.equals(order) || comparator(order) == null)) return false;
+        return onScreen && size < LOAD_CAP && size > before;
+    }
+
+    /** Whether this adapter's grid loads its pages by itself: an order is chosen, or a search is on. */
+    private static boolean loads(Object adapter) {
+        return comparator(orderFor(adapter)) != null || GridSearch.searching(adapter);
+    }
+
+    /**
+     * Puts {@code order} on the grid this adapter draws, from the list TikTok last gave it, and
+     * saves it as the order its kind of grid follows: the Liked tab's own, a sound page's own, or
+     * the profile grids'.
+     */
+    static void apply(Object adapter, String order) {
+        apply(adapter, order, null);
+    }
+
+    private static void apply(Object adapter, String order, View chosenFrom) {
+        if (chosenFrom != null && !currentControl(adapter, chosenFrom)) return;
+        View grid = gridView(adapter);
+        SortChip control = controlOn(grid);
+        boolean saved;
+        synchronized (Setting.class) {
+            boolean retainedOriginal = control != null && control.originalChosen;
+            if (control != null) control.stopRetainingOriginal();
+            saved = settingFor(adapter).save(order);
+            if (control != null && (saved ? control == chosenFrom && OFF.equals(order) : retainedOriginal)) {
+                control.retainOriginal();
+            }
+        }
+        if (!saved) {
+            Utils.showToastShort(L10n.t("Couldn't save the change. Try again."));
+            return;
+        }
+        List<?> original;
+        synchronized (ORIGINALS) {
+            original = ORIGINALS.get(adapter);
+        }
+        if (original != null) {
+            List<?> out = GridSearch.narrowed(adapter, sorted(original, orderFor(adapter)));
+            Field items = Reflect.field(adapter.getClass(), "mmItems");
+            if (items != null) {
+                try {
+                    items.set(adapter, out);
+                    refresh(adapter);
+                } catch (Throwable ex) {
+                    Logger.printException(() -> "Could not sort a grid in place", ex);
+                }
+            }
+        }
+        showChip(adapter, grid);
+        int size = original == null ? 0 : original.size();
+        if (wantsNextPage(order, GridSearch.searching(adapter), 0, size, onScreen(grid))
+                && loadMoreListener(adapter) != null) {
+            startHold(adapter, size);
+            askForNextPage(adapter);
+        } else {
+            endHold(grid);
+        }
+    }
+
+    /**
+     * A video taken off this adapter's grid by Tap a video to remove it (#401). It leaves the lists
+     * kept to sort and search the grid too, so a later sort doesn't bring it back. TikTok's own
+     * list loses it in place, since later pages are matched to it by identity.
+     */
+    public static void forget(Object adapter, String id) {
+        if (adapter == null || id == null) return;
+        synchronized (ORIGINALS) {
+            List<?> handed = HANDED.get(adapter);
+            boolean handedDropped = handed == null || QuickRemove.dropIn(handed, id);
+            if (handed != null) LOADED.put(adapter, handed.size());
+            List<?> original = ORIGINALS.get(adapter);
+            if (original != null && !(original == handed ? handedDropped : QuickRemove.dropIn(original, id))) {
+                ORIGINALS.put(adapter, QuickRemove.without(original, id));
+            }
+        }
+    }
+
+    /** TikTok's list as this adapter last had it, in TikTok's order, or null. */
+    static List<?> originalOf(Object adapter) {
+        synchronized (ORIGINALS) {
+            return ORIGINALS.get(adapter);
+        }
+    }
+
+    /**
+     * Puts the adapter's list back on its grid in the chosen order, narrowed to its search, with
+     * a full refresh in the same pass, so the grid never draws from a list it wasn't told about.
+     */
+    static void reshow(Object adapter) {
+        List<?> original = originalOf(adapter);
+        Field items = original == null ? null : Reflect.field(adapter.getClass(), "mmItems");
+        if (items == null) return;
+        try {
+            items.set(adapter, GridSearch.narrowed(adapter, sorted(original, orderFor(adapter))));
+            refresh(adapter);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not narrow a grid to its search", ex);
+        }
+    }
+
+    /**
+     * A search typed or cleared on the adapter's grid. The grid narrows at once, and while a
+     * search is on it loads on by itself, the way a sorted grid does, so it covers more than the
+     * first screen. It stays in sight as it loads: matches turning up is what a search is for.
+     */
+    static void searchChanged(Object adapter) {
+        reshow(adapter);
+        int size;
+        synchronized (ORIGINALS) {
+            Integer loaded = LOADED.get(adapter);
+            size = loaded == null ? 0 : loaded;
+        }
+        if (wantsNextPage(orderFor(adapter), GridSearch.searching(adapter), 0, size, onScreen(gridView(adapter)))
+                && loadMoreListener(adapter) != null) {
+            askForNextPage(adapter);
+        }
+    }
+
+    /**
+     * Notes the list TikTok handed over and its own order of it, and returns how many videos the
+     * adapter held before it.
+     */
+    private static int remember(Object adapter, List<?> list, List<?> order) {
+        synchronized (ORIGINALS) {
+            ORIGINALS.put(adapter, order);
+            HANDED.put(adapter, list);
+            Integer before = LOADED.put(adapter, list == null ? 0 : list.size());
+            ASKED.remove(adapter);
+            return before == null ? 0 : before;
+        }
+    }
+
+    /**
+     * TikTok's own order of the list it handed over. That's the list itself unless a video was
+     * opened from the sorted grid, which wrote the grid's order into it. Then the order is the
+     * one kept from before, without the videos that left, and the new ones after it as TikTok
+     * added them. With no order chosen, TikTok's order goes back into its list, so the grid and
+     * the video page share it again.
+     */
+    static List<?> tiktokOrder(Object adapter, List<?> list) {
+        List<?> earlier;
+        synchronized (ORIGINALS) {
+            if (!REWRITTEN.containsKey(adapter)) return list;
+            earlier = ORIGINALS.get(adapter);
+        }
+        List<Object> order = list == null ? null : rebuilt(earlier, list);
+        if (order == null) {
+            // A list with none of the earlier videos is a fresh load in TikTok's order.
+            synchronized (ORIGINALS) {
+                REWRITTEN.remove(adapter);
+            }
+            return list;
+        }
+        String chosen = orderFor(adapter);
+        if ((OFF.equals(chosen) || comparator(chosen) == null) && follow(list, order)) {
+            synchronized (ORIGINALS) {
+                REWRITTEN.remove(adapter);
+            }
+            return list;
+        }
+        return order;
+    }
+
+    /**
+     * The videos of {@code earlier} still in {@code list}, in their earlier order, then the ones
+     * {@code list} added, in its order. Null when none of the earlier ones is left, or when
+     * {@code list} holds a video twice and no order would keep every entry.
+     */
+    static List<Object> rebuilt(List<?> earlier, List<?> list) {
+        if (earlier == null) return null;
+        Map<Object, Boolean> now = new IdentityHashMap<>();
+        for (Object item : list) now.put(item, Boolean.TRUE);
+        Map<Object, Boolean> placed = new IdentityHashMap<>();
+        List<Object> order = new ArrayList<>(list.size());
+        for (Object item : earlier) {
+            if (now.containsKey(item) && placed.put(item, Boolean.TRUE) == null) order.add(item);
+        }
+        if (order.isEmpty()) return null;
+        for (Object item : list) {
+            if (placed.put(item, Boolean.TRUE) == null) order.add(item);
+        }
+        return order.size() == list.size() ? order : null;
+    }
+
+    /**
+     * Called as a grid cell opens its video (#180), with the grid's fragment. TikTok's video page
+     * plays the fragment's own list, the one it handed the adapter, so swiping there went on in
+     * TikTok's order while the grid showed another. This writes the grid's order into that list
+     * first. A list that doesn't hold the same videos as the grid is left alone.
+     *
+     * <p>A sound's page hands its grid a copy and plays its page model's list, so on a sound
+     * page that list is the one put in order, and the copy kept as TikTok's order stays as it is.
+     */
+    public static void beforeOpen(Object fragment) {
+        try {
+            Object adapter = adapterOf(fragment);
+            if (adapter == null) return;
+            List<?> played;
+            if (isSound(adapter)) {
+                played = soundPageList(fragment);
+            } else {
+                synchronized (ORIGINALS) {
+                    played = HANDED.get(adapter);
+                }
+            }
+            playInGridOrder(adapter, played);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not give the video page the grid's order", ex);
+        }
+    }
+
+    /** Writes the order the adapter's grid shows into {@code played}, the list its video page swipes through. */
+    static void playInGridOrder(Object adapter, List<?> played) {
+        List<?> handed;
+        synchronized (ORIGINALS) {
+            handed = HANDED.get(adapter);
+        }
+        Object shown = Reflect.readField(adapter, "mmItems");
+        if (handed == null || played == null || !(shown instanceof List) || shown == played) return;
+        List<?> onGrid = (List<?>) shown;
+        // A grid narrowed to a search plays its matches first, then the rest in the grid's order.
+        List<?> original = originalOf(adapter);
+        boolean searching = GridSearch.searching(adapter);
+        List<?> grid = onGrid.size() != played.size() && searching
+                ? GridSearch.withRest(onGrid, sorted(original != null ? original : played, orderFor(adapter)))
+                : onGrid;
+        if (sameOrder(played, grid)) return;
+        List<Object> before = new ArrayList<>(played);
+        // The kept order is a copy once the list has been written, so if TikTok's list has changed
+        // since, the matches it still holds go first and the rest keep that list's own order. That
+        // goes for a changed list that happens to hold as many videos as the grid shows, too.
+        if (!follow(played, grid) && (!searching
+                || !follow(played, GridSearch.withRest(stillIn(onGrid, played), played)))) {
+            Logger.printDebug(() -> "Grid sort: the opened video's list doesn't hold the grid's videos, left as is");
+            return;
+        }
+        synchronized (ORIGINALS) {
+            if (ORIGINALS.get(adapter) == played) ORIGINALS.put(adapter, before);
+            REWRITTEN.put(adapter, Boolean.TRUE);
+        }
+        Logger.printDebug(() -> "Grid sort: the video page follows the grid's order, " + grid.size() + " videos");
+    }
+
+    /** The list a sound page's video page plays: its page model's items, or null. */
+    private static List<?> soundPageList(Object fragment) {
+        Object model;
+        try {
+            model = detailModel(fragment);
+        } catch (Throwable ex) {
+            Logger.printDebug(() -> "Grid sort: no page model on " + fragment.getClass().getName() + " (" + ex + ")");
+            return null;
+        }
+        Object items = model == null ? null : Reflect.invoke(model, "getItems");
+        return items instanceof List ? (List<?>) items : null;
+    }
+
+    /**
+     * The page model a detail page's cell click hands TikTok's video page. The patch replaces this
+     * body with a call to the detail fragment's own getter for it. Where the patch found no getter
+     * this stays null, and a sorted sound page's video page swipes in TikTok's order.
+     */
+    @SuppressWarnings("unused")
+    static Object detailModel(Object fragment) {
+        return null;
+    }
+
+    /**
+     * Puts {@code order} into {@code target} in place and says whether {@code target} now holds
+     * it. Only when both hold the same videos, each as often, so nothing is lost or repeated.
+     */
+    @SuppressWarnings("unchecked")
+    static boolean follow(List<?> target, List<?> order) {
+        if (target == null || order == null || target.size() != order.size()) return false;
+        if (sameOrder(target, order)) return true;
+        Map<Object, Integer> counts = new IdentityHashMap<>();
+        for (Object item : target) {
+            Integer count = counts.get(item);
+            counts.put(item, count == null ? 1 : count + 1);
+        }
+        for (Object item : order) {
+            Integer count = counts.get(item);
+            if (count == null || count == 0) return false;
+            counts.put(item, count - 1);
+        }
+        List<Object> copy = new ArrayList<>(order);
+        List<Object> writable = (List<Object>) target;
+        try {
+            for (int i = 0; i < copy.size(); i++) writable.set(i, copy.get(i));
+            return true;
+        } catch (RuntimeException ex) {
+            Logger.printDebug(() -> "Grid sort: TikTok's list can't be reordered (" + ex + ")");
+            return false;
+        }
+    }
+
+    /** The videos of {@code videos} that {@code list} still holds, in {@code videos}' order. */
+    private static List<Object> stillIn(List<?> videos, List<?> list) {
+        Map<Object, Boolean> held = new IdentityHashMap<>();
+        for (Object video : list) held.put(video, Boolean.TRUE);
+        List<Object> out = new ArrayList<>(videos.size());
+        for (Object video : videos) {
+            if (held.containsKey(video)) out.add(video);
+        }
+        return out;
+    }
+
+    private static boolean sameOrder(List<?> a, List<?> b) {
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); i++) {
+            if (a.get(i) != b.get(i)) return false;
+        }
+        return true;
+    }
+
+    /** The adapter a grid fragment holds, found by the lists handed over, the field kept per class. */
+    private static Object adapterOf(Object fragment) {
+        if (fragment == null) return null;
+        Class<?> type = fragment.getClass();
+        Field known;
+        synchronized (ADAPTER_FIELDS) {
+            known = ADAPTER_FIELDS.get(type);
+        }
+        if (known != null) {
+            try {
+                return known.get(fragment);
+            } catch (IllegalAccessException ex) {
+                return null;
+            }
+        }
+        for (Class<?> at = type; at != null && at != Object.class; at = at.getSuperclass()) {
+            for (Field field : at.getDeclaredFields()) {
+                if (field.getType().isPrimitive() || Modifier.isStatic(field.getModifiers())) continue;
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(fragment);
+                    boolean adapter;
+                    synchronized (ORIGINALS) {
+                        adapter = value != null && HANDED.containsKey(value);
+                    }
+                    if (adapter) {
+                        synchronized (ADAPTER_FIELDS) {
+                            ADAPTER_FIELDS.put(type, field);
+                        }
+                        return value;
+                    }
+                } catch (Throwable ignored) {
+                    // A field this can't read isn't the adapter.
+                }
+            }
+        }
+        return null;
+    }
+
+    private static void afterTikTok(Object adapter, int before, int size, boolean fresh) {
+        View grid = null;
+        try {
+            grid = gridView(adapter);
+            View gridShown = grid;
+            showChip(adapter, grid);
+            GridPosition.show(adapter, grid);
+            GridSearch.showChip(adapter);
+            boolean shown = onScreen(grid);
+            // TikTok takes the listener away once it knows it has no more. It decides that after it
+            // hands the list over, so this post is the first point that can tell.
+            // A search stays in sight as it loads, so a hold that ran out doesn't stop it.
+            boolean searching = GridSearch.searching(adapter);
+            boolean next = wantsNextPage(orderFor(adapter), searching, before, size, shown)
+                    && (searching || !TIMED_OUT.containsKey(adapter)) && loadMoreListener(adapter) != null;
+            Logger.printDebug(() -> "Grid sort: page " + before + " -> " + size
+                    + (gridShown == null ? ", no grid" : shown ? "" : ", off screen") + (next ? ", asking for more" : ""));
+            if (next) {
+                // The grid can be laid out only now, which is too late for the hook's own start.
+                if (fresh) startHold(adapter, size);
+                showHoldCount(grid, size);
+                askForNextPage(adapter);
+            } else {
+                endHold(grid);
+            }
+        } catch (Throwable ex) {
+            endHold(grid);
+            Logger.printException(() -> "Could not finish a sorted grid page", ex);
+        }
+    }
+
+    /** The listener TikTok's footer calls, which it clears once a grid has no more pages. */
+    static Object loadMoreListener(Object adapter) {
+        Object listener = Reflect.invoke(adapter, "getLoadMoreListener");
+        return listener != null ? listener : Reflect.readField(adapter, "mmLoadMoreListener");
+    }
+
+    private static void askForNextPage(Object adapter) {
+        Hold hold = HOLDS.get(gridView(adapter));
+        if (hold != null) {
+            MAIN.removeCallbacks(hold.quiet);
+            MAIN.postDelayed(hold.quiet, HOLD_QUIET_MS);
+        }
+        synchronized (ORIGINALS) {
+            if (ASKED.containsKey(adapter)) return;
+            ASKED.put(adapter, Boolean.TRUE);
+        }
+        MAIN.postDelayed(() -> loadMore(adapter), NEXT_PAGE_DELAY_MS);
+    }
+
+    /**
+     * Asks the grid for its next page, through TikTok's page loader where the patch found one and
+     * otherwise through the listener its own footer calls.
+     */
+    private static void loadMore(Object adapter) {
+        try {
+            String order = orderFor(adapter);
+            if (!loads(adapter) || !onScreen(gridView(adapter))) {
+                synchronized (ORIGINALS) {
+                    ASKED.remove(adapter);
+                }
+                endHold(gridView(adapter));
+                Logger.printDebug(() -> "Grid sort: next page dropped, order " + order + " or the grid left the screen");
+                return;
+            }
+            Object listener = loadMoreListener(adapter);
+            if (listener != null && loadPage(listener, 0, PAGE_SIZE, PAGE_SOURCE)) {
+                Object loaderShown = listener;
+                Logger.printDebug(() -> "Grid sort: asked " + loaderShown.getClass().getName() + "'s page loader for the next page");
+                return;
+            }
+            Method next = listener == null ? null : Reflect.method(listener.getClass(), "loadMore");
+            if (next == null) {
+                synchronized (ORIGINALS) {
+                    ASKED.remove(adapter);
+                }
+                endHold(gridView(adapter));
+                Logger.printDebug(() -> "Grid sort: no load more listener on " + adapter.getClass().getName());
+                return;
+            }
+            Object listenerShown = listener;
+            Logger.printDebug(() -> "Grid sort: asking " + listenerShown.getClass().getName() + " for the next page");
+            next.invoke(listener);
+        } catch (Throwable ex) {
+            endHold(gridView(adapter));
+            Logger.printException(() -> "Could not load the next page of a sorted grid", ex);
+        }
+    }
+
+    /**
+     * A grid out of sight while its pages load. It stays laid out and shown, since {@link #onScreen}
+     * is what keeps the pages coming, and only its alpha drops. A cover over it takes the taps that
+     * would otherwise open a cell nobody can see, and shows a spinner with how many videos are in.
+     * The sort chip sits above the cover by its elevation, so the order can still change.
+     */
+    private static final class Hold {
+        final View cover;
+        final TextView count;
+        final Runnable limit;
+        final Runnable quiet;
+        final View.OnAttachStateChangeListener leaving;
+        Object adapter;
+        boolean refreshDue;
+
+        Hold(View cover, TextView count, Runnable limit, Runnable quiet, View.OnAttachStateChangeListener leaving, Object adapter) {
+            this.cover = cover;
+            this.count = count;
+            this.limit = limit;
+            this.quiet = quiet;
+            this.leaving = leaving;
+            this.adapter = adapter;
+        }
+    }
+
+    /** A grid gone from the screen can't load, so its cover steps aside rather than eat taps until the limit. */
+    private static final class HoldCover extends FrameLayout {
+        private final View grid;
+
+        HoldCover(Context context, View grid) {
+            super(context);
+            this.grid = grid;
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent event) {
+            if (onScreen(grid)) return super.dispatchTouchEvent(event);
+            letGoOfGrid(grid, this);
+            return false;
+        }
+
+        /** A mouse or touchpad over a cover whose grid has left lets go of it, as a touch does. */
+        @Override
+        public boolean dispatchGenericMotionEvent(MotionEvent event) {
+            if (onScreen(grid)) return super.dispatchGenericMotionEvent(event);
+            letGoOfGrid(grid, this);
+            return false;
+        }
+    }
+
+    /** Called from the middle of the parent's own removal or touch pass, so the removal waits for the post. */
+    private static void letGoOfGrid(View grid, View cover) {
+        cover.setVisibility(View.GONE);
+        MAIN.post(() -> endHold(grid));
+    }
+
+    /** Takes the grid out of sight if it's about to load pages on its own. */
+    private static void startHold(Object adapter, int size) {
+        try {
+            if (Looper.myLooper() != Looper.getMainLooper() || size <= 0 || size >= LOAD_CAP) return;
+            if (!loads(adapter)) return;
+            View grid = gridView(adapter);
+            FrameLayout frame = overlayFrame(grid);
+            if (!onScreen(grid) || frame == null) return;
+            Object currentAdapter = Reflect.invoke(grid, "getAdapter");
+            if (currentAdapter != null && currentAdapter != adapter) return;
+            Hold held = HOLDS.get(grid);
+            if (held != null) {
+                held.adapter = adapter;
+                // A pull to refresh during a hold has every page ahead of it again.
+                MAIN.removeCallbacks(held.limit);
+                MAIN.postDelayed(held.limit, HOLD_LIMIT_MS);
+                return;
+            }
+            Context context = grid.getContext();
+            FrameLayout cover = new HoldCover(context, grid);
+            cover.setTag(HOLD_TAG);
+            cover.setClickable(true);
+            SessionLockOverlay.keepTheWheel(cover);
+
+            LinearLayout box = new LinearLayout(context);
+            box.setGravity(Gravity.CENTER_VERTICAL);
+            box.setBackground(SettingsUi.overlayChip(context, SettingsUi.RADIUS_OVERLAY));
+            int paddingX = SettingsUi.dp(context, 12);
+            int paddingY = SettingsUi.dp(context, 8);
+            box.setPadding(paddingX, paddingY, paddingX, paddingY);
+            box.setVisibility(View.INVISIBLE);
+            ProgressBar spinner = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+            spinner.setIndeterminateTintList(ColorStateList.valueOf(SettingsUi.OVERLAY_TEXT));
+            int spinnerSize = SettingsUi.dp(context, 18);
+            box.addView(spinner, new LinearLayout.LayoutParams(spinnerSize, spinnerSize));
+            TextView count = new TextView(context);
+            count.setTextColor(SettingsUi.OVERLAY_TEXT);
+            count.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsUi.TEXT_CAPTION);
+            count.setPaddingRelative(SettingsUi.dp(context, 8), 0, 0, 0);
+            setHoldCount(count, size);
+            box.addView(count);
+            TextView hint = new TextView(context);
+            hint.setTextColor(SettingsUi.OVERLAY_TEXT);
+            hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsUi.TEXT_CAPTION);
+            hint.setPaddingRelative(SettingsUi.dp(context, 8), 0, 0, 0);
+            hint.setText(L10n.t(context, "Tap to see the order now"));
+            box.addView(hint);
+            cover.setOnClickListener(view -> showNow(grid));
+            FrameLayout.LayoutParams boxAt = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+            boxAt.topMargin = SettingsUi.dp(context, 64);
+            cover.addView(box, boxAt);
+            FrameLayout.LayoutParams coverAt = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            // From the grid down, so a header above it in the same frame can still be tapped.
+            coverAt.topMargin = Math.max(0, topInFrame(grid));
+            frame.addView(cover, coverAt);
+            grid.setAlpha(0f);
+
+            View.OnAttachStateChangeListener leaving = new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View view) {
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View view) {
+                    letGoOfGrid(grid, cover);
+                }
+            };
+            grid.addOnAttachStateChangeListener(leaving);
+            Runnable runOut = () -> {
+                Hold running = HOLDS.get(grid);
+                if (running != null && running.adapter != null) TIMED_OUT.put(running.adapter, Boolean.TRUE);
+                Logger.printDebug(() -> "Grid sort: hold ran out, the reader's scrolling loads the rest");
+                endHold(grid);
+            };
+            Hold hold = new Hold(cover, count, runOut, () -> endHold(grid), leaving, adapter);
+            HOLDS.put(grid, hold);
+            MAIN.postDelayed(hold.limit, HOLD_LIMIT_MS);
+            MAIN.postDelayed(() -> box.setVisibility(View.VISIBLE), HOLD_SPINNER_DELAY_MS);
+            Logger.printDebug(() -> "Grid sort: holding the grid at " + size);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not hold a sorted grid", ex);
+        }
+    }
+
+    private static void showHoldCount(View grid, int size) {
+        Hold hold = HOLDS.get(grid);
+        if (hold != null) setHoldCount(hold.count, size);
+    }
+
+    /** The number alone says nothing by ear, so a screen reader hears what it counts. */
+    private static void setHoldCount(TextView count, int size) {
+        String shown = String.valueOf(size);
+        count.setText(shown);
+        count.setContentDescription(
+                L10n.quantity(count.getContext(), size, "%1$s video", "%1$s videos", shown));
+    }
+
+    /** Whether a page's refresh can wait for the end of the hold: one refresh, not one per page. */
+    private static boolean holdTakesRefresh(Object adapter) {
+        Hold hold = HOLDS.get(gridView(adapter));
+        if (hold == null) return false;
+        hold.refreshDue = true;
+        return true;
+    }
+
+    /** Brings the grid back, with the one refresh the pages it hid were owed. */
+    /** A tap on the hold: the order it has now, with the rest of the pages left to the reader's scrolling. */
+    private static void showNow(View grid) {
+        Hold hold = HOLDS.get(grid);
+        if (hold == null) return;
+        if (hold.adapter != null) TIMED_OUT.put(hold.adapter, Boolean.TRUE);
+        Logger.printDebug(() -> "Grid sort: hold tapped, showing the order it has");
+        endHold(grid);
+    }
+
+    private static void endHold(View grid) {
+        Hold hold = grid == null ? null : HOLDS.remove(grid);
+        if (hold == null) return;
+        MAIN.removeCallbacks(hold.limit);
+        MAIN.removeCallbacks(hold.quiet);
+        grid.removeOnAttachStateChangeListener(hold.leaving);
+        grid.setAlpha(1f);
+        ViewParent parent = hold.cover.getParent();
+        if (parent instanceof ViewGroup) ((ViewGroup) parent).removeView(hold.cover);
+        if (hold.refreshDue) refresh(hold.adapter);
+        Logger.printDebug(() -> "Grid sort: hold over");
+    }
+
+    /**
+     * Asks the grid's fragment for its next page through TikTok's own page loader, and says
+     * whether it could. The footer's listener runs a reach-bottom check first that only loads
+     * within eight rows of the end, so on its own a sorted grid stopped after its third page. The
+     * patch replaces this body with the loader call, made only when {@code fragment} is a grid
+     * fragment, with TikTok's load-more message in {@code message}. The loader drops an ask while
+     * the same load is queued or running. Where the patch found no loader this stays false.
+     */
+    @SuppressWarnings("unused")
+    static boolean loadPage(Object fragment, int message, int count, String source) {
+        return false;
+    }
+
+    /** The RecyclerView the adapter is attached to, or null. */
+    static View gridView(Object adapter) {
+        Object view = Reflect.readField(adapter, "mmRecyclerView");
+        return view instanceof View ? (View) view : null;
+    }
+
+    /** Shown and at least partly on screen: a grid on a tab the reader isn't on doesn't load. */
+    private static boolean onScreen(View grid) {
+        return grid != null && grid.isShown() && grid.getGlobalVisibleRect(new Rect());
+    }
+
+    /** Original selected here keeps only this control, until its grid leaves the screen. */
+    private static final class SortChip extends TextView {
+        Object adapter;
+        View grid;
+        volatile boolean originalChosen;
+        private OriginalWatch originalWatch;
+
+        SortChip(Context context) {
+            super(context);
+        }
+
+        void retainOriginal() {
+            synchronized (Setting.class) {
+                stopRetainingOriginal();
+                originalChosen = true;
+                originalWatch = new OriginalWatch(Setting.preferences.preferences);
+                originalWatch.preferences.registerOnSharedPreferenceChangeListener(originalWatch);
+            }
+        }
+
+        void stopRetainingOriginal() {
+            synchronized (Setting.class) {
+                originalChosen = false;
+                if (originalWatch == null) return;
+                originalWatch.preferences.unregisterOnSharedPreferenceChangeListener(originalWatch);
+                originalWatch = null;
+            }
+        }
+
+        private final class OriginalWatch implements SharedPreferences.OnSharedPreferenceChangeListener {
+            final SharedPreferences preferences;
+
+            OriginalWatch(SharedPreferences preferences) {
+                this.preferences = preferences;
+            }
+
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
+                if (key != null && !Settings.PROFILE_GRID_SORT.key.equals(key)
+                        && !Settings.LIKED_GRID_SORT.key.equals(key)
+                        && !Settings.FAVORITES_GRID_SORT.key.equals(key)
+                        && !Settings.SOUND_GRID_SORT.key.equals(key)) return;
+                synchronized (Setting.class) {
+                    if (originalWatch != this || !originalChosen) return;
+                    originalChosen = false;
+                    this.preferences.unregisterOnSharedPreferenceChangeListener(this);
+                }
+                MAIN.post(() -> {
+                    synchronized (Setting.class) {
+                        // A callback already queued before unregister belongs to the old choice.
+                        if (originalWatch != this) return;
+                        originalWatch = null;
+                    }
+                    if (controlOn(grid) == SortChip.this) showChip(adapter, grid);
+                });
+            }
+        }
+
+        void expireOriginal() {
+            synchronized (Setting.class) {
+                if (!originalChosen && originalWatch == null) return;
+                stopRetainingOriginal();
+            }
+            setVisibility(View.GONE);
+            // Window detach can be iterating the parent's children. Remove after that traversal.
+            MAIN.post(() -> {
+                ViewParent parent = getParent();
+                if (getVisibility() == View.GONE && parent instanceof ViewGroup) {
+                    ((ViewGroup) parent).removeView(this);
+                }
+            });
+        }
+
+        @Override
+        protected void onWindowVisibilityChanged(int visibility) {
+            super.onWindowVisibilityChanged(visibility);
+            if (visibility != View.VISIBLE) expireOriginal();
+        }
+
+        @Override
+        protected void onDetachedFromWindow() {
+            stopRetainingOriginal();
+            super.onDetachedFromWindow();
+        }
+    }
+
+    /**
+     * The FrameLayout the grid's chips, rail and loading cover float in: the grid's own parent, or
+     * the frame around the LinearLayout TikTok wraps the Favorites grid in. On 47.9.3 that layout
+     * sits in a fragment container, which refuses any other view, inside a plain frame of the
+     * same size, so a frame that vets what's added to it is passed over, as is a scroll view.
+     */
+    static FrameLayout overlayFrame(View grid) {
+        if (grid == null) return null;
+        ViewParent parent = grid.getParent();
+        if (parent instanceof FrameLayout) return (FrameLayout) parent;
+        if (!(parent instanceof LinearLayout)) return null;
+        ViewParent above = parent.getParent();
+        for (int level = 0; level < 2 && above instanceof FrameLayout; level++, above = above.getParent()) {
+            if (takesViews(above.getClass())) return (FrameLayout) above;
+        }
+        return null;
+    }
+
+    /** Whether a frame takes any view, rather than checking each one in its own addView. */
+    private static boolean takesViews(Class<?> type) {
+        Boolean known = TAKES_VIEWS.get(type);
+        if (known != null) return known;
+        boolean takes = true;
+        for (Class<?> at = type; takes && at != null && at != FrameLayout.class; at = at.getSuperclass()) {
+            try {
+                at.getDeclaredMethod("addView", View.class, int.class, ViewGroup.LayoutParams.class);
+                takes = false;
+            } catch (NoSuchMethodException inherited) {
+                // This class leaves adding views to the one it extends.
+            } catch (LinkageError | SecurityException unreadable) {
+                // A class that can't be read could refuse a view, so it gets none.
+                takes = false;
+            }
+        }
+        TAKES_VIEWS.put(type, takes);
+        return takes;
+    }
+
+    /**
+     * The grid's top below its overlay frame's padding, through any layouts between them. An
+     * overlay at the frame's top already starts below that padding.
+     */
+    static int topInFrame(View grid) {
+        int top = grid.getTop();
+        FrameLayout frame = overlayFrame(grid);
+        if (frame == null) return top;
+        for (ViewParent at = grid.getParent(); at instanceof View && at != frame; at = at.getParent()) {
+            top += ((View) at).getTop() - ((View) at).getScrollY();
+        }
+        return top - frame.getPaddingTop();
+    }
+
+    /** Whether an overlay still sits in the grid's frame, rather than one TikTok moved it out of. */
+    static boolean overGrid(View overlay, View grid) {
+        FrameLayout frame = overlayFrame(grid);
+        return frame != null && overlay.getParent() == frame;
+    }
+
+    private static SortChip controlOn(View grid) {
+        FrameLayout frame = overlayFrame(grid);
+        if (frame == null) return null;
+        for (int i = 0; i < frame.getChildCount(); i++) {
+            View child = frame.getChildAt(i);
+            if (child instanceof SortChip && CHIP_TAG.equals(child.getTag())) return (SortChip) child;
+        }
+        return null;
+    }
+
+    private static boolean currentControl(Object adapter, View anchor) {
+        View grid = gridView(adapter);
+        if (grid == null) return false;
+        Object currentAdapter = Reflect.invoke(grid, "getAdapter");
+        if (currentAdapter != null && currentAdapter != adapter) return false;
+        SortChip control = controlOn(grid);
+        return control == anchor && control != null && control.adapter == adapter
+                && control.grid == grid && control.isAttachedToWindow() && control.isShown()
+                && !Setting.isPaused() && onScreen(control.grid);
+    }
+
+    /**
+     * The chip over the grid's top corner while an order is chosen, or while Original was chosen
+     * from this control. A default Original grid and an explicit disable keep TikTok's stock grid.
+     * TikTok's FrameLayout lets the chip float over the corner without moving a cell.
+     */
+    private static void showChip(Object adapter, View grid) {
+        if (grid == null) return;
+        Object currentAdapter = Reflect.invoke(grid, "getAdapter");
+        if (currentAdapter != null && currentAdapter != adapter) return;
+        FrameLayout frame = overlayFrame(grid);
+        if (frame == null) return;
+        SortChip chip = controlOn(grid);
+        // Late reads from an inactive old grid cannot take over the current grid's control.
+        // A newly attached grid can still bind its control before its first layout.
+        if (chip != null && chip.grid != grid
+                && (!grid.isShown() || (grid.isLaidOut() && !onScreen(grid)))) return;
+        View existing = chip;
+        boolean differentControl = chip != null && (chip.grid != grid || chip.adapter != adapter);
+        boolean shown = onScreen(grid);
+        int index;
+        boolean hideChip;
+        synchronized (Setting.class) {
+            index = indexOf(orderFor(adapter));
+            hideChip = Setting.isPaused() || index < 0 || (index == 0
+                    && (chip == null || differentControl || !chip.originalChosen || !shown));
+            if (chip != null && (differentControl || index > 0 || hideChip)) chip.stopRetainingOriginal();
+        }
+        if (chip != null && chip.grid != grid) {
+            frame.removeView(chip);
+            chip = null;
+            existing = null;
+        }
+        if (hideChip) {
+            if (existing != null) frame.removeView(existing);
+            return;
+        }
+        if (chip == null) {
+            Context context = frame.getContext();
+            chip = new SortChip(context);
+            chip.setTag(CHIP_TAG);
+            chip.setTextColor(SettingsUi.OVERLAY_TEXT);
+            chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsUi.TEXT_CAPTION);
+            chip.setMinWidth(SettingsUi.dp(context, 48));
+            chip.setMinHeight(SettingsUi.dp(context, 48));
+            chip.setSingleLine(true);
+            chip.setEllipsize(TextUtils.TruncateAt.END);
+            chip.setGravity(Gravity.CENTER);
+            int paddingX = SettingsUi.dp(context, 10);
+            int paddingY = SettingsUi.dp(context, 5);
+            chip.setPadding(paddingX, paddingY, paddingX, paddingY);
+            // Words over thumbnails take the text scrim, the same as the grid's Top/Back/End.
+            chip.setBackground(SettingsUi.overlayBanner(context));
+            SettingsUi.markAsButton(chip);
+            chip.setElevation(SettingsUi.dp(context, 2));
+            FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.TOP | Gravity.END);
+            int margin = SettingsUi.dp(context, 8);
+            layout.setMargins(margin, margin, margin, margin);
+            frame.addView(chip, layout);
+            followHeader(chip, grid);
+        }
+        chip.adapter = adapter;
+        chip.grid = grid;
+        chip.setVisibility(View.VISIBLE);
+        String order = L10n.t(LABELS[index]);
+        chip.setText(order);
+        // A description replaces the text for a screen reader, so it carries the order too.
+        chip.setContentDescription(L10n.f("%1$s: %2$s", L10n.t("Sort this grid"), order));
+        // Set every time: the parent can outlive one adapter and get the next one.
+        chip.setOnClickListener(view -> choose(adapter, view));
+        TextView placed = chip;
+        chip.post(() -> placeChip(placed, grid));
+    }
+
+    /**
+     * Keeps the chip under a full-width row at the top of the grid as the grid lays out and
+     * scrolls. The listener drops itself once the chip is taken away.
+     */
+    private static void followHeader(SortChip chip, View grid) {
+        final class Follow implements ViewTreeObserver.OnScrollChangedListener,
+                ViewTreeObserver.OnGlobalLayoutListener, View.OnAttachStateChangeListener {
+            private ViewTreeObserver observer;
+
+            private void removeFrom(ViewTreeObserver from) {
+                if (from == null || !from.isAlive()) return;
+                from.removeOnScrollChangedListener(this);
+                from.removeOnGlobalLayoutListener(this);
+            }
+
+            private void unobserve() {
+                removeFrom(observer);
+                observer = null;
+            }
+
+            void observe() {
+                ViewTreeObserver current = grid.getViewTreeObserver();
+                if (observer == current && current.isAlive()) return;
+                removeFrom(observer);
+                // A floating observer's listeners already merged into the window on attach.
+                removeFrom(current);
+                observer = current;
+                if (!current.isAlive()) return;
+                current.addOnScrollChangedListener(this);
+                current.addOnGlobalLayoutListener(this);
+            }
+
+            @Override
+            public void onScrollChanged() {
+                update();
+            }
+
+            @Override
+            public void onGlobalLayout() {
+                update();
+            }
+
+            @Override
+            public void onViewAttachedToWindow(View view) {
+                observe();
+                MAIN.post(this::update);
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View view) {
+                unobserve();
+                chip.setVisibility(View.GONE);
+                chip.expireOriginal();
+                MAIN.post(this::update);
+            }
+
+            private void remove() {
+                chip.stopRetainingOriginal();
+                ViewParent parent = chip.getParent();
+                if (parent instanceof ViewGroup) ((ViewGroup) parent).removeView(chip);
+            }
+
+            private void update() {
+                Object currentAdapter = Reflect.invoke(grid, "getAdapter");
+                if (Setting.isPaused() || (currentAdapter != null && currentAdapter != chip.adapter)
+                        || (chip.originalChosen && !onScreen(grid))) remove();
+                if (chip.getParent() != null && grid.isAttachedToWindow() && !overGrid(chip, grid)) {
+                    remove();
+                    showChip(chip.adapter, grid);
+                }
+                if (chip.getParent() != null) {
+                    // The frame can hold more than the grid, as Favorites' sub-tabs do, so the
+                    // chip hides with the grid itself and not only with the frame.
+                    if (!grid.isAttachedToWindow() || !grid.isShown()) chip.setVisibility(View.GONE);
+                    else if (indexOf(orderFor(chip.adapter)) > 0) chip.setVisibility(View.VISIBLE);
+                    placeChip(chip, grid);
+                    return;
+                }
+                grid.removeOnAttachStateChangeListener(this);
+                unobserve();
+            }
+        }
+        Follow follow = new Follow();
+        grid.addOnAttachStateChangeListener(follow);
+        follow.observe();
+    }
+
+    static void placeChip(View chip, View grid) {
+        try {
+            if (chip instanceof SortChip) fitBesideSearch((TextView) chip);
+            if (!(grid instanceof ViewGroup)) return;
+            ViewGroup rows = (ViewGroup) grid;
+            int count = rows.getChildCount();
+            int[] tops = new int[count];
+            int[] bottoms = new int[count];
+            int[] widths = new int[count];
+            for (int i = 0; i < count; i++) {
+                View row = rows.getChildAt(i);
+                tops[i] = row.getTop();
+                bottoms[i] = row.getBottom();
+                widths[i] = row.getWidth();
+            }
+            float y = topInFrame(grid) + chipOffset(grid.getWidth(), tops, bottoms, widths);
+            if (chip.getTranslationY() != y) chip.setTranslationY(y);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not place the grid sort chip", ex);
+        }
+    }
+
+    /**
+     * Shortens the order chip to the room left at the end of its frame by the search chip in the
+     * middle, so a long order name, a long search or a narrow window ends in "..." rather than one
+     * chip running under the other. With no search chip it keeps its whole name.
+     */
+    private static void fitBesideSearch(TextView chip) {
+        if (!(chip.getParent() instanceof ViewGroup)) return;
+        ViewGroup frame = (ViewGroup) chip.getParent();
+        View search = null;
+        for (int i = 0; i < frame.getChildCount(); i++) {
+            View child = frame.getChildAt(i);
+            if (GridSearch.CHIP_TAG.equals(child.getTag()) && child.getVisibility() == View.VISIBLE) search = child;
+        }
+        int max = Integer.MAX_VALUE;
+        if (search != null && frame.getWidth() > 0) {
+            Context context = chip.getContext();
+            // The order chip's 8dp margin from the edge, and a 4dp gap between the two.
+            int room = frame.getWidth() / 2 - search.getWidth() / 2 - SettingsUi.dp(context, 12);
+            max = Math.max(SettingsUi.dp(context, 48), room);
+        }
+        if (chip.getMaxWidth() != max) chip.setMaxWidth(max);
+    }
+
+    /**
+     * How far down the chip goes to clear the full-width rows at the top of the grid, such as the
+     * Liked tab's note about making liked videos public, which it covered: the bottom of the last
+     * row spanning the grid that starts at its top, or right under one that does. A row scrolled
+     * partly away pulls the chip up with it. Cells are narrower than the grid and never move it,
+     * and neither does a full-width footer further down.
+     */
+    static int chipOffset(int gridWidth, int[] tops, int[] bottoms, int[] widths) {
+        if (gridWidth <= 0) return 0;
+        int offset = 0;
+        for (int i = 0; i < tops.length; i++) {
+            if (widths[i] * 10 < gridWidth * 9 || bottoms[i] <= 0 || tops[i] > offset) continue;
+            offset = Math.max(offset, bottoms[i]);
+        }
+        return offset;
+    }
+
+    /** The orders as a list to pick from, the current one marked. */
+    private static void choose(Object adapter, View anchor) {
+        try {
+            Activity activity = activityOf(anchor.getContext());
+            if (activity == null) activity = Utils.getVisibleActivity();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+            SettingsUi.syncDarkMode(activity);
+            String[] labels = new String[LABELS.length];
+            for (int i = 0; i < labels.length; i++) labels[i] = L10n.t(LABELS[i]);
+            AlertDialog dialog = new AlertDialog.Builder(activity)
+                    .setTitle(L10n.t("Sort this grid"))
+                    .setSingleChoiceItems(labels, indexOf(orderFor(adapter)), (shown, which) -> {
+                        shown.dismiss();
+                        apply(adapter, ORDERS[which], anchor);
+                    })
+                    .setNegativeButton(L10n.t("Cancel"), null)
+                    .create();
+            dialog.setOnShowListener(ignored -> SettingsUi.styleStandardAlertDialog(dialog));
+            dialog.show();
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not open the grid sort choices", ex);
+        }
+    }
+
+    private static Activity activityOf(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) return (Activity) context;
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
+    }
+
+    static int indexOf(String order) {
+        for (int i = 0; i < ORDERS.length; i++) {
+            if (ORDERS[i].equals(order)) return i;
+        }
+        return -1;
+    }
+
+    private static boolean moved(List<?> before, List<?> after) {
+        if (before == null || after == null || before.size() != after.size()) return before != after;
+        for (int i = 0; i < before.size(); i++) {
+            if (before.get(i) != after.get(i)) return true;
+        }
+        return false;
+    }
+
+    static void refresh(Object adapter) {
+        try {
+            adapter.getClass().getMethod("notifyDataSetChanged").invoke(adapter);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not refresh a sorted grid", ex);
+        }
+    }
+
+    static List<?> sorted(List<?> list, String order) {
+        try {
+            if (list == null || list.size() < 2 || OFF.equals(order)) return list;
+            Comparator<Object> by = comparator(order);
+            if (by == null) return list;
+            return sort(list, by);
+        } catch (Throwable ex) {
+            Logger.printException(() -> "Could not sort a grid", ex);
+            return list;
+        }
+    }
+
+    /**
+     * A new list: the pinned videos first as TikTok has them, then the rest by [by]. With Sort
+     * pinned videos with the rest on, pinned videos are sorted in like any other (#466); a
+     * folder's header rows stay in front either way.
+     */
+    static List<Object> sort(List<?> list, Comparator<Object> by) {
+        List<Object> pinned = new ArrayList<>();
+        List<Object> rest = new ArrayList<>();
+        boolean pinnedFirst = !Settings.SORT_PINNED_WITH_REST.get();
+        for (Object item : list) {
+            boolean front = isPinned(item) && (pinnedFirst || GridPicker.wrapsPost(item));
+            (front ? pinned : rest).add(item);
+        }
+        // List.sort is stable, so equal values and missing ones stay in TikTok's order.
+        Collections.sort(rest, by);
+        pinned.addAll(rest);
+        return pinned;
+    }
+
+    static Comparator<Object> comparator(String order) {
+        if (NEWEST.equals(order)) return byLong(GridSort::created, true);
+        if (OLDEST.equals(order)) return byLong(GridSort::created, false);
+        if (LONGEST.equals(order)) return byLong(GridSort::length, true);
+        if (SHORTEST.equals(order)) return byLong(GridSort::length, false);
+        if (MOST_VIEWED.equals(order)) return byLong(GridSort::views, true);
+        if (LEAST_VIEWED.equals(order)) return byLong(GridSort::views, false);
+        if (MOST_LIKED.equals(order)) return byLong(GridSort::likes, true);
+        if (LEAST_LIKED.equals(order)) return byLong(GridSort::likes, false);
+        return null;
+    }
+
+    private interface Key {
+        long of(Object item);
+    }
+
+    /**
+     * Orders by [key] and puts every item whose key is 0 or less after the ones that have one. For
+     * the least viewed and least liked orders too: a grid cell with no counts at all reads as 0, and
+     * those would otherwise crowd the front.
+     */
+    private static Comparator<Object> byLong(Key key, boolean descending) {
+        return (a, b) -> {
+            long x = key.of(a);
+            long y = key.of(b);
+            boolean hasX = x > 0;
+            boolean hasY = y > 0;
+            if (hasX != hasY) return hasX ? -1 : 1;
+            if (!hasX) return 0;
+            return descending ? Long.compare(y, x) : Long.compare(x, y);
+        };
+    }
+
+    /**
+     * Whether an item keeps its place in front: a video pinned to its profile, or a collection
+     * folder's row with no video, its header, which TikTok puts ahead of the videos.
+     */
+    static boolean isPinned(Object item) {
+        if (GridPicker.wrapsPost(item)) return postOf(item) == null;
+        Object top = Reflect.property(item, "getIsTop", "isTop");
+        return top instanceof Number && ((Number) top).intValue() == 1;
+    }
+
+    /**
+     * The video a grid item stands for: the item itself, or the one a collection folder's row
+     * wraps. Null for anything else, a header row included, which on 47.9.3 wraps an empty video
+     * with no id.
+     */
+    static Aweme postOf(Object item) {
+        Object post = GridPicker.postIn(item);
+        if (!(post instanceof Aweme)) return null;
+        if (post == item) return (Aweme) post;
+        return TextUtils.isEmpty(((Aweme) post).getAid()) ? null : (Aweme) post;
+    }
+
+    static long created(Object item) {
+        Aweme post = postOf(item);
+        return post == null ? 0 : post.getCreateTime();
+    }
+
+    static long length(Object item) {
+        return GridVideoLength.lengthMs(postOf(item));
+    }
+
+    static long views(Object item) {
+        Aweme post = postOf(item);
+        AwemeStatistics statistics = post == null ? null : post.getStatistics();
+        return statistics == null ? 0 : statistics.getPlayCount();
+    }
+
+    static long likes(Object item) {
+        Aweme post = postOf(item);
+        AwemeStatistics statistics = post == null ? null : post.getStatistics();
+        return statistics == null ? 0 : statistics.getDiggCount();
+    }
+
+    static void resetForTests() {
+        synchronized (ORIGINALS) {
+            ORIGINALS.clear();
+            LOADED.clear();
+            ASKED.clear();
+            HANDED.clear();
+            REWRITTEN.clear();
+            TABS.clear();
+        }
+        HOLDS.clear();
+        TIMED_OUT.clear();
+        synchronized (ADAPTER_FIELDS) {
+            ADAPTER_FIELDS.clear();
+        }
+    }
+}

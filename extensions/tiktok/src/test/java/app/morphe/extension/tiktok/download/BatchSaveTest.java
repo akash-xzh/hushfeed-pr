@@ -1,0 +1,357 @@
+/*
+ * Copyright 2026 Hushfeed contributors
+ * https://github.com/SysAdminDoc/hushfeed
+ */
+package app.morphe.extension.tiktok.download;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Context;
+import android.os.Looper;
+
+import app.morphe.extension.shared.Utils;
+import app.morphe.extension.tiktok.SettingsContextRule;
+import app.morphe.extension.tiktok.settings.Settings;
+import app.morphe.extension.tiktok.settings.SettingsStatus;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
+
+/**
+ * The run that saves the posts picked on a grid (#27): one count over every post, a post that
+ * fails skipped and the next one still saved, Cancel and a refusal from the disk ending it with
+ * the reason, already-saved videos counted and named, and a run cut off by TikTok closing named
+ * at the next start without counting an already-saved video as lost.
+ */
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 29, qualifiers = "en")
+public class BatchSaveTest {
+    @Rule public final SettingsContextRule settings = new SettingsContextRule();
+    private Context context;
+    private final List<CountDownLatch> holds = new ArrayList<>();
+
+    @Before public void setUp() throws Exception {
+        context = RuntimeEnvironment.getApplication();
+        Utils.setContext(context);
+        SaveNotice.windowRootsForTests = List.of();
+        SaveRecordsFixtures.reset(context);
+        ShadowToast.reset();
+    }
+
+    @After public void tearDown() throws Exception {
+        for (CountDownLatch hold : holds) hold.countDown();
+        BatchSave.saverForTests = null;
+        SaveRecordsFixtures.reset(context);
+        SaveNotice.windowRootsForTests = null;
+        Settings.DOWNLOAD_VIDEO_QUALITY.resetToDefault();
+        Settings.DOWNLOAD_WITHOUT_SOUND.resetToDefault();
+        Settings.REMOVE_DOWNLOAD_WATERMARK.resetToDefault();
+        Settings.DOWNLOAD_PHOTOS_AS_VIDEO.resetToDefault();
+        Settings.CHECK_SAVED_VIDEOS.resetToDefault();
+        SettingsStatus.advancedDownloadsEnabled = false;
+        SlideshowVideo.makerForTests = null;
+        SavedVideoArchiveAccess.reset(context);
+    }
+
+    private static void idle() {
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    /** The banner with no file to open falls back to a toast, which is what the tests read. */
+    private static String said() {
+        idle();
+        Shadows.shadowOf(Looper.getMainLooper()).idleFor(SaveNotice.SHEET_SETTLE_MS + 1, TimeUnit.MILLISECONDS);
+        return ShadowToast.getTextOfLatestToast();
+    }
+
+    private static List<Object> posts(String... ids) {
+        List<Object> posts = new ArrayList<>();
+        for (String id : ids) posts.add(id);
+        return posts;
+    }
+
+    @Test public void everyPostSavedSaysHowMany() {
+        SaveProgress progress = SaveProgress.queuedFiles(3);
+        List<Object> seen = new ArrayList<>();
+        BatchSave.run(context, posts("a", "b", "c"), (app, post, last) -> {
+            seen.add(post);
+            return BatchSave.Result.SAVED;
+        }, progress);
+        assertEquals("the posts weren't saved in the order picked", posts("a", "b", "c"), seen);
+        assertEquals("Saved 3 videos", said());
+    }
+
+    @Test public void aFailedPostIsSkippedAndAnAlreadySavedOneIsNamed() {
+        SaveProgress progress = SaveProgress.queuedFiles(4);
+        List<Object> seen = new ArrayList<>();
+        BatchSave.run(context, posts("a", "b", "c", "d"), (app, post, last) -> {
+            seen.add(post);
+            if ("b".equals(post)) throw new IOException("gone");
+            return "c".equals(post) ? BatchSave.Result.ALREADY_SAVED : BatchSave.Result.SAVED;
+        }, progress);
+        assertEquals("a failure ended the run", 4, seen.size());
+        assertEquals("Saved 3 of 4, 1 skipped\nOne was already saved", said());
+    }
+
+    @Test public void cancelLetsThePostUnderWayFinishAndLeavesTheRest() {
+        SaveProgress progress = SaveProgress.queuedFiles(4);
+        List<Object> seen = new ArrayList<>();
+        BatchSave.run(context, posts("a", "b", "c", "d"), (app, post, last) -> {
+            seen.add(post);
+            if ("b".equals(post)) progress.cancel();
+            return BatchSave.Result.SAVED;
+        }, progress);
+        assertEquals(posts("a", "b"), seen);
+        assertEquals("Saved 2 of 4, the rest cancelled", said());
+    }
+
+    @Test public void aFullDiskEndsTheRunWithItsReason() {
+        SaveProgress progress = SaveProgress.queuedFiles(3);
+        List<Object> seen = new ArrayList<>();
+        BatchSave.run(context, posts("a", "b", "c"), (app, post, last) -> {
+            seen.add(post);
+            if ("b".equals(post)) throw new MediaBudget.StopException("full", MediaBudget.StopException.Reason.SPACE);
+            return BatchSave.Result.SAVED;
+        }, progress);
+        assertEquals("the run went on past a full disk", posts("a", "b"), seen);
+        assertEquals("Saved 1 of 3, the rest need more free space", said());
+    }
+
+    @Test public void nothingSavedSaysSo() {
+        SaveProgress progress = SaveProgress.queuedFiles(2);
+        BatchSave.run(context, posts("a", "b"), (app, post, last) -> {
+            throw new IOException("gone");
+        }, progress);
+        assertEquals("None of the picked videos could be saved. Try again.", said());
+    }
+
+    @Test public void everyPostAlreadySavedStillSaysSo() {
+        SaveProgress progress = SaveProgress.queuedFiles(2);
+        BatchSave.run(context, posts("a", "b"), (app, post, last) -> BatchSave.Result.ALREADY_SAVED, progress);
+        assertEquals("2 were already saved", said());
+    }
+
+    @Test public void aRunOfNewAndAlreadySavedVideosCountsEachOnce() {
+        SaveProgress progress = SaveProgress.queuedFiles(3);
+        BatchSave.run(context, posts("a", "b", "c"), (app, post, last) ->
+                "a".equals(post) ? BatchSave.Result.ALREADY_SAVED : BatchSave.Result.SAVED, progress);
+        assertEquals("Saved 2 videos\nOne was already saved", said());
+        assertEquals("Saved one video", BatchSave.message(context, new SaveProgress.Outcome(1, 1, 0, 0), 0));
+    }
+
+    @Test public void theRunIsOneJobInTheMediaQueue() throws Exception {
+        CountDownLatch done = new CountDownLatch(2);
+        BatchSave.saverForTests = (app, post, last) -> {
+            assertFalse("a post was saved on the main thread", Utils.isCurrentlyOnMainThread());
+            done.countDown();
+            return BatchSave.Result.SAVED;
+        };
+        assertTrue(BatchSave.start(context, posts("a", "b")));
+        assertTrue("the run never saved its posts", done.await(10, TimeUnit.SECONDS));
+        SaveRecordsFixtures.drain();
+        assertEquals("Saved 2 videos", said());
+        assertFalse("nothing to start", BatchSave.start(context, new ArrayList<>()));
+    }
+
+    @Test public void aRunCutOffByTikTokClosingIsNamedWithoutItsAlreadySavedVideos() throws Exception {
+        CountDownLatch hold = new CountDownLatch(1);
+        holds.add(hold);
+        CountDownLatch reached = new CountDownLatch(1);
+        assertNotNull(MediaJobScheduler.submit(BatchSave.LABEL, null, 3, () -> {
+            SaveRecords.countedWithoutFile();
+            reached.countDown();
+            SaveRecordsFixtures.await(hold);
+        }, null));
+        assertTrue(reached.await(5, TimeUnit.SECONDS));
+
+        byte[] died = SaveRecordsFixtures.atDeath(context);
+        hold.countDown();
+        SaveRecordsFixtures.startAgain(context, died);
+        SaveRecords.Report report = SaveRecords.reconcile(context);
+
+        assertEquals(1, report.saves.size());
+        SaveRecords.Unfinished save = report.saves.get(0);
+        assertEquals(BatchSave.LABEL, save.kind);
+        assertEquals(3, save.files);
+        assertEquals("the already-saved video was named as lost", 1, save.done);
+        assertEquals(2, save.unfinished);
+        assertEquals("Picked videos", UnfinishedSaves.kindLabel(context, save.kind));
+    }
+
+    @Test public void eachVideoComesFromWhereDownloadWouldTakeIt() {
+        Settings.REMOVE_DOWNLOAD_WATERMARK.save(true);
+        AdvancedDownloadsTest.VideoData video = new AdvancedDownloadsTest.VideoData(List.of(
+                new AdvancedDownloadsTest.Gear("normal_720_0", 200, "https://example.com/720")));
+        video.downloadNoWatermarkAddr = new AdvancedDownloadsTest.Address("https://example.com/clean", 10);
+        video.downloadAddr = new AdvancedDownloadsTest.Address("https://example.com/stamped", 10);
+
+        BatchSave.Source automatic = BatchSave.source(video, "auto", false);
+        assertEquals("Automatic takes TikTok's clean file", List.of("https://example.com/clean"), automatic.video);
+        assertTrue(automatic.audio.isEmpty());
+        assertFalse(automatic.stripSound);
+        assertTrue("muted, the sound comes out", BatchSave.source(video, "auto", true).stripSound);
+
+        BatchSave.Source picked = BatchSave.source(video, "720", false);
+        assertEquals("a chosen quality takes its rendition", List.of("https://example.com/720"), picked.video);
+        assertFalse(picked.stripSound);
+        assertTrue("a rendition with its sound in it, muted", BatchSave.source(video, "720", true).stripSound);
+    }
+
+    @Test public void aPictureOnlyRenditionComesWithItsSoundOrNotAtAll() {
+        AdvancedDownloadsTest.Gear gear = new AdvancedDownloadsTest.Gear("normal_1080_0", 400, "https://example.com/video");
+        gear.videoExtra = "{\"audio_file_id\":\"matching\"}";
+        AdvancedDownloadsTest.VideoData video = new AdvancedDownloadsTest.VideoData(List.of(gear));
+        video.dash = true;
+        video.bitRateAudio = List.of(new AdvancedDownloadsTest.Audio("matching", 100));
+
+        BatchSave.Source source = BatchSave.source(video, "highest", false);
+        assertEquals(List.of("https://example.com/video"), source.video);
+        assertEquals("https://example.com/matching", source.audio.get(0));
+        BatchSave.Source muted = BatchSave.source(video, "highest", true);
+        assertTrue("muted, no sound is fetched", muted.audio.isEmpty());
+        assertFalse("and there is none to strip", muted.stripSound);
+
+        gear.videoExtra = "{\"audio_file_id\":\"missing\"}";
+        assertTrue("a silent video was offered as a complete one", BatchSave.source(video, "highest", false).video.isEmpty());
+    }
+
+    /** A drama episode as its episode list hands over one the account hasn't unlocked: no video. */
+    public static final class LockedEpisode {
+        public final String aid = "batch-locked-14";
+        public final DramaEpisodesTest.Paid mPaidContentInfo = new DramaEpisodesTest.Paid(7431100L, "Night Shift");
+    }
+
+    /**
+     * #463, #527: a drama episode with no video stops with its reason. TikTok is never asked for
+     * the episode some other way, since the whole of a locked one is what TikTok sells.
+     */
+    @Test public void aLockedDramaEpisodeIsNeverFetchedAnotherWay() {
+        List<String> asked = new ArrayList<>();
+        DramaEpisodes.sourceForTests = (path, query) -> {
+            asked.add(path);
+            return "{\"status_code\":0,\"aweme_detail\":{\"aweme_id\":\"batch-locked-14\",\"video\":"
+                    + "{\"play_addr\":{\"url_list\":[\"https://example.com/whole.mp4\"]}}}}";
+        };
+        DramaEpisodes.readerForTests = json -> null;
+        try {
+            IOException stopped = assertThrows(IOException.class,
+                    () -> BatchSave.saveOne(context, new LockedEpisode(), new MediaFileWriter.Saved[]{null}));
+            assertEquals("This video isn't available as a complete file", stopped.getMessage());
+            assertTrue("TikTok was asked for the locked episode: " + asked, asked.isEmpty());
+        } finally {
+            DramaEpisodes.sourceForTests = null;
+            DramaEpisodes.readerForTests = null;
+        }
+    }
+
+    private static AdvancedDownloadsTest.PhotoPost photoPost(String id, AdvancedDownloadsTest.Photo... photos) {
+        return new AdvancedDownloadsTest.PhotoPost(id, List.of(photos));
+    }
+
+    /**
+     * #430: One video gathers the picked photo posts into one item where the first of them was
+     * picked. Videos and a post with a live photo stay one per post, around it.
+     */
+    @Test public void joiningPutsThePhotoPostsInOneItemWhereTheFirstWasPicked() throws Exception {
+        Object a = "video-a", b = "video-b";
+        Object one = photoPost("join-1", new AdvancedDownloadsTest.Photo("https://example.com/join/1"));
+        Object two = photoPost("join-2", new AdvancedDownloadsTest.Photo("https://example.com/join/2"));
+        Object live = photoPost("join-live", new AdvancedDownloadsTest.Photo("https://example.com/join/live").live());
+        List<Object> items = BatchSave.joined(List.of(a, one, live, b, two));
+        assertEquals(4, items.size());
+        assertEquals(a, items.get(0));
+        assertTrue("the photo posts weren't joined", items.get(1) instanceof BatchSave.Joined);
+        assertEquals(List.of(one, two), ((BatchSave.Joined) items.get(1)).posts);
+        assertEquals("a live photo went into the video", live, items.get(2));
+        assertEquals(b, items.get(3));
+
+        List<Object> lone = List.of(a, one, b);
+        assertSame("one photo post was joined with nothing", lone, BatchSave.joined(lone));
+
+        CountDownLatch done = new CountDownLatch(4);
+        List<Object> seen = new java.util.concurrent.CopyOnWriteArrayList<>();
+        BatchSave.saverForTests = (app, post, last) -> {
+            seen.add(post);
+            done.countDown();
+            return BatchSave.Result.SAVED;
+        };
+        assertTrue(BatchSave.start(context, new ArrayList<>(List.of(a, one, live, b, two)), true));
+        assertTrue("the run never saved its items", done.await(10, TimeUnit.SECONDS));
+        SaveRecordsFixtures.drain();
+        assertEquals(4, seen.size());
+        assertTrue(seen.get(1) instanceof BatchSave.Joined);
+        assertEquals("Saved 4 videos", said());
+    }
+
+    /** #430: the joined video is made once, named as its first post's, and isn't any post's saved video. */
+    @Test public void theJoinedVideoIsMadeOnceAndNamedAfterItsFirstPost() throws Exception {
+        SettingsStatus.advancedDownloadsEnabled = true;
+        Settings.DOWNLOAD_PHOTOS_AS_VIDEO.save(true);
+        Settings.CHECK_SAVED_VIDEOS.save(true);
+        List<String> made = new ArrayList<>();
+        SlideshowVideo.makerForTests = (name, seconds, sounds, clips) -> {
+            made.add(name);
+            java.io.File file = new java.io.File(context.getCacheDir(), "joined-photo-video.mp4");
+            java.nio.file.Files.write(file.toPath(), new byte[]{1, 2, 3, 4});
+            return new MediaFileWriter.Saved(name, null, file);
+        };
+        Object first = photoPost("joined-first", new AdvancedDownloadsTest.Photo("https://example.com/joined/1"));
+        Object second = photoPost("joined-second", new AdvancedDownloadsTest.Photo("https://example.com/joined/2"),
+                new AdvancedDownloadsTest.Photo("https://example.com/joined/3"));
+        MediaFileWriter.Saved[] last = {null};
+
+        assertEquals(BatchSave.Result.SAVED,
+                BatchSave.saveOne(context, new BatchSave.Joined(List.of(first, second)), last));
+        assertEquals(List.of(DownloadFilenameFormatter.formatSelectedVideoName(first)), made);
+        assertNotNull(last[0]);
+        assertFalse("the joined video was taken as the first post's own",
+                SavedVideoArchiveAccess.isRecorded(context, "joined-first"));
+        assertFalse(SavedVideoArchiveAccess.isRecorded(context, "joined-second"));
+    }
+
+    /** #197: with Save photo posts as a video on, a picked photo post comes out as that video. */
+    @Test public void aPickedPhotoPostIsSavedAsAVideoWhenThatSwitchIsOn() throws Exception {
+        SettingsStatus.advancedDownloadsEnabled = true;
+        Settings.DOWNLOAD_PHOTOS_AS_VIDEO.save(true);
+        Settings.CHECK_SAVED_VIDEOS.save(true);
+        List<String> made = new ArrayList<>();
+        SlideshowVideo.makerForTests = (name, seconds, sounds, clips) -> {
+            made.add(name);
+            java.io.File file = new java.io.File(context.getCacheDir(), "batch-photo-video.mp4");
+            java.nio.file.Files.write(file.toPath(), new byte[]{1, 2, 3, 4});
+            return new MediaFileWriter.Saved(name, null, file);
+        };
+        Object post = new AdvancedDownloadsTest.PhotoPost("batch-photo-post", List.of(
+                new AdvancedDownloadsTest.Photo("https://example.com/batch/0"),
+                new AdvancedDownloadsTest.Photo("https://example.com/batch/1")));
+        MediaFileWriter.Saved[] last = {null};
+
+        assertEquals(BatchSave.Result.SAVED, BatchSave.saveOne(context, post, last));
+        assertEquals("the photo post wasn't made into a video", 1, made.size());
+        assertNotNull(last[0]);
+        assertTrue("the video isn't in the record of saved posts",
+                SavedVideoArchiveAccess.isRecorded(context, "batch-photo-post"));
+        assertEquals("a second pick of the same post made another video", BatchSave.Result.ALREADY_SAVED,
+                BatchSave.saveOne(context, post, last));
+        assertEquals(1, made.size());
+    }
+}

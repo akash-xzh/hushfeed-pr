@@ -1,0 +1,174 @@
+/*
+ * Copyright 2026 Hushfeed contributors
+ * https://github.com/SysAdminDoc/hushfeed
+ *
+ * Built on icysymmetra/tiktok-patches-for-morphe (GPL-3.0).
+ * Follows hxreborn/hxreborn-tiktok-patches (GPL-3.0).
+ */
+package app.morphe.extension.tiktok.feedfilter;
+
+import app.morphe.extension.shared.Logger;
+import app.morphe.extension.shared.diagnostics.FeedFilterCounters;
+import app.morphe.extension.tiktok.blockauthor.Reflect;
+import app.morphe.extension.tiktok.settings.Settings;
+
+import com.ss.android.ugc.aweme.feed.model.Aweme;
+
+/**
+ * The things TikTok slots into a feed that are not videos: the playlist bar along the
+ * bottom of a video, the floating event badge, the friend recommendation card and its
+ * bulletin board relatives, and the countdown lock on a short drama advert.
+ *
+ * These are stopped where they are built rather than filtered out of a list, because none
+ * of them arrives as an ordinary feed item. The one exception is the inserted card, which
+ * also shows up in the list as aweme type 105, so it gets a list filter too.
+ */
+public final class CardFilters {
+    private CardFilters() {
+    }
+
+    /** The playlist bar TikTok shows along the bottom of a video in a series. */
+    public static boolean shouldHidePlaylistBar() {
+        return Settings.HIDE_PLAYLIST_BAR.get();
+    }
+
+    /** The export's line for the shop's Find bar: each ask, each one that would show, each one hidden. */
+    static final String SHOP_FIND_BAR_SOURCE = "ShopFindBar";
+
+    /**
+     * TikTok's answer to whether a video shows the shop's "Find &lt;product&gt;" bar along its
+     * bottom (#271), a shopping search for something in the video. It rides Hide TikTok Shop,
+     * like the shop buttons under captions. Only some accounts are served the bar, so every ask
+     * is counted: an export with asks and no bars says the account just isn't getting it.
+     */
+    public static boolean keepShopFindBar(boolean shows) {
+        try {
+            FeedFilterCounters.sawList(SHOP_FIND_BAR_SOURCE, shows ? 1 : 0);
+            if (!shows || !Settings.HIDE_SHOP.get()) return shows;
+            FeedFilterCounters.removed(SHOP_FIND_BAR_SOURCE, 1, "shopFindBar");
+            return false;
+        } catch (Throwable failure) {
+            Logger.printException(() -> "Could not check the shop Find bar", failure);
+            return shows;
+        }
+    }
+
+    /** The export's line for the shop's Find button on videos with no product cart. */
+    static final String SHOP_FIND_BUTTON_SOURCE = "ShopFindButton";
+
+    /**
+     * TikTok's answer to whether a video with no product cart shows the shop's "Find
+     * &lt;product&gt;" button above the bottom bar (#271), the one the reporter kept seeing after
+     * the Find bar was taken. It rides Hide TikTok Shop too, and every ask is counted the same way.
+     * The trigger's answer arrives as an int, non-zero for yes.
+     */
+    public static boolean keepShopFindButton(int shows) {
+        boolean showing = shows != 0;
+        try {
+            FeedFilterCounters.sawList(SHOP_FIND_BUTTON_SOURCE, showing ? 1 : 0);
+            if (!showing || !Settings.HIDE_SHOP.get()) return showing;
+            FeedFilterCounters.removed(SHOP_FIND_BUTTON_SOURCE, 1, "shopFindButton");
+            return false;
+        } catch (Throwable failure) {
+            Logger.printException(() -> "Could not check the shop Find button", failure);
+            return showing;
+        }
+    }
+
+    /** The floating promotional event badge. */
+    public static boolean shouldHideEventBadge() {
+        return Settings.HIDE_EVENT_BADGE.get();
+    }
+
+    /** The friend recommendation card and the other cards inserted between videos. */
+    public static boolean shouldHideInsertedCards() {
+        return Settings.HIDE_INSERTED_CARDS.get();
+    }
+
+    /** The export's line for the full-screen people you may know card (#478). */
+    static final String REC_USER_BIG_CARD_SOURCE = "RecUserBigCard";
+
+    /** CardInsertInfo's card type for that card, TikTok's FEED_REC_USER_BIG_CARD. */
+    static final int REC_USER_BIG_CARD_TYPE = 49;
+
+    /**
+     * The full-screen "people you may know" card between videos (#478) is never asked for. Its
+     * request builder answers an empty list when TikTok's experiment is off, and that's what it
+     * gets with Hide inserted cards on. Each ask is counted, so an export says whether TikTok
+     * went looking for the card at all.
+     */
+    public static boolean shouldSkipRecUserBigCardRequest() {
+        try {
+            FeedFilterCounters.sawList(REC_USER_BIG_CARD_SOURCE, 1);
+            if (!shouldHideInsertedCards()) return false;
+            FeedFilterCounters.removed(REC_USER_BIG_CARD_SOURCE, 1, "recUserBigCardRequest");
+            return true;
+        } catch (Throwable failure) {
+            Logger.printException(() -> "Could not check the people you may know card", failure);
+            return false;
+        }
+    }
+
+    /**
+     * The Lemon8 install promo card is never asked for. Its request is the Lemon8 handler's
+     * answer to the card-insert round, and an empty answer is the app's own "nothing to insert".
+     * It rides Remove feed ads, like the same card's list filter in AdsFilter.
+     */
+    public static boolean shouldSkipLemon8PromoRequest() {
+        return Settings.REMOVE_ADS.get();
+    }
+
+    /**
+     * The full-screen "Trending free dramas on PineDrama" card between drama episodes (#286) is
+     * never asked for. It is a mini drama promo and an inserted card, so any of the three
+     * switches that name those turns it off.
+     */
+    public static boolean shouldSkipPineDramaMidInsert() {
+        return Settings.HIDE_MINI_DRAMAS.get() || Settings.HIDE_SERIES.get()
+                || Settings.HIDE_INSERTED_CARDS.get();
+    }
+
+    /**
+     * TikTok locks scrolling until a short drama advert has counted down. It asks whether
+     * the item is a blocking advert; answering no releases the scroll.
+     */
+    public static boolean shouldBlockForDramaAd(boolean isBlockingAd) {
+        if (isBlockingAd && Settings.REMOVE_ADS.get()) {
+            Logger.printInfo(() -> "Released the countdown lock on a short drama advert");
+            return false;
+        }
+        return isBlockingAd;
+    }
+
+    /**
+     * The series player asks TikTok's ad server for an advert to drop in every so many episodes
+     * (#286), and checks the answer with a validity test before it inserts one. With Remove feed
+     * ads on, every answer fails that test, which is the path the app takes when the ad server
+     * has nothing, and the player goes on to the next episode.
+     */
+    public static boolean shouldRefuseSeriesRealtimeAd() {
+        return Settings.REMOVE_ADS.get();
+    }
+    /** The list side of {@link #shouldHideInsertedCards()}. */
+    public static final class InsertedCardFilter implements IFilter {
+        private static final int AWEME_TYPE_INSERT_CARD = 105;
+
+        @Override
+        public boolean getEnabled() {
+            return shouldHideInsertedCards();
+        }
+
+        @Override
+        public boolean getFiltered(Aweme item) {
+            return item.getAwemeType() == AWEME_TYPE_INSERT_CARD || isRecUserBigCard(item);
+        }
+
+        /** The people you may know card by its card type, whatever awemeType it came with (#478). */
+        static boolean isRecUserBigCard(Aweme item) {
+            Object insert = Reflect.property(item, "getCardInsertInfo", "cardInsertInfo");
+            if (insert == null) return false;
+            Object type = Reflect.property(insert, "getCardType", "cardType");
+            return type instanceof Number && ((Number) type).intValue() == REC_USER_BIG_CARD_TYPE;
+        }
+    }
+}

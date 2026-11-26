@@ -1,0 +1,219 @@
+/*
+ * Copyright 2026 Hushfeed contributors
+ * https://github.com/SysAdminDoc/hushfeed
+ */
+package app.morphe.patches.tiktok.privacy
+
+import app.morphe.BridgeTypeFlow
+import app.morphe.Fixtures
+import app.morphe.util.cloneMutable
+import app.morphe.util.getReference
+import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.iface.ClassDef
+import com.android.tools.smali.dexlib2.iface.Method
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
+import com.android.tools.smali.dexlib2.iface.reference.TypeReference
+import com.android.tools.smali.dexlib2.immutable.ImmutableClassDef
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstruction11n
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstruction11x
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstruction21c
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstruction35c
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+private const val MANAGER = "Lcom/ss/android/ugc/aweme/framework/services/ServiceManager;"
+private const val FACTORY = "Lcom/bytedance/ies/ugc/aweme/network/IRetrofitFactory;"
+private const val CLIENT = "LX/05y0;"
+private const val SERVICE = "LX/1DT1;"
+
+/**
+ * What Account cleanup (#332) bridges to, held to each declared build: one liked videos list
+ * service, one Favorites service and one service that clears unavailable Favorites, each made one
+ * way in TikTok, and a bridge that makes it the same way and passes the verifier's typing. The
+ * comment cleanup (#442) adds TikTok's general request service, made on the liked list's client.
+ */
+class AccountCleanupServicesTest {
+    @Test
+    fun `each build has the services the cleanup bridges to, each made one way`() {
+        Fixtures.forEachDeclared { apk ->
+            val version = Fixtures.versionOf(apk)
+            val liked = mutableSetOf<String>()
+            val favorites = mutableSetOf<String>()
+            val unavailable = mutableSetOf<String>()
+            val made = mutableMapOf<String, MutableSet<ServiceRecipe>>()
+            val makers = mutableMapOf<String, MutableList<Method>>()
+            val classes = mutableMapOf<String, ClassDef>()
+            val container = Fixtures.dexContainer(apk, Opcodes.getDefault())
+            for (entry in container.dexEntryNames) {
+                for (classDef in container.getEntry(entry)!!.dexFile.classes) {
+                    classes[classDef.type] = classDef
+                    if (isLikedListService(classDef)) liked += classDef.type
+                    if (isFavoritesService(classDef)) favorites += classDef.type
+                    if (isUnavailableFavoritesService(classDef)) unavailable += classDef.type
+                    for (method in classDef.methods) {
+                        for ((service, recipe) in serviceRecipes(method)) {
+                            made.getOrPut(service) { mutableSetOf() } += recipe
+                            makers.getOrPut(service) { mutableListOf() } += method
+                        }
+                    }
+                }
+            }
+            assertEquals("$version: liked list services $liked", 1, liked.size)
+            assertEquals("$version: Favorites services $favorites", 1, favorites.size)
+            assertEquals("$version: unavailable Favorites services $unavailable", 1, unavailable.size)
+            for (service in listOf(liked.single(), favorites.single(), unavailable.single())) {
+                val recipes = made[service].orEmpty()
+                assertEquals("$version: ways $service is made: $recipes", 1, recipes.size)
+                // The patch finds the makers through the patcher's check-cast index.
+                for (maker in makers[service].orEmpty()) {
+                    assertTrue("$version: ${maker.definingClass}->${maker.name} casts to $service",
+                        maker.implementation!!.instructions.any { it.casts(service) })
+                }
+                checkBridge("$version $service", service, recipes.single())
+                checkBridgeCanReach("$version $service", classes, service, recipes.single())
+            }
+            assertTrue("$version: $NETWORK_API with one doGet and one doPost",
+                classes[NETWORK_API]?.let(::isNetworkApi) == true)
+            val apiHost = made.getValue(liked.single()).single()
+            checkBridge("$version general requests", NETWORK_API, apiHost)
+            checkBridgeCanReach("$version general requests", classes, NETWORK_API, apiHost)
+        }
+    }
+
+    @Test
+    fun `TikTok's own way of making a service is read whole`() {
+        val recipes = serviceRecipes(maker())
+        assertEquals(1, recipes.size)
+        val (service, recipe) = recipes.single()
+        assertEquals(SERVICE, service)
+        assertEquals("$FACTORY->LIZ", recipe.factory.definingClass + "->" + recipe.factory.name)
+        assertEquals(Opcode.INVOKE_INTERFACE, recipe.factoryCall)
+        assertEquals("LX/0464;->LIZJ", recipe.host.definingClass + "->" + recipe.host.name)
+        assertEquals("$CLIENT->create", recipe.create.definingClass + "->" + recipe.create.name)
+        assertEquals(Opcode.INVOKE_INTERFACE, recipe.createCall)
+        checkBridge("hand-built", service, recipe)
+    }
+
+    @Test
+    fun `a maker missing a step is not taken`() {
+        assertEquals("the host isn't a String", emptyList<Any>(),
+            serviceRecipes(maker(host = ImmutableFieldReference("LX/0464;", "LIZJ", "LX/0464;"))))
+        assertEquals("the factory isn't from ServiceManager", emptyList<Any>(), serviceRecipes(maker(fromManager = false)))
+        assertEquals("the class handed to create isn't the one loaded", emptyList<Any>(),
+            serviceRecipes(maker(createRegisters = 1 to 1)))
+    }
+
+    @Test
+    fun `a general request service that changed shape is not taken`() {
+        val get = "doGet" to listOf("Z", "I", "Ljava/lang/String;", "Ljava/util/Map;", "Ljava/util/List;", "Ljava/lang/Object;")
+        val post = "doPost" to listOf("I", "Ljava/lang/String;", "Ljava/util/Map;", "Ljava/util/Map;", "Ljava/util/List;", "Ljava/lang/Object;")
+        assertTrue("47.9.3's shape", isNetworkApi(networkApi(get, post)))
+        assertFalse("no doPost", isNetworkApi(networkApi(get)))
+        assertFalse("a second doGet", isNetworkApi(networkApi(get, post, "doGet" to listOf("Ljava/lang/String;"))))
+        assertFalse("doGet without its first flag", isNetworkApi(networkApi("doGet" to get.second.drop(1), post)))
+        assertFalse("a class, not an interface", isNetworkApi(networkApi(get, post, flags = AccessFlags.PUBLIC.value)))
+    }
+
+    private fun networkApi(
+        vararg methods: Pair<String, List<String>>,
+        flags: Int = AccessFlags.PUBLIC.value or AccessFlags.INTERFACE.value or AccessFlags.ABSTRACT.value,
+    ): ClassDef = ImmutableClassDef(
+        NETWORK_API, flags, "Ljava/lang/Object;", null, null, null, null,
+        methods.map { (name, parameters) ->
+            ImmutableMethod(NETWORK_API, name, parameters.map { ImmutableMethodParameter(it, null, null) },
+                "LX/063E;", AccessFlags.PUBLIC.value or AccessFlags.ABSTRACT.value, null, null, null)
+        },
+    )
+
+    private fun Instruction.casts(type: String) =
+        opcode == Opcode.CHECK_CAST && getReference<TypeReference>()?.type == type
+
+    private fun checkBridge(label: String, service: String, recipe: ServiceRecipe) {
+        val stub = ImmutableMethod(
+            ACCOUNT_CLEANUP_SOURCES, "likedListService", listOf(), "Ljava/lang/Object;",
+            AccessFlags.PUBLIC.value or AccessFlags.STATIC.value, null, null,
+            ImmutableMethodImplementation(1, listOf(
+                ImmutableInstruction11n(Opcode.CONST_4, 0, 0),
+                ImmutableInstruction11x(Opcode.RETURN_OBJECT, 0),
+            ), null, null),
+        )
+        val bridge = stub.cloneMutable(additionalRegisters = 2)
+        bridge.makeService(service, recipe)
+        val code = bridge.implementation!!.instructions.toList()
+        assertEquals("$label: the bridge", listOf(
+            Opcode.INVOKE_STATIC, Opcode.MOVE_RESULT_OBJECT, Opcode.CONST_CLASS, Opcode.INVOKE_VIRTUAL,
+            Opcode.MOVE_RESULT_OBJECT, Opcode.CHECK_CAST, Opcode.SGET_OBJECT, recipe.factoryCall,
+            Opcode.MOVE_RESULT_OBJECT, Opcode.CONST_CLASS, recipe.createCall, Opcode.MOVE_RESULT_OBJECT,
+            Opcode.RETURN_OBJECT,
+        ), code.take(13).map { it.opcode })
+        assertEquals("$label: the factory's class", recipe.factory.definingClass, code[2].getReference<TypeReference>()!!.type)
+        assertEquals("$label: the host", recipe.host.name, code[6].getReference<FieldReference>()!!.name)
+        assertEquals("$label: the factory call", recipe.factory.name, code[7].getReference<MethodReference>()!!.name)
+        assertEquals("$label: the service", service, code[9].getReference<TypeReference>()!!.type)
+        assertEquals("$label: the create call", "create", code[10].getReference<MethodReference>()!!.name)
+        assertEquals("$label: two scratch registers", 3, bridge.implementation!!.registerCount)
+        assertEquals(emptyList<BridgeTypeFlow.Problem>(), BridgeTypeFlow.check(bridge))
+    }
+
+    /** The bridge sits in the extension's package, so all it names has to be public on the build. */
+    private fun checkBridgeCanReach(label: String, classes: Map<String, ClassDef>, service: String, recipe: ServiceRecipe) {
+        fun isPublic(flags: Int) = AccessFlags.PUBLIC.isSet(flags)
+        for (type in listOf(service, recipe.host.definingClass, recipe.factory.definingClass, recipe.create.definingClass)) {
+            assertTrue("$label: $type is public", isPublic(classes.getValue(type).accessFlags))
+        }
+        val host = classes.getValue(recipe.host.definingClass).fields.single { it.name == recipe.host.name && it.type == recipe.host.type }
+        assertTrue("$label: the host field is public", isPublic(host.accessFlags))
+        for (call in listOf(recipe.factory, recipe.create)) {
+            val declared = classes.getValue(call.definingClass).methods.firstOrNull { method ->
+                method.name == call.name && method.parameterTypes.map { it.toString() } == call.parameterTypes.map { it.toString() }
+            } ?: continue
+            assertTrue("$label: ${call.name} is public", isPublic(declared.accessFlags))
+        }
+    }
+
+    /** The liked list service's maker as 47.6.3 has it, cut down to the steps that make it. */
+    private fun maker(
+        host: ImmutableFieldReference = ImmutableFieldReference("LX/0464;", "LIZJ", "Ljava/lang/String;"),
+        fromManager: Boolean = true,
+        createRegisters: Pair<Int, Int> = 1 to 0,
+    ): Method {
+        val get = ImmutableMethodReference(MANAGER, "get", listOf(), MANAGER)
+        val getService = ImmutableMethodReference(
+            if (fromManager) MANAGER else "LX/0Other;", "getService", listOf("Ljava/lang/Class;"), "Ljava/lang/Object;")
+        val factory = ImmutableMethodReference(FACTORY, "LIZ", listOf("Ljava/lang/String;"), CLIENT)
+        val create = ImmutableMethodReference(CLIENT, "create", listOf("Ljava/lang/Class;"), "Ljava/lang/Object;")
+        val instructions = listOf(
+            ImmutableInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0, get),
+            ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 1),
+            ImmutableInstruction21c(Opcode.CONST_CLASS, 0, ImmutableTypeReference(FACTORY)),
+            ImmutableInstruction35c(Opcode.INVOKE_VIRTUAL, 2, 1, 0, 0, 0, 0, getService),
+            ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 1),
+            ImmutableInstruction21c(Opcode.CHECK_CAST, 1, ImmutableTypeReference(FACTORY)),
+            ImmutableInstruction21c(Opcode.SGET_OBJECT, 0, host),
+            ImmutableInstruction35c(Opcode.INVOKE_INTERFACE, 2, 1, 0, 0, 0, 0, factory),
+            ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 1),
+            ImmutableInstruction21c(Opcode.CONST_CLASS, 0, ImmutableTypeReference(SERVICE)),
+            ImmutableInstruction35c(Opcode.INVOKE_INTERFACE, 2, createRegisters.first, createRegisters.second, 0, 0, 0, create),
+            ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0),
+            ImmutableInstruction21c(Opcode.CHECK_CAST, 0, ImmutableTypeReference(SERVICE)),
+            ImmutableInstruction11x(Opcode.RETURN_OBJECT, 0),
+        )
+        return ImmutableMethod(
+            "LX/1DT0;", "make", listOf(), "Ljava/lang/Object;",
+            AccessFlags.PUBLIC.value or AccessFlags.STATIC.value, null, null,
+            ImmutableMethodImplementation(2, instructions, null, null),
+        )
+    }
+}
