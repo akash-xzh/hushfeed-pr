@@ -103,7 +103,21 @@ public final class FollowBridge {
                 }
             } catch (Throwable ex) {
                 httpStatus = 500;
-                respJson = new JSONObject().put("ok", false).put("error", String.valueOf(ex.getMessage()));
+                Throwable root = ex;
+                while (root.getCause() != null && (root instanceof java.lang.reflect.InvocationTargetException || root.getMessage() == null)) {
+                    root = root.getCause();
+                }
+                android.util.Log.e("FollowBridge", "Request failed: " + target, root);
+                StringBuilder sb = new StringBuilder();
+                StackTraceElement[] st = root.getStackTrace();
+                for (int i = 0; i < Math.min(4, st.length); i++) {
+                    if (i > 0) sb.append(" <- ");
+                    sb.append(st[i].getClassName()).append(".").append(st[i].getMethodName()).append(":").append(st[i].getLineNumber());
+                }
+                respJson = new JSONObject()
+                        .put("ok", false)
+                        .put("error", root.getClass().getSimpleName() + ": " + String.valueOf(root.getMessage()))
+                        .put("trace", sb.toString());
             }
 
             byte[] body = respJson.toString().getBytes(StandardCharsets.UTF_8);
@@ -286,23 +300,44 @@ public final class FollowBridge {
 
     private static Object invokeBody(Object response) {
         if (response == null) return null;
+        Object raw = null;
         try {
             Method m = response.getClass().getMethod("body");
             m.setAccessible(true);
-            Object v = m.invoke(response);
-            if (v != null) return v;
+            raw = m.invoke(response);
         } catch (Throwable ignored) {}
-        for (Class<?> at = response.getClass(); at != null && at != Object.class; at = at.getSuperclass()) {
-            for (Field f : at.getDeclaredFields()) {
-                if (Modifier.isStatic(f.getModifiers()) || f.getType() != Object.class) continue;
-                try {
-                    f.setAccessible(true);
-                    Object v = f.get(response);
-                    if (v instanceof String) return v;
-                } catch (Throwable ignored) {}
+        if (raw == null) {
+            for (Class<?> at = response.getClass(); at != null && at != Object.class; at = at.getSuperclass()) {
+                for (Field f : at.getDeclaredFields()) {
+                    if (Modifier.isStatic(f.getModifiers()) || f.getType() != Object.class) continue;
+                    try {
+                        f.setAccessible(true);
+                        Object v = f.get(response);
+                        if (v != null) {
+                            raw = v;
+                            break;
+                        }
+                    } catch (Throwable ignored) {}
+                }
+                if (raw != null) break;
             }
         }
-        return null;
+        if (raw == null) return null;
+        if (raw instanceof String) return raw;
+        try {
+            Class<?> typedInput = Class.forName("com.bytedance.retrofit2.mime.TypedInput");
+            if (typedInput.isInstance(raw)) {
+                try (java.io.InputStream is = (java.io.InputStream) typedInput.getMethod("in").invoke(raw)) {
+                    if (is == null) return null;
+                    java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int n;
+                    while ((n = is.read(buf)) > 0) baos.write(buf, 0, n);
+                    return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (Throwable ignored) {}
+        return String.valueOf(raw);
     }
 
     private static Object networkApi() throws Exception {

@@ -1,5 +1,5 @@
 {
-  "version": "v0.85.1",
+  "version": "v0.85.2",
   "appNames": {
     "com.zhiliaoapp.musically": "TikTok",
     "com.zhiliaoapp.musically.go": "TikTok Lite"
@@ -5072,6 +5072,44 @@
       ]
     },
     {
+      "name": "Follow bridge (localhost)",
+      "description": "Starts a local 127.0.0.1:48912 HTTP bridge inside TikTok for Termux automation.",
+      "category": null,
+      "use": true,
+      "dependencies": [
+        "Patch"
+      ],
+      "compatiblePackages": {
+        "com.zhiliaoapp.musically": [
+          "47.9.3"
+        ]
+      },
+      "compatibility": [
+        {
+          "name": "TikTok",
+          "packageName": "com.zhiliaoapp.musically",
+          "description": null,
+          "appIconColor": 16657493,
+          "signatures": [
+            "9041803e91bcb814b4b4399fb5c85a91640b755e5e8ba76813814bf4cf2ab5ba"
+          ],
+          "targets": [
+            {
+              "version": "47.9.3",
+              "experimental": false,
+              "versionCodes": {
+                "ARM64_V8A": 2024709030,
+                "ARMEABI_V7A": 2024709030,
+                "X86": 2024709030,
+                "X86_64": 2024709030
+              }
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Follow diagnostics",
       "description": "Tells you when TikTok quietly turned down a follow, and why, since the app shows it as if it worked. With diagnostic logging on, the details go in the report too. Works as soon as you patch it in, with no switch.",
       "category": "Interaction",
@@ -7531,7 +7569,7 @@
           "description": null,
           "required": false,
           "type": "kotlin.String",
-          "default": "\ud83d\udd25",
+          "default": "🔥",
           "values": null
         }
       ]
@@ -13140,44 +13178,6 @@
           "values": null
         }
       ]
-    },
-    {
-      "name": "Follow bridge (localhost)",
-      "description": "Starts a local 127.0.0.1:48912 HTTP bridge inside TikTok for Termux automation.",
-      "category": "Misc",
-      "use": true,
-      "dependencies": [
-        "Patch"
-      ],
-      "compatiblePackages": {
-        "com.zhiliaoapp.musically": [
-          "47.9.3"
-        ]
-      },
-      "compatibility": [
-        {
-          "name": "TikTok",
-          "packageName": "com.zhiliaoapp.musically",
-          "description": null,
-          "appIconColor": 16657493,
-          "signatures": [
-            "9041803e91bcb814b4b4399fb5c85a91640b755e5e8ba76813814bf4cf2ab5ba"
-          ],
-          "targets": [
-            {
-              "version": "47.9.3",
-              "experimental": false,
-              "versionCodes": {
-                "ARM64_V8A": 2024709030,
-                "ARMEABI_V7A": 2024709030,
-                "X86": 2024709030,
-                "X86_64": 2024709030
-              }
-            }
-          ]
-        }
-      ],
-      "options": []
     }
   ]
 }
