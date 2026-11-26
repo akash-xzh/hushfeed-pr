@@ -9,7 +9,7 @@ import app.morphe.util.addInstruction
 import app.morphe.util.addInstructions
 
 internal object DropBackgroundRequestsFingerprint : Fingerprint(
-    strings = listOf("Drop background requests when went background for 2 minutes"),
+    strings = listOf("Drop background requests when went background for "),
 )
 
 @Suppress("unused")
