@@ -352,15 +352,18 @@ public final class FollowBridge {
         if (raw == null) return null;
         if (raw instanceof String) return raw;
         try {
-            Class<?> typedInput = Class.forName("com.bytedance.retrofit2.mime.TypedInput");
-            if (typedInput.isInstance(raw)) {
-                try (java.io.InputStream is = (java.io.InputStream) typedInput.getMethod("in").invoke(raw)) {
-                    if (is == null) return null;
-                    java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-                    byte[] buf = new byte[8192];
-                    int n;
-                    while ((n = is.read(buf)) > 0) baos.write(buf, 0, n);
-                    return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+            for (Method m : raw.getClass().getMethods()) {
+                if (m.getParameterTypes().length == 0
+                        && java.io.InputStream.class.isAssignableFrom(m.getReturnType())) {
+                    m.setAccessible(true);
+                    try (java.io.InputStream is = (java.io.InputStream) m.invoke(raw)) {
+                        if (is == null) return null;
+                        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                        byte[] buf = new byte[8192];
+                        int n;
+                        while ((n = is.read(buf)) > 0) baos.write(buf, 0, n);
+                        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                    }
                 }
             }
         } catch (Throwable ignored) {}

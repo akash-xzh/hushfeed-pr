@@ -282,26 +282,37 @@ public final class AccountCountry {
         Object response = execute.invoke(call);
         Object body = bodyOf(response);
         if (body == null) throw new UnsupportedOperationException("no reply body");
-        Method in = Class.forName(TYPED_INPUT).getMethod("in");
+        if (body instanceof String) return (String) body;
+        Method in = findInputStreamMethod(body.getClass());
+        if (in == null) throw new UnsupportedOperationException("no InputStream on reply body: " + body.getClass().getName());
+        in.setAccessible(true);
         try (InputStream stream = (InputStream) in.invoke(body)) {
             return read(stream);
         }
     }
 
+    private static Method findInputStreamMethod(Class<?> cls) {
+        for (Method m : cls.getMethods()) {
+            if (m.getParameterTypes().length == 0 && InputStream.class.isAssignableFrom(m.getReturnType())) {
+                return m;
+            }
+        }
+        return null;
+    }
+
     /**
-     * The reply's body. The response keeps it in its one generic field, declared Object once
-     * erased, next to an error body declared as the input type itself, so only the field
-     * declared Object counts.
+     * The reply's body. Works for both unobfuscated TypedInput (TikTok) and obfuscated TypedInput (TikTok Lite).
      */
     private static Object bodyOf(Object response) throws Exception {
         if (response == null) return null;
-        Class<?> input = Class.forName(TYPED_INPUT);
         for (Class<?> at = response.getClass(); at != null && at != Object.class; at = at.getSuperclass()) {
             for (Field field : at.getDeclaredFields()) {
                 if (Modifier.isStatic(field.getModifiers()) || field.getType() != Object.class) continue;
                 field.setAccessible(true);
                 Object value = field.get(response);
-                if (input.isInstance(value)) return value;
+                if (value == null) continue;
+                if (value instanceof String) return value;
+                if (findInputStreamMethod(value.getClass()) != null) return value;
             }
         }
         return null;
