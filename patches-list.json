@@ -1,12 +1,13 @@
 {
-  "version": "v0.85.3",
+  "version": "v0.85.4",
   "appNames": {
-    "com.zhiliaoapp.musically": "TikTok"
+    "com.zhiliaoapp.musically": "TikTok",
+    "com.zhiliaoapp.musically.go": "TikTok Lite"
   },
   "patches": [
     {
       "name": "Follow bridge (localhost)",
-      "description": "Starts a local 127.0.0.1:48912 HTTP bridge inside TikTok for Termux automation.",
+      "description": "Starts a local HTTP bridge (48912 TikTok / 48914 TikTok Lite) for Termux automation.",
       "category": null,
       "use": true,
       "dependencies": [
@@ -15,6 +16,9 @@
       "compatiblePackages": {
         "com.zhiliaoapp.musically": [
           "47.9.3"
+        ],
+        "com.zhiliaoapp.musically.go": [
+          "47.8.2"
         ]
       },
       "compatibility": [
@@ -35,6 +39,27 @@
                 "ARMEABI_V7A": 2024709030,
                 "X86": 2024709030,
                 "X86_64": 2024709030
+              }
+            }
+          ]
+        },
+        {
+          "name": "TikTok Lite",
+          "packageName": "com.zhiliaoapp.musically.go",
+          "description": null,
+          "appIconColor": 16657493,
+          "signatures": [
+            "d7811ec4166fea6cc720ba66699dc84b584ac9e6986613a76d4e43d8cbe32b27"
+          ],
+          "targets": [
+            {
+              "version": "47.8.2",
+              "experimental": false,
+              "versionCodes": {
+                "ARM64_V8A": 470802,
+                "ARMEABI_V7A": 470802,
+                "X86": 470802,
+                "X86_64": 470802
               }
             }
           ]

@@ -30,7 +30,8 @@ import app.morphe.extension.tiktok.comment.AccountCountry;
  * native signed follow requests without opening TikTok's UI.
  */
 public final class FollowBridge {
-    private static final int PORT = 48912;
+    private static final int[] PORTS_MAIN = {48912, 48914, 48916, 48918};
+    private static final int[] PORTS_ALT = {48914, 48916, 48918, 48912};
     private static final String SERVICE_MANAGER = "com.ss.android.ugc.aweme.framework.services.ServiceManager";
     private static final String RETROFIT_SERVICE = "com.ss.android.ugc.aweme.framework.services.IRetrofitService";
     private static final String RETROFIT = "com.ss.android.ugc.aweme.framework.services.IRetrofit";
@@ -38,12 +39,19 @@ public final class FollowBridge {
     private static final String NETWORK_API = "com.bytedance.ttnet.INetworkApi";
 
     private static volatile boolean started = false;
+    private static volatile int boundPort = 48912;
+    private static volatile String appPackage = "";
+    private static volatile int androidUserId = 0;
     private static volatile Object cachedNetworkApi;
     private static volatile String cachedHost;
 
     private FollowBridge() {}
 
     public static void install(Activity activity, Bundle savedInstanceState) {
+        if (activity != null && appPackage.isEmpty()) {
+            try { appPackage = activity.getPackageName(); } catch (Throwable ignored) {}
+        }
+        androidUserId = android.os.Process.myUid() / 100000;
         if (started) return;
         synchronized (FollowBridge.class) {
             if (started) return;
@@ -55,10 +63,24 @@ public final class FollowBridge {
     }
 
     private static void serveLoop() {
-        try (ServerSocket server = new ServerSocket(PORT, 16, InetAddress.getByName("127.0.0.1"))) {
-            Logger.printInfo(() -> "FollowBridge listening on 127.0.0.1:" + PORT);
+        boolean isAlt = appPackage.endsWith(".go") || androidUserId != 0;
+        int[] candidates = isAlt ? PORTS_ALT : PORTS_MAIN;
+        ServerSocket server = null;
+        for (int p : candidates) {
+            try {
+                server = new ServerSocket(p, 16, InetAddress.getByName("127.0.0.1"));
+                boundPort = p;
+                break;
+            } catch (Throwable ignored) {}
+        }
+        if (server == null) {
+            started = false;
+            return;
+        }
+        try (ServerSocket s = server) {
+            Logger.printInfo(() -> "FollowBridge listening on 127.0.0.1:" + boundPort + " (" + appPackage + ")");
             while (true) {
-                Socket client = server.accept();
+                Socket client = s.accept();
                 Thread worker = new Thread(() -> handleClient(client), "PRFollowWorker");
                 worker.setDaemon(true);
                 worker.start();
@@ -92,7 +114,12 @@ public final class FollowBridge {
             int httpStatus = 200;
             try {
                 if ("/ping".equals(path)) {
-                    respJson = new JSONObject().put("ok", true).put("bridge", "tiktok-follow");
+                    respJson = new JSONObject()
+                            .put("ok", true)
+                            .put("bridge", "tiktok-follow")
+                            .put("package", appPackage)
+                            .put("android_user", androidUserId)
+                            .put("port", boundPort);
                 } else if ("/profile".equals(path)) {
                     respJson = handleProfile(params);
                 } else if ("/follow".equals(path)) {
